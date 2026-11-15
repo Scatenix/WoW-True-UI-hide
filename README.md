@@ -125,7 +125,7 @@ And this is also not a promise.
 - Better pre-built presets
 - Better custom presets support (especially the command to set a custom preset, which easily leads to name collisions)
 - change some commands, because its confusing
-- Improve readme (descripe commands like diff, add troubleshooting, document quirks)
+- Improve readme (descripe commands like diff, add troubleshooting, document quirks, add pictures)
 - Add/Change/Remove keybinds
 - Release Pipeline
 - Maybe publish addon somewhere
