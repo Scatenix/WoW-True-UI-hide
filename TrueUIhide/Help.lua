@@ -35,7 +35,7 @@ local function onEnter(frame, link)
   local kind, addon, key = strsplit(":", link)
   if kind ~= "addon" or addon ~= "TUIH" then return end
   GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
-  GameTooltip:AddLine("True UI hide", 0.64, 0.21, 0.93)
+  GameTooltip:AddLine("True UI Hide", 0.64, 0.21, 0.93)
   if key == "status" or key == "help" then
     GameTooltip:AddLine("Toggle truly all UI!", 1, 1, 1)
   end
@@ -46,7 +46,7 @@ local function onEnter(frame, link)
   GameTooltip:AddLine(" ")
   GameTooltip:AddLine("Keybinds for TUIH are available", 1, 1, 1)
   GameTooltip:AddLine(" ")
-  GameTooltip:AddLine("Thanks for using True UI hide!", 1, 0.82, 0)
+  GameTooltip:AddLine("Thanks for using True UI Hide!", 1, 0.82, 0)
   GameTooltip:Show()
 end
 

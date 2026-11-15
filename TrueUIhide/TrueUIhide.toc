@@ -1,5 +1,5 @@
 ## Interface: 16001
-## Title: |cffa335eeTrue UI hide |r
+## Title: |cffa335eeTrue UI Hide |r
 ## Author: Scatenix
 ## Version: v0.1
 ## IconTexture: Interface\Icons\achievement_zone_stormpeaks_01

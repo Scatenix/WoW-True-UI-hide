@@ -11,11 +11,11 @@ end
 local function buildConfig()
   if cfg then return end
   cfg = CreateFrame("Frame", "TUIHOptionsPanel")
-  cfg.name = "True UI hide"
+  cfg.name = "True UI Hide"
 
   local title = cfg:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("TOPLEFT", 16, -16)
-  title:SetText("|cffa335eeTrue UI hide|r")
+  title:SetText("|cffa335eeTrue UI Hide|r")
 
   local function heading(y, text)
     local fs = cfg:CreateFontString(nil, "OVERLAY", "GameFontNormal")
