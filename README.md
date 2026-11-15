@@ -134,6 +134,7 @@ And this is also not a promise.
 - Release Pipeline
 - Maybe publish addon somewhere
 - Review the save system with the DB and check what all of the stuff in `<YOUR-WOW-INSTALL-DIR>/_forever_/WTF/Account/<ACCOUNT_ID>/SavedVariables/TrueUIhide.lua` is
+- What happens if the game is restarted with UI hidden?
 
 ## Legal
 
