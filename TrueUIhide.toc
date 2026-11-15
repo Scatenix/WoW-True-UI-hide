@@ -1,0 +1,20 @@
+## Interface: 16001
+## Title: |cffa335eeTrue UI hide |r
+## Author: Scatenix
+## Version: v0.1
+## IconTexture: Interface\Icons\achievement_zone_stormpeaks_01
+## SavedVariables: TUIHDB
+## Notes: |cffa335eeToggle truly all UI!|r - "/tuih" toggles all UI, "/tuih help" lists all commands.
+Core.lua
+Data.lua
+CVars.lua
+Frames.lua
+Actions.lua
+Presets.lua
+Peek.lua
+Combat.lua
+Diag.lua
+Options.lua
+Help.lua
+Commands.lua
+Binds.lua

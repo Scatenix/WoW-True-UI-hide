@@ -1,0 +1,70 @@
+<Bindings>
+  <Binding name="TUIH_TOGGLE" header="TUIH" category="True UI Hide">
+    TUIH_Toggle()
+  </Binding>
+  <Binding name="TUIH_PLAYERS" category="True UI Hide">
+    TUIH_Players()
+  </Binding>
+  <Binding name="TUIH_PEEK" category="True UI Hide" runOnUp="true">
+    TUIH_Peek(keystate)
+  </Binding>
+  <Binding name="TUIH_PEEK_HIDE" category="True UI Hide" runOnUp="true">
+    TUIH_PeekHide(keystate)
+  </Binding>
+  <Binding name="TUIH_SHOT" category="True UI Hide">
+    TUIH_Shot()
+  </Binding>
+  <Binding name="TUIH_CONFIG" category="True UI Hide">
+    TUIH_Config()
+  </Binding>
+  <Binding name="TUIH_HELP" category="True UI Hide">
+    TUIH_Help()
+  </Binding>
+
+  <Binding name="TUIH_PRESET_NORMAL" category="True UI Hide">
+    TUIH_Preset("normal")
+  </Binding>
+  <Binding name="TUIH_PRESET_EXPLORE" category="True UI Hide">
+    TUIH_Preset("explore")
+  </Binding>
+  <Binding name="TUIH_PRESET_SOCIAL" category="True UI Hide">
+    TUIH_Preset("social")
+  </Binding>
+  <Binding name="TUIH_PRESET_IMMERSIVE" category="True UI Hide">
+    TUIH_Preset("immersive")
+  </Binding>
+  <Binding name="TUIH_PRESET_SCREENSHOT" category="True UI Hide">
+    TUIH_Preset("screenshot")
+  </Binding>
+
+  <Binding name="TUIH_KEEP_MINIMAP" category="True UI Hide">
+    TUIH_Keep("minimap")
+  </Binding>
+  <Binding name="TUIH_KEEP_PLAYER" category="True UI Hide">
+    TUIH_Keep("player")
+  </Binding>
+  <Binding name="TUIH_KEEP_TARGET" category="True UI Hide">
+    TUIH_Keep("target")
+  </Binding>
+  <Binding name="TUIH_KEEP_ENEMYPLATES" category="True UI Hide">
+    TUIH_Keep("enemyplates")
+  </Binding>
+  <Binding name="TUIH_KEEP_CHAT" category="True UI Hide">
+    TUIH_Keep("chat")
+  </Binding>
+  <Binding name="TUIH_KEEP_ACTIONBARS" category="True UI Hide">
+    TUIH_Keep("actionbars")
+  </Binding>
+  <Binding name="TUIH_KEEP_BUFFS" category="True UI Hide">
+    TUIH_Keep("buffs")
+  </Binding>
+  <Binding name="TUIH_KEEP_QUEST" category="True UI Hide">
+    TUIH_Keep("quest")
+  </Binding>
+  <Binding name="TUIH_KEEP_QUESTIE" category="True UI Hide">
+    TUIH_Keep("questie")
+  </Binding>
+  <Binding name="TUIH_KEEP_CASTBAR" category="True UI Hide">
+    TUIH_Keep("castbar")
+  </Binding>
+</Bindings>
