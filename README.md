@@ -9,6 +9,8 @@ True UI Hide solves this, by letting you assign hotkeys to achieve this (or chat
 
 Disclaimer: Addon is mainly written by AI but the I checked the generated code and made small adjustments.
 
+Second Disclaimer: This addon might permanently overwrite some of your settings, like which names to show on players and NPCs. It should not do that, but there might be bugs. Before toggling the UI off, your settings are written into a DB that hopefully survives even a crash and is reset when toggling the UI on again. (DB stored `<YOUR-WOW-INSTALL-DIR>/_forever_/WTF/Account/<ACCOUNT_ID>/SavedVariables/TrueUIhide.lua`)
+
 ## Getting started
 
 Todo: Add automatic release pipeline to bundle addon into a zip.
@@ -20,6 +22,8 @@ into: `<YOUR-WOW-INSTALL-DIR>/_forever_/Interface/AddOns/`
 If your game is running, make sure to run `/reload` in the in-game chat.
 
 ## Using
+
+Disclaimer for a Small quirk: If you toggle the UI off and hit escape, press Alt+Z or change some appearance settings (or similar), this UI is in a somewhat unstable state. Toggle tuih again to be in a stable "normal" state again.
 
 If you have Questie installed, this addon automatically detects it and gives you the option to show it during the UI hide mode.
 
@@ -129,6 +133,7 @@ And this is also not a promise.
 - Add/Change/Remove keybinds
 - Release Pipeline
 - Maybe publish addon somewhere
+- Review the save system with the DB and check what all of the stuff in `<YOUR-WOW-INSTALL-DIR>/_forever_/WTF/Account/<ACCOUNT_ID>/SavedVariables/TrueUIhide.lua` is
 
 ## Legal
 
