@@ -40,6 +40,10 @@ function ns.isPlate(c)
   return c:lower():sub(1, 9) == "nameplate"
 end
 
+function ns.isSoftTarget(c)
+  return c:lower():sub(1, 10) == "softtarget"
+end
+
 -- Merge missing values so a partial restore never loses the original state
 function ns.snapshot()
   TUIHDB.saved = TUIHDB.saved or {}
@@ -97,6 +101,7 @@ function ns.hideAll()
   ns.snapshot()  -- adds only values that are not saved yet
   for _, c in ipairs(ns.cvarList()) do
     local skip = (c == "nameplateShowEnemies" and TUIHDB.keep.enemyplates)
+      or (ns.isSoftTarget(c) and TUIHDB.keep.softtarget)
       or (ns.isPlate(c) and InCombatLockdown())
     local v = GetCVar(c)
     if v ~= nil and v ~= "0" and not skip then

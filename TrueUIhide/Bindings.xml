@@ -64,6 +64,9 @@
   <Binding name="TUIH_KEEP_ENEMYPLATES" category="True UI Hide">
     TUIH_Keep("enemyplates")
   </Binding>
+  <Binding name="TUIH_KEEP_SOFTTARGET" category="True UI Hide">
+    TUIH_Keep("softtarget")
+  </Binding>
   <Binding name="TUIH_KEEP_CHAT" category="True UI Hide">
     TUIH_Keep("chat")
   </Binding>

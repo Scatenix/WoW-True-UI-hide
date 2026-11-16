@@ -95,6 +95,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | `/tuih toggle player` | `pf` | Player frame |
 | `/tuih toggle target` | `tf`, `t` | Target frame |
 | `/tuih toggle enemyplates` | `plates`, `nameplates`, `np`, `ep` | Enemy nameplates |
+| `/tuih toggle softtarget` | `soft`, `st` | Soft-target highlight (the game's soft-target settings; hidden together with the UI by default) |
 | `/tuih toggle chat` | `c` | Chat |
 | `/tuih toggle actionbars` | `bars`, `actionbar`, `ab` | Action bars |
 | `/tuih toggle buffs` | `b`, `auras` | Buffs and debuffs |
@@ -147,7 +148,7 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 | Cycle through built-in presets / custom presets | Same as `/tuih preset next builtin` / `custom` |
 | Cycle backwards through all / built-in / custom presets | Same as `/tuih preset prev [builtin\|custom]` |
 | Preset: normal / explore / social / immersive / screenshot | Same as `/tuih preset <name>` |
-| Toggle: Minimap, Player frame, Target frame, Enemy nameplates, Chat, Action bars, Buffs and debuffs, Quest tracker, Questie tracker, Cast bar | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
+| Toggle: Minimap, Player frame, Target frame, Enemy nameplates, Soft-target highlight, Chat, Action bars, Buffs and debuffs, Quest tracker, Questie tracker, Cast bar | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
 | Open options | Same as `/tuih config` |
 | Show help links | Same as `/tuih help` |
 

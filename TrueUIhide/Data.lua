@@ -67,6 +67,8 @@ ns.keepList = {
     frames = { "TargetFrame" } },
   { key = "enemyplates", label = "Enemy nameplates",
     alias = { "plates", "nameplates", "np", "ep" } },
+  { key = "softtarget", label = "Soft-target highlight",
+    alias = { "soft", "st" } },
   { key = "chat", label = "Chat",
     alias = { "c" },
     frames = chatNames },

@@ -72,9 +72,25 @@ function ns.sync()
   end
 end
 
--- Enemy nameplates are a setting, not a frame
+-- Soft-target settings follow the "Soft-target highlight" keep option while
+-- hidden: kept = original values back, not kept = off
+function ns.syncSoftTarget()
+  for _, c in ipairs(ns.cvarList()) do
+    if ns.isSoftTarget(c) then
+      if TUIHDB.keep.softtarget then
+        local v = TUIHDB.saved and TUIHDB.saved[c]
+        if v ~= nil then ns.setCVar(c, v) end
+      elseif GetCVar(c) ~= "0" then
+        ns.setCVar(c, "0")
+      end
+    end
+  end
+end
+
+-- Enemy nameplates and soft-target are settings, not frames
 function ns.syncPlates()
   if UIParent:IsShown() or InCombatLockdown() then return end
+  ns.syncSoftTarget()
   if TUIHDB.keep.enemyplates then
     local v = TUIHDB.saved and TUIHDB.saved.nameplateShowEnemies
     if v ~= nil then ns.setCVar("nameplateShowEnemies", v) end
