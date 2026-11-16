@@ -37,8 +37,10 @@ local function setCommand(arg)
     ns.toggleCombat()
   elseif word == "mouselook" or word == "look" or word == "ml" then
     ns.toggleMouselookAuto()
+  elseif word == "icon" or word == "minimap" then
+    ns.toggleMinimapIcon()
   else
-    ns.log("Usage: /tuih set combat | mouselook")
+    ns.log("Usage: /tuih set combat | mouselook | icon")
   end
 end
 

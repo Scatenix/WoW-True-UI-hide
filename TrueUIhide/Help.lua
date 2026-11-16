@@ -40,6 +40,7 @@ ns.helpGroups = {
     rows = {
       { "/tuih set combat", "show the UI during combat (may be blocked by the game)" },
       { "/tuih set mouselook", "enter mouselook whenever the UI is hidden" },
+      { "/tuih set icon", "show or hide the minimap icon" },
     },
   },
 }

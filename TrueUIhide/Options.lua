@@ -72,7 +72,11 @@ local function buildConfig()
     function(v) ns.setMouselookAuto(v) end)
   addInfo(y - 124, ns.MOUSELOOK_INFO)
 
-  local py = y - 160
+  addCheck(y - 150, "Show the minimap icon",
+    function() return TUIHDB.minimapIcon end,
+    function(v) ns.setMinimapIcon(v) end)
+
+  local py = y - 194
   heading(py, "Presets:")
   local function addButton(i, text, onClick)
     local b = CreateFrame("Button", nil, cfg, "UIPanelButtonTemplate")

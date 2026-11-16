@@ -37,6 +37,8 @@ You can setup a lot of keybindings in options -> keybindings -> True UI Hide.
 
 ---
 
+A small icon on the minimap border opens the settings with a click. Drag it to move it around the minimap. It can be hidden in the settings (or with `/tuih set icon`).
+
 You can find some settings for True UI Hide in options, at the 'AddOns' tab at 'True UI Hide'.
 
 Configure which UI elements should stay visible when toggling off the UI.
@@ -111,6 +113,7 @@ Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). 
 |---|---|
 | `/tuih set combat` | Show the UI automatically during combat |
 | `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
+| `/tuih set icon` | Show or hide the minimap icon |
 
 ### Keybindings
 

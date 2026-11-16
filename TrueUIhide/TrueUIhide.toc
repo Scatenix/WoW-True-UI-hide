@@ -16,6 +16,7 @@ Mouselook.lua
 Combat.lua
 Diag.lua
 Options.lua
+MinimapButton.lua
 Help.lua
 Commands.lua
 Binds.lua

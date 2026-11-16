@@ -45,6 +45,8 @@ local function sanitize()
   if type(TUIHDB.combatShow) ~= "boolean" then TUIHDB.combatShow = nil end
   if type(TUIHDB.mouselookAuto) ~= "boolean" then TUIHDB.mouselookAuto = false end
   TUIHDB.freelookAuto = nil  -- removed feature (protected game function)
+  if type(TUIHDB.minimapIcon) ~= "boolean" then TUIHDB.minimapIcon = true end
+  if type(TUIHDB.minimapAngle) ~= "number" then TUIHDB.minimapAngle = nil end
 
   -- Saved CVar values: string name -> string value
   if type(TUIHDB.saved) ~= "table" then
