@@ -101,10 +101,25 @@ local function onEnter(frame, link)
   GameTooltip:Show()
 end
 
-for i = 1, NUM_CHAT_WINDOWS do
-  local f = _G["ChatFrame" .. i]
-  if f then
-    f:HookScript("OnHyperlinkEnter", onEnter)
-    f:HookScript("OnHyperlinkLeave", function() GameTooltip:Hide() end)
-  end
+local hooked = {}
+local function hookChatFrame(f)
+  if not f or hooked[f] or not f.HookScript then return end
+  hooked[f] = true
+  f:HookScript("OnHyperlinkEnter", onEnter)
+  f:HookScript("OnHyperlinkLeave", function() GameTooltip:Hide() end)
+end
+
+for i = 1, NUM_CHAT_WINDOWS or 10 do
+  hookChatFrame(_G["ChatFrame" .. i])
+end
+
+-- Pop-out and temporary windows (whisper tabs, ...) are created later
+if FCF_OpenTemporaryWindow then
+  hooksecurefunc("FCF_OpenTemporaryWindow", function()
+    for i = 1, 50 do
+      local f = _G["ChatFrame" .. i]
+      if not f then break end
+      hookChatFrame(f)
+    end
+  end)
 end

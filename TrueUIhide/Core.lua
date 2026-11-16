@@ -57,6 +57,7 @@ local function sanitize()
     if not v or v < ns.SHOT_WAIT_MIN or v > ns.SHOT_WAIT_MAX then v = default end
     TUIHDB[key] = v
   end
+  if type(TUIHDB.welcomed) ~= "boolean" then TUIHDB.welcomed = nil end
   if type(TUIHDB.minimapIcon) ~= "boolean" then TUIHDB.minimapIcon = true end
   if type(TUIHDB.minimapAngle) ~= "number" then TUIHDB.minimapAngle = nil end
 
@@ -131,6 +132,11 @@ loader:SetScript("OnEvent", function(_, event, name)
       else
         ns.log("Some settings from the last session could not be restored yet. Run /tuih on to retry.")
       end
+    end
+    -- Welcome message on the very first load only
+    if not TUIHDB.welcomed then
+      TUIHDB.welcomed = true
+      ns.log("Loaded. Hover the [TUIH] tag for basic commands or run /tuih help")
     end
     if TUIHDB and TUIHDB.combatNotice then
       TUIHDB.combatNotice = nil

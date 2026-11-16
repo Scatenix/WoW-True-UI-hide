@@ -8,6 +8,9 @@ ev:SetScript("OnEvent", function(_, event)
   if not TUIHDB then return end
   local st = ns.state
   if event == "PLAYER_REGEN_DISABLED" then
+    -- End a running peek first (its key-up may be lost); the auto-show below
+    -- then decides what the UI looks like in combat
+    ns.endPeek()
     -- Combat during a screenshot: by default give the UI back right away,
     -- while the game still allows it (this handler runs before the lockdown)
     if st.shotBusy and TUIHDB.shotCombatShow then

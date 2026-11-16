@@ -1,20 +1,33 @@
 -- Peek: hold a key to show/hide the UI; screenshot without UI
 local _, ns = ...
 
+-- End a running peek and put the UI back the way it was before it.
+-- Also used when a key-up got lost (alt-tab, dialog), so peek cannot get stuck.
+function ns.endPeek()
+  local peek = ns.state.peek
+  if peek.mode == "show" then
+    peek.mode = nil
+    ns.setAll(false)
+    ns.setStage(peek.stage or 0)
+  elseif peek.mode == "hide" then
+    peek.mode = nil
+    ns.setAll(true)
+  end
+end
+
 -- Hold to show the UI while it is hidden
 function ns.peekShow(keystate)
   local peek = ns.state.peek
   if ns.state.shotBusy then return end
   if keystate == "down" then
-    if not UIParent:IsShown() and not peek.mode then
+    if peek.mode then ns.endPeek() end  -- stale peek: its key-up never came
+    if not UIParent:IsShown() then
       peek.mode = "show"
       peek.stage = ns.getStage()
       ns.setAll(true)
     end
   elseif peek.mode == "show" then
-    peek.mode = nil
-    ns.setAll(false)
-    ns.setStage(peek.stage or 0)
+    ns.endPeek()
   end
 end
 
@@ -23,15 +36,20 @@ function ns.peekHide(keystate)
   local peek = ns.state.peek
   if ns.state.shotBusy then return end
   if keystate == "down" then
-    if UIParent:IsShown() and not peek.mode then
+    if peek.mode then ns.endPeek() end  -- stale peek: its key-up never came
+    if UIParent:IsShown() then
       peek.mode = "hide"
       ns.setAll(false)
     end
   elseif peek.mode == "hide" then
-    peek.mode = nil
-    ns.setAll(true)
+    ns.endPeek()
   end
 end
+
+-- Safety net: a peek never survives loading screens (combat start: Combat.lua)
+local peekEv = CreateFrame("Frame")
+peekEv:RegisterEvent("PLAYER_ENTERING_WORLD")
+peekEv:SetScript("OnEvent", function() ns.endPeek() end)
 
 -- End a running screenshot: stop its timers and put everything back.
 -- Safe to call at any time; does nothing when no screenshot is running.
