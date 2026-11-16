@@ -23,7 +23,7 @@ If your game is running, make sure to run `/reload` in the in-game chat.
 
 ## Using
 
-Disclaimer for a Small quirk: If you toggle the UI off and hit escape, press Alt+Z or change some appearance settings (or similar), this UI is in a somewhat unstable state. Toggle tuih again to be in a stable "normal" state again.
+Disclaimer for a Small quirk: If you toggle the UI off and hit escape, press Alt+Z or change some appearance settings (or similar), this UI is in a somewhat unstable state. Toggle tuih again to be in a stable "normal" state again. If you change a name or nameplate option while the UI is hidden, your new value is kept when the UI comes back. Options you did not touch go back to what they were before.
 
 If you have Questie installed, this addon automatically detects it and gives you the option to show it during the UI hide mode.
 

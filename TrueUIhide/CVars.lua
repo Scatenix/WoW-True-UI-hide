@@ -61,11 +61,19 @@ local function sameValue(a, b)
   return x ~= nil and y ~= nil and math.abs(x - y) < 1e-6
 end
 
+-- What the addon itself last set, per CVar (runtime only). On restore, a
+-- CVar whose current value differs was changed by the player in the
+-- meantime (menu, /console): their value is kept.
+local applied = {}
+
 -- Set a CVar and check that it really changed. pcall alone is not enough:
 -- blocked actions (combat) usually do not raise an error. Returns true on success.
-function ns.setCVar(c, v)
+-- isRestore: the value is being put back, so it is no longer "ours".
+function ns.setCVar(c, v, isRestore)
   pcall(SetCVar, c, v)
-  return sameValue(GetCVar(c), v)
+  local ok = sameValue(GetCVar(c), v)
+  if ok then applied[c] = (not isRestore) and v or nil end
+  return ok
 end
 
 -- Restore the saved state; values that could not be restored are kept
@@ -75,15 +83,21 @@ function ns.restore(quiet)
   if s then
     local left, pending = {}, false
     for c, v in pairs(s) do
-      if GetCVar(c) == nil then
+      local now = GetCVar(c)
+      if now == nil then
         -- CVar no longer exists in this client: nothing to restore
+      elseif applied[c] ~= nil and not sameValue(now, applied[c]) then
+        -- The player changed it while the UI was hidden: keep their value
+        applied[c] = nil
+        ns.info("Kept your change: " .. c .. " = " .. tostring(now))
       elseif ns.isPlate(c) and InCombatLockdown() then
         left[c], pending = v, true
-      elseif not ns.setCVar(c, v) then
+      elseif not ns.setCVar(c, v, true) then
         left[c], pending = v, true
       end
     end
     TUIHDB.saved = pending and left or nil
+    if not pending then applied = {} end
     if pending and not quiet then
       ns.log("Some settings could not be restored (combat?). Run /tuih again after combat.")
     end
@@ -98,6 +112,7 @@ function ns.restore(quiet)
 end
 
 function ns.hideAll()
+  if TUIHDB.saved == nil then applied = {} end  -- a new hide starts clean
   ns.snapshot()  -- adds only values that are not saved yet
   for _, c in ipairs(ns.cvarList()) do
     local skip = (c == "nameplateShowEnemies" and TUIHDB.keep.enemyplates)
@@ -106,6 +121,8 @@ function ns.hideAll()
     local v = GetCVar(c)
     if v ~= nil and v ~= "0" and not skip then
       ns.setCVar(c, "0")
+    elseif v == "0" and not skip then
+      applied[c] = "0"  -- already off: still notice if the player turns it on
     end
   end
 end
