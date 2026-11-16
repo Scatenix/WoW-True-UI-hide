@@ -120,20 +120,24 @@ local function buildConfig()
     function() return TUIHDB.verbose end,
     function(v) TUIHDB.verbose = v end)
 
-  heading(y - 220, "Screenshot:")
-  addCheck(y - 242, "Show the UI if combat starts during a screenshot",
+  addCheck(y - 202, "Show the red warning dot if hide settings stay on while the UI is visible",
+    function() return TUIHDB.indicator end,
+    function(v) TUIHDB.indicator = v; ns.updateIndicator() end)
+
+  heading(y - 246, "Screenshot:")
+  addCheck(y - 268, "Show the UI if combat starts during a screenshot",
     function() return TUIHDB.shotCombatShow end,
     function(v) TUIHDB.shotCombatShow = v end)
-  addNote(y - 268, ns.SHOT_COMBAT_WARNING, true)
-  addSlider(y - 322, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addNote(y - 294, ns.SHOT_COMBAT_WARNING, true)
+  addSlider(y - 348, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotBefore end,
     function(v) TUIHDB.shotBefore = v end)
-  addSlider(y - 370, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addSlider(y - 396, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotAfter end,
     function(v) TUIHDB.shotAfter = v end)
-  addNote(y - 392, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
+  addNote(y - 418, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
 
-  local py = y - 438
+  local py = y - 464
   heading(py, "Presets:")
   local function addButton(i, text, onClick)
     local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")

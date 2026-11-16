@@ -9,7 +9,7 @@ local _, ns = ...
 local dot
 
 local function unstable()
-  if not TUIHDB or ns.state.shotBusy then return false end
+  if not TUIHDB or not TUIHDB.indicator or ns.state.shotBusy then return false end
   return UIParent:IsShown() and (TUIHDB.saved ~= nil or ns.hasDetached())
 end
 
@@ -78,3 +78,9 @@ ev:RegisterEvent("PLAYER_ENTERING_WORLD")
 ev:RegisterEvent("PLAYER_REGEN_ENABLED")
 ev:RegisterEvent("PLAYER_REGEN_DISABLED")
 ev:SetScript("OnEvent", schedule)
+
+function ns.toggleIndicator()
+  TUIHDB.indicator = not TUIHDB.indicator
+  ns.updateIndicator()
+  ns.log("Warning dot: " .. (TUIHDB.indicator and "on" or "off"), "toggle")
+end

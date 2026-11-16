@@ -30,7 +30,7 @@ local function toggleCommand(arg)
   end
 end
 
--- /tuih set <combat | mouselook | icon | shotcombat | verbose>
+-- /tuih set <combat | mouselook | icon | shotcombat | dot | verbose>
 local function setCommand(arg)
   local word = firstWord(arg)
   if word == "combat" then
@@ -41,10 +41,12 @@ local function setCommand(arg)
     ns.toggleMinimapIcon()
   elseif word == "shotcombat" then
     ns.toggleShotCombat()
+  elseif word == "dot" or word == "indicator" then
+    ns.toggleIndicator()
   elseif word == "verbose" or word == "chat" then
     ns.toggleVerbose()
   else
-    ns.log("Usage: /tuih set combat | mouselook | icon | shotcombat | verbose")
+    ns.log("Usage: /tuih set combat | mouselook | icon | shotcombat | dot | verbose")
   end
 end
 

@@ -57,6 +57,7 @@ function ns.wipeAll()
   st.pending, st.autoShown, st.autoStage, st.needsSync = nil, false, nil, false
   if ns.refreshMinimap then ns.refreshMinimap() end
   if ns.refreshOptions then ns.refreshOptions() end
+  if ns.updateIndicator then ns.updateIndicator() end
   ns.log("All data deleted. Fresh defaults are active.")
   return true
 end

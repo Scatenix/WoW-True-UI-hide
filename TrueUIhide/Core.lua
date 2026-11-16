@@ -70,6 +70,7 @@ local function sanitize()
   end
   if type(TUIHDB.welcomed) ~= "boolean" then TUIHDB.welcomed = nil end
   if type(TUIHDB.verbose) ~= "boolean" then TUIHDB.verbose = false end
+  if type(TUIHDB.indicator) ~= "boolean" then TUIHDB.indicator = true end
   if type(TUIHDB.minimapIcon) ~= "boolean" then TUIHDB.minimapIcon = true end
   if type(TUIHDB.minimapAngle) ~= "number" then TUIHDB.minimapAngle = nil end
 

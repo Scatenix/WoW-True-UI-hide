@@ -45,5 +45,6 @@ function ns.status()
   ns.log("Show UI in combat: " .. (TUIHDB.combatShow and "on" or "off"))
   ns.log("Show UI if combat starts during a screenshot: " .. (TUIHDB.shotCombatShow and "on" or "off"))
   ns.log("Mouselook while the UI is hidden: " .. (TUIHDB.mouselookAuto and "on" or "off"))
+  ns.log("Warning dot: " .. (TUIHDB.indicator and "on" or "off"))
   ns.log("Events in chat: " .. (TUIHDB.verbose and "on" or "off"))
 end
