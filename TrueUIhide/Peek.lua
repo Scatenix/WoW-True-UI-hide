@@ -51,7 +51,7 @@ function ns.shot()
     ns.setAll(false)
   else
     ns.sync()
-    if not InCombatLockdown() then pcall(SetCVar, "nameplateShowEnemies", "0") end
+    if not InCombatLockdown() then ns.setCVar("nameplateShowEnemies", "0") end
   end
   C_Timer.After(shotTimerBefore, function()
     Screenshot()
@@ -62,7 +62,7 @@ function ns.shot()
       else
         ns.sync()
         if plates and not InCombatLockdown() then
-          pcall(SetCVar, "nameplateShowEnemies", plates)
+          ns.setCVar("nameplateShowEnemies", plates)
         end
       end
       st.shotBusy = false

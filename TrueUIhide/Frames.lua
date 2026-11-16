@@ -77,9 +77,9 @@ function ns.syncPlates()
   if UIParent:IsShown() or InCombatLockdown() then return end
   if TUIHDB.keep.enemyplates then
     local v = TUIHDB.saved and TUIHDB.saved.nameplateShowEnemies
-    if v ~= nil then pcall(SetCVar, "nameplateShowEnemies", v) end
+    if v ~= nil then ns.setCVar("nameplateShowEnemies", v) end
   else
-    pcall(SetCVar, "nameplateShowEnemies", "0")
+    ns.setCVar("nameplateShowEnemies", "0")
   end
 end
 

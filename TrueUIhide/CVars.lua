@@ -48,30 +48,49 @@ function ns.snapshot()
   end
 end
 
--- Restore the saved state; keep values that could not be restored yet
+-- CVar values come back as strings and may be formatted differently than
+-- what was set ("0.5" vs "0.500000"), so compare numerically when possible
+local function sameValue(a, b)
+  if a == nil or b == nil then return false end
+  if tostring(a) == tostring(b) then return true end
+  local x, y = tonumber(a), tonumber(b)
+  return x ~= nil and y ~= nil and math.abs(x - y) < 1e-6
+end
+
+-- Set a CVar and check that it really changed. pcall alone is not enough:
+-- blocked actions (combat) usually do not raise an error. Returns true on success.
+function ns.setCVar(c, v)
+  pcall(SetCVar, c, v)
+  return sameValue(GetCVar(c), v)
+end
+
+-- Restore the saved state; values that could not be restored are kept
+-- so that a later call (after combat, next login) can finish the job
 function ns.restore(quiet)
   local s = TUIHDB.saved
   if s then
     local left, pending = {}, false
     for c, v in pairs(s) do
-      if v ~= nil then
-        if ns.isPlate(c) and InCombatLockdown() then
-          left[c], pending = v, true
-        elseif not pcall(SetCVar, c, v) then
-          left[c], pending = v, true
-        end
+      if GetCVar(c) == nil then
+        -- CVar no longer exists in this client: nothing to restore
+      elseif ns.isPlate(c) and InCombatLockdown() then
+        left[c], pending = v, true
+      elseif not ns.setCVar(c, v) then
+        left[c], pending = v, true
       end
     end
     TUIHDB.saved = pending and left or nil
     if pending and not quiet then
       ns.log("Some settings could not be restored (combat?). Run /tuih again after combat.")
     end
+    return not pending
   elseif not UIParent:IsShown() then
     -- Hidden but nothing saved: fall back to showing player names
     for _, c in ipairs({ "UnitNameOwn", "UnitNameFriendlyPlayerName", "UnitNameEnemyPlayerName" }) do
-      pcall(SetCVar, c, "1")
+      ns.setCVar(c, "1")
     end
   end
+  return true
 end
 
 function ns.hideAll()
@@ -81,7 +100,7 @@ function ns.hideAll()
       or (ns.isPlate(c) and InCombatLockdown())
     local v = GetCVar(c)
     if v ~= nil and v ~= "0" and not skip then
-      pcall(SetCVar, c, "0")
+      ns.setCVar(c, "0")
     end
   end
 end
@@ -94,11 +113,13 @@ function ns.getStage()
 end
 
 function ns.setStage(i)
+  i = tonumber(i) or 0
+  if i < 0 or i > 3 then i = 0 end
   local o = (i % 2 == 1) and "1" or "0"
   local p = (i >= 2) and "1" or "0"
-  pcall(SetCVar, "UnitNameOwn", o)
-  pcall(SetCVar, "UnitNameFriendlyPlayerName", p)
-  pcall(SetCVar, "UnitNameEnemyPlayerName", p)
+  ns.setCVar("UnitNameOwn", o)
+  ns.setCVar("UnitNameFriendlyPlayerName", p)
+  ns.setCVar("UnitNameEnemyPlayerName", p)
 end
 
 -- Player nameplates follow the name cycle: always off.
@@ -111,7 +132,7 @@ function ns.hidePlayerPlates()
     local skip = (c == "nameplateShowEnemies" and TUIHDB.keep.enemyplates)
     if not skip then
       if TUIHDB.saved[c] == nil then TUIHDB.saved[c] = GetCVar(c) end
-      pcall(SetCVar, c, "0")
+      ns.setCVar(c, "0")
     end
   end
 end
