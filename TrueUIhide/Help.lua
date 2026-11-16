@@ -42,6 +42,7 @@ ns.helpGroups = {
       { "/tuih set mouselook", "enter mouselook whenever the UI is hidden" },
       { "/tuih set icon", "show or hide the minimap icon" },
       { "/tuih set shotcombat", "show the UI if combat starts during a screenshot" },
+      { "/tuih set verbose  (chat)", "show True UI Hide events in chat (for debugging)" },
     },
   },
 }

@@ -28,7 +28,7 @@ function ns.toggleMouselook()
   end
   local on = not IsMouselooking()
   ns.setMouselook(on)
-  ns.log("Mouselook (right-click style): " .. (on and "on" or "off"), "toggle")
+  ns.info("Mouselook (right-click style): " .. (on and "on" or "off"), "toggle")
 end
 
 -- Setting: enter mouselook automatically whenever the UI gets hidden

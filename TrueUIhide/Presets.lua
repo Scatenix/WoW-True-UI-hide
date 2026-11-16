@@ -12,7 +12,7 @@ function ns.applyPreset(name)
   name = (name or ""):lower()
   if name == "normal" then
     ns.resetState()
-    ns.log("Preset: normal", "preset")
+    ns.info("Preset: normal", "preset")
     return true
   end
   local p = ns.builtin[name] or TUIHDB.presets[name]
@@ -23,7 +23,7 @@ function ns.applyPreset(name)
   ns.userSetAll(false)
   ns.setStage(p.players or 0)
   ns.syncPlates()
-  ns.log("Preset: " .. name, "preset")
+  ns.info("Preset: " .. name, "preset")
   return true
 end
 

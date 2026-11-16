@@ -42,6 +42,17 @@ function ns.log(msg, key)
   print(ns.link("TUIH", key or "status") .. " " .. msg)
 end
 
+-- Routine confirmations ("UI on", "Preset: x", ...): only shown when the
+-- player opted in with the "verbose" setting. Everything else uses ns.log.
+function ns.info(msg, key)
+  if TUIHDB and TUIHDB.verbose then ns.log(msg, key) end
+end
+
+function ns.toggleVerbose()
+  TUIHDB.verbose = not TUIHDB.verbose
+  ns.log("Events in chat: " .. (TUIHDB.verbose and "on" or "off"), "toggle")
+end
+
 -- Make sure the saved variables have the expected shape, so a corrupted
 -- or hand-edited file cannot cause errors in every command
 local function sanitize()
@@ -58,6 +69,7 @@ local function sanitize()
     TUIHDB[key] = v
   end
   if type(TUIHDB.welcomed) ~= "boolean" then TUIHDB.welcomed = nil end
+  if type(TUIHDB.verbose) ~= "boolean" then TUIHDB.verbose = false end
   if type(TUIHDB.minimapIcon) ~= "boolean" then TUIHDB.minimapIcon = true end
   if type(TUIHDB.minimapAngle) ~= "number" then TUIHDB.minimapAngle = nil end
 
@@ -141,9 +153,7 @@ loader:SetScript("OnEvent", function(_, event, name)
     if TUIHDB and TUIHDB.combatNotice then
       TUIHDB.combatNotice = nil
       ns.log("\"Show the UI during combat\" is on by default. " .. ns.COMBAT_WARNING
-        .. " Turn it off with /tuih combat.")
+        .. " Turn it off with /tuih set combat.")
     end
   end
 end)
-
-ns.log("Loaded. Hover the [TUIH] tag for commands.")

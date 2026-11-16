@@ -115,6 +115,7 @@ Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). 
 | `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
 | `/tuih set icon` | Show or hide the minimap icon |
 | `/tuih set shotcombat` | Show the UI if combat starts during a screenshot (on by default) |
+| `/tuih set verbose` | Show True UI Hide events in chat for debugging ("UI on", "Preset: ...", ...). Off by default |
 
 ### Keybindings
 
