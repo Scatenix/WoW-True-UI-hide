@@ -119,7 +119,7 @@ local function buildConfig()
     b:SetText(capitalize(name))
     b.preset = name  -- custom buttons are reused for other presets later
     b:SetScript("OnClick", function(self)
-      ns.applyPreset(self.preset)
+      ns.applyPresetSettings(self.preset)
       refreshAll()
     end)
     b:SetScript("OnEnter", function(self)
@@ -229,8 +229,86 @@ local function buildConfig()
   local wipeBtn = addMaintButton(170, "Delete all data", function()
     StaticPopup_Show("TUIH_WIPE")
   end)
+  local namesBtn = addMaintButton(320, "Reset name settings", function()
+    StaticPopup_Show("TUIH_NAMES_RESET")
+  end)
+  namesBtn:SetWidth(180)
+  local namesNote = addNote(0, "Reset name settings: puts all name tag and nameplate settings back to the game's defaults (your current values for them are lost). Use it when names or nameplates look wrong.", false, true)
   local resetNote = addNote(0, "Reset: shows the UI, restores your game settings and clears the kept elements. Presets and your other options stay. Use it when the UI or names look wrong.", false, true)
   local wipeNote = addNote(0, "Delete all data: the nuclear option. Restores your game settings first, then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves.", true, true)
+
+  -- Advanced: the client's on/off soft-target settings, collapsed by default
+  local SOFT_Y = TAIL_MAINT - 190
+  local softExpanded, softBuilt, softRows, baseTy = false, false, 0, 0
+  local softChecks = {}
+  local function setHeight()
+    content:SetHeight(-baseTy - TAIL_MAINT + 190 + 40 + (softExpanded and (softRows * 28 + 30) or 0) + 24)
+  end
+  local softBtn = CreateFrame("Button", nil, tail, "UIPanelButtonTemplate")
+  softBtn:SetSize(280, 24)
+  softBtn:SetPoint("TOPLEFT", 20, SOFT_Y)
+  softBtn:SetText("Show soft-target settings (advanced)")
+  local softReset = CreateFrame("Button", nil, tail, "UIPanelButtonTemplate")
+  softReset:SetSize(190, 24)
+  softReset:SetPoint("TOPLEFT", 310, SOFT_Y)
+  softReset:SetText("Reset all to game defaults")
+  softReset:SetScript("OnClick", function() StaticPopup_Show("TUIH_SOFT_RESET") end)
+  softReset:Hide()
+  local softNote = addNote(SOFT_Y - 28, "These are game settings, not addon settings. A change applies immediately and is saved by the game.", false, true)
+  softNote:Hide()
+
+  -- Settings with plain 0/1 values only; ranges, sizes and so on are skipped
+  local numericName = { "Range$", "Arc$", "Size$", "Dist$", "Scale$", "DurationMs$", "Tutorial" }
+  local function isOnOff(name)
+    if not name:find("OnlyInRange$") then
+      for _, p in ipairs(numericName) do
+        if name:find(p) then return false end
+      end
+    end
+    local cur = GetCVar(name)
+    local def = GetCVarDefault and GetCVarDefault(name)
+    return (cur == "0" or cur == "1") and (def == nil or def == "0" or def == "1")
+  end
+  local function refreshSoft()
+    for _, e in ipairs(softChecks) do
+      e.cb:SetChecked(GetCVar(e.name) == "1")
+      e.cb:SetShown(softExpanded)
+    end
+    softNote:SetShown(softExpanded)
+    softReset:SetShown(softExpanded)
+  end
+  local function buildSoft()
+    if softBuilt then return end
+    softBuilt = true
+    local names = {}
+    for _, info in ipairs(ns.getAllCommands() or {}) do
+      local n = info.command or info.name
+      if n and ns.isSoftTarget(n) and isOnOff(n) then names[#names + 1] = n end
+    end
+    table.sort(names)
+    softRows = math.ceil(#names / 2)
+    for i, n in ipairs(names) do
+      local cb = CreateFrame("CheckButton", nil, tail, "UICheckButtonTemplate")
+      cb:SetSize(24, 24)
+      cb:SetPoint("TOPLEFT", 20 + ((i - 1) % 2) * 270, SOFT_Y - 52 - math.floor((i - 1) / 2) * 28)
+      local fs = cb:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+      fs:SetPoint("LEFT", cb, "RIGHT", 4, 1)
+      fs:SetText(n)
+      cb:SetScript("OnClick", function(self)
+        pcall(SetCVar, n, self:GetChecked() and "1" or "0")
+        self:SetChecked(GetCVar(n) == "1")  -- shows the real result
+      end)
+      softChecks[#softChecks + 1] = { cb = cb, name = n }
+    end
+  end
+  softBtn:SetScript("OnClick", function()
+    softExpanded = not softExpanded
+    if softExpanded then buildSoft() end
+    softBtn:SetText(softExpanded and "Hide soft-target settings" or "Show soft-target settings (advanced)")
+    refreshSoft()
+    setHeight()
+  end)
+  refreshers[#refreshers + 1] = refreshSoft
 
   -- Places the save row, the tail sections and the scroll height
   local function layout(customCount)
@@ -252,11 +330,16 @@ local function buildConfig()
     resetBtn:SetPoint("TOPLEFT", 20, my - 24)
     wipeBtn:ClearAllPoints()
     wipeBtn:SetPoint("TOPLEFT", 170, my - 24)
+    namesBtn:ClearAllPoints()
+    namesBtn:SetPoint("TOPLEFT", 320, my - 24)
     resetNote:ClearAllPoints()
     resetNote:SetPoint("TOPLEFT", 44, my - 56)
+    namesNote:ClearAllPoints()
+    namesNote:SetPoint("TOPLEFT", 44, my - 92)
     wipeNote:ClearAllPoints()
-    wipeNote:SetPoint("TOPLEFT", 44, my - 92)
-    content:SetHeight(-ty - my + 92 + 48 + 24)
+    wipeNote:SetPoint("TOPLEFT", 44, my - 128)
+    baseTy = ty
+    setHeight()
   end
 
   local customButtons = {}
@@ -315,6 +398,34 @@ end
 function ns.refreshOptions()
   refreshAll()
 end
+
+StaticPopupDialogs["TUIH_NAMES_RESET"] = {
+  text = "Reset ALL name tag and nameplate settings to the game's default values?\nYour current values for them are lost.",
+  button1 = "Reset",
+  button2 = CANCEL,
+  OnAccept = function()
+    ns.resetNameSettings()
+    ns.refreshOptions()
+  end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
+
+StaticPopupDialogs["TUIH_SOFT_RESET"] = {
+  text = "Reset ALL soft-target settings to the game's default values?\nYour current values for them are lost.",
+  button1 = "Reset",
+  button2 = CANCEL,
+  OnAccept = function()
+    ns.resetSoftTargets()
+    ns.refreshOptions()
+  end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
 
 StaticPopupDialogs["TUIH_OVERWRITE_PRESET"] = {
   text = "The custom preset \"%s\" already exists. Overwrite it with the current state?",

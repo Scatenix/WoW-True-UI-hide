@@ -44,6 +44,42 @@ function ns.isSoftTarget(c)
   return c:lower():sub(1, 10) == "softtarget"
 end
 
+-- Put every setting that matches back to the game's own default value (all of
+-- them, including numeric ones). Returns how many were reset.
+local function resetToDefaults(matches, what)
+  if InCombatLockdown() then
+    ns.log("Not possible in combat. Try again after combat.")
+    return 0
+  end
+  if TUIHDB.saved ~= nil then
+    ns.log("The UI is still in hide mode. Run /tuih on first, then try again.")
+    return 0
+  end
+  local n = 0
+  for _, info in ipairs(ns.getAllCommands() or {}) do
+    local c = info.command or info.name
+    local def = c and matches(c) and GetCVarDefault and GetCVarDefault(c)
+    if def ~= nil and def ~= false then
+      pcall(SetCVar, c, def)
+      n = n + 1
+    end
+  end
+  ns.log(what .. " reset to the game's defaults (" .. n .. ").")
+  return n
+end
+
+function ns.resetSoftTargets()
+  return resetToDefaults(ns.isSoftTarget, "Soft-target settings")
+end
+
+-- All name tag (unitname*) and nameplate (nameplate*) settings
+function ns.resetNameSettings()
+  return resetToDefaults(function(c)
+    local l = c:lower()
+    return l:sub(1, 8) == "unitname" or l:sub(1, 9) == "nameplate"
+  end, "Name tag and nameplate settings")
+end
+
 -- Merge missing values so a partial restore never loses the original state
 function ns.snapshot()
   TUIHDB.saved = TUIHDB.saved or {}

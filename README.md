@@ -53,9 +53,13 @@ Presets: Not yet final, but change between some presets to leave things like the
 
 True UI Hide supports built in and custom presets.
 
-See the preset commands below (`/tuih preset ...`). The settings panel has one section for the built-in presets and one for your custom presets. In the custom section, the small x next to a preset deletes it (after a confirmation), and the name field with "Save current as preset" saves the current state under a new name. If the name already exists, the panel asks before overwriting it (the command does not).
+See the preset commands below (`/tuih preset ...`). The settings panel has one section for the built-in presets and one for your custom presets. Clicking a preset there only changes the settings (kept elements and the combat option) and does not hide the UI; the commands and keybinds apply the preset and hide the UI. In the custom section, the small x next to a preset deletes it (after a confirmation), and the name field with "Save current as preset" saves the current state under a new name. If the name already exists, the panel asks before overwriting it (the command does not).
 
 Feature not yet fully tested and may change in the future.
+
+## Soft-target settings (advanced)
+
+At the bottom of the settings panel, "Show soft-target settings (advanced)" lists the game's own on/off soft-target settings as plain checkboxes. The game has no menu for them. They are game settings, not addon settings: a change applies immediately and is saved by the game. While the UI is hidden the addon turns all of them off unless "Soft-target highlight" is kept.
 
 ## Reset vs. delete all data
 

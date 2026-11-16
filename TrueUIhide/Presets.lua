@@ -30,6 +30,25 @@ function ns.applyPreset(name, silent)
   return true
 end
 
+-- Used by the settings panel: only changes the settings (kept elements and
+-- the combat option), does not hide the UI and leaves the game settings alone
+function ns.applyPresetSettings(name)
+  name = (name or ""):lower()
+  if name == "normal" then
+    TUIHDB.keep = {}
+    TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT
+    ns.state.presetCurrent = "normal"
+    return true
+  end
+  local p = ns.builtin[name] or TUIHDB.presets[name]
+  if not p then return false end
+  TUIHDB.keep = ns.copy(p.keep)
+  if p.combat ~= nil then TUIHDB.combatShow = p.combat end
+  ns.state.presetCurrent = name
+  ns.info("Preset settings: " .. name .. " (the UI stays as it is)", "preset")
+  return true
+end
+
 -- Custom preset names, sorted
 function ns.customPresetList()
   local mine = {}
