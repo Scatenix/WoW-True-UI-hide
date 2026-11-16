@@ -1,13 +1,10 @@
 -- Peek: hold a key to show/hide the UI; screenshot without UI
 local _, ns = ...
 
--- Timings to disable all UI before screenshot and re-enable after
-local shotTimerBefore = 0.4
-local shotTimerAfter = 0.6
-
 -- Hold to show the UI while it is hidden
 function ns.peekShow(keystate)
   local peek = ns.state.peek
+  if ns.state.shotBusy then return end
   if keystate == "down" then
     if not UIParent:IsShown() and not peek.mode then
       peek.mode = "show"
@@ -24,6 +21,7 @@ end
 -- Hold to hide the UI while it is visible
 function ns.peekHide(keystate)
   local peek = ns.state.peek
+  if ns.state.shotBusy then return end
   if keystate == "down" then
     if UIParent:IsShown() and not peek.mode then
       peek.mode = "hide"
@@ -35,37 +33,60 @@ function ns.peekHide(keystate)
   end
 end
 
+-- End a running screenshot: stop its timers and put everything back.
+-- Safe to call at any time; does nothing when no screenshot is running.
+local function finishShot()
+  local st = ns.state
+  local ctx = st.shotCtx
+  if not ctx then return end
+  if ctx.timer then ctx.timer:Cancel() end
+  st.shotCtx, st.shotMode, st.shotBusy = nil, false, false
+  if ctx.wasShown then
+    ns.setAll(true)
+    if not UIParent:IsShown() then
+      -- Combat blocked showing the UI: do it as soon as combat ends
+      st.pending = "show"
+      ns.log("Combat blocked showing the UI. It will be shown when combat ends.")
+    end
+  else
+    ns.sync()  -- defers itself during combat and finishes afterwards
+    if ctx.plates and not InCombatLockdown() then
+      ns.setCVar("nameplateShowEnemies", ctx.plates)
+    end
+  end
+end
+
+-- Cancel a running screenshot (combat started, or the player did something else)
+function ns.abortShot(msg)
+  if not ns.state.shotCtx then return end
+  finishShot()
+  if msg then ns.log(msg) end
+end
+
 -- Hide everything (also kept elements), take a screenshot, restore
 function ns.shot()
   local st = ns.state
   if st.shotBusy then return end
-  if not (C_Timer and C_Timer.After) then
+  if not (C_Timer and C_Timer.NewTimer) then
     ns.log("C_Timer is not available, cannot take a screenshot.")
     return
   end
-  st.shotBusy = true
-  local wasShown = UIParent:IsShown()
-  local plates = GetCVar("nameplateShowEnemies")
-  st.shotMode = true
-  if wasShown then
+  local ctx = {
+    wasShown = UIParent:IsShown(),
+    plates = GetCVar("nameplateShowEnemies"),
+  }
+  st.shotCtx, st.shotBusy, st.shotMode = ctx, true, true
+  if ctx.wasShown then
     ns.setAll(false)
   else
     ns.sync()
     if not InCombatLockdown() then ns.setCVar("nameplateShowEnemies", "0") end
   end
-  C_Timer.After(shotTimerBefore, function()
+  ctx.timer = C_Timer.NewTimer(TUIHDB.shotBefore or ns.SHOT_BEFORE_DEFAULT, function()
     Screenshot()
-    C_Timer.After(shotTimerAfter, function()
-      st.shotMode = false
-      if wasShown then
-        ns.setAll(true)
-      else
-        ns.sync()
-        if plates and not InCombatLockdown() then
-          ns.setCVar("nameplateShowEnemies", plates)
-        end
-      end
-      st.shotBusy = false
+    ctx.timer = C_Timer.NewTimer(TUIHDB.shotAfter or ns.SHOT_AFTER_DEFAULT, function()
+      ctx.timer = nil
+      finishShot()
     end)
   end)
 end

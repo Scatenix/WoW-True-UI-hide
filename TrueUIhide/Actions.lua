@@ -8,6 +8,8 @@ end
 
 -- Used for everything the player triggers directly
 function ns.userSetAll(show)
+  if ns.state.shotBusy then ns.abortShot() end  -- the player's own action wins
+  ns.state.pending = nil
   ns.state.autoShown = false
   ns.state.peek.mode = nil
   ns.setAll(show)

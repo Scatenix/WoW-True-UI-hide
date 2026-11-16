@@ -19,6 +19,12 @@ ns.onLogin = {}
 
 -- Default for "Show the UI during combat"
 ns.COMBAT_SHOW_DEFAULT = true
+-- Screenshot: wait before taking it and after it (seconds), configurable
+ns.SHOT_BEFORE_DEFAULT = 0.1
+ns.SHOT_AFTER_DEFAULT = 0.1
+ns.SHOT_WAIT_MIN = 0.1
+ns.SHOT_WAIT_MAX = 3
+ns.SHOT_COMBAT_WARNING = "If you turn this off, the UI stays hidden when combat starts during a screenshot, and may stay hidden until combat ends."
 ns.COMBAT_WARNING = "The game may block showing the UI in combat. If nothing happens, the UI stays hidden until combat ends."
 
 function ns.copy(t)
@@ -45,6 +51,12 @@ local function sanitize()
   if type(TUIHDB.combatShow) ~= "boolean" then TUIHDB.combatShow = nil end
   if type(TUIHDB.mouselookAuto) ~= "boolean" then TUIHDB.mouselookAuto = false end
   TUIHDB.freelookAuto = nil  -- removed feature (protected game function)
+  if type(TUIHDB.shotCombatShow) ~= "boolean" then TUIHDB.shotCombatShow = true end
+  for key, default in pairs({ shotBefore = ns.SHOT_BEFORE_DEFAULT, shotAfter = ns.SHOT_AFTER_DEFAULT }) do
+    local v = tonumber(TUIHDB[key])
+    if not v or v < ns.SHOT_WAIT_MIN or v > ns.SHOT_WAIT_MAX then v = default end
+    TUIHDB[key] = v
+  end
   if type(TUIHDB.minimapIcon) ~= "boolean" then TUIHDB.minimapIcon = true end
   if type(TUIHDB.minimapAngle) ~= "number" then TUIHDB.minimapAngle = nil end
 

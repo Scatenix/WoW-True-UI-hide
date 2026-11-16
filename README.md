@@ -114,6 +114,7 @@ Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). 
 | `/tuih set combat` | Show the UI automatically during combat |
 | `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
 | `/tuih set icon` | Show or hide the minimap icon |
+| `/tuih set shotcombat` | Show the UI if combat starts during a screenshot (on by default) |
 
 ### Keybindings
 
