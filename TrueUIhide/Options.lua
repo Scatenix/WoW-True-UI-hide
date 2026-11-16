@@ -148,10 +148,17 @@ local function buildConfig()
   local saveBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
   saveBtn:SetSize(150, 24)
   saveBtn:SetText("Save current as preset")
+  function ns.clearSaveBox()
+    saveBox:SetText("")
+    saveBox:ClearFocus()
+  end
   local function savePreset()
-    if ns.savePreset(saveBox:GetText():match("^%s*(%S*)")) then
-      saveBox:SetText("")
-      saveBox:ClearFocus()
+    local name = (saveBox:GetText():match("^%s*(%S*)") or ""):lower()
+    if TUIHDB.presets[name] then
+      -- Saving over an existing preset asks first (the command does not)
+      StaticPopup_Show("TUIH_OVERWRITE_PRESET", name, nil, name)
+    elseif ns.savePreset(name) then
+      ns.clearSaveBox()
     end
   end
   saveBtn:SetScript("OnClick", savePreset)
@@ -224,7 +231,6 @@ local function buildConfig()
   end)
   local resetNote = addNote(0, "Reset: shows the UI, restores your game settings and clears the kept elements. Presets and your other options stay. Use it when the UI or names look wrong.", false, true)
   local wipeNote = addNote(0, "Delete all data: the nuclear option. Restores your game settings first, then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves.", true, true)
-
 
   -- Places the save row, the tail sections and the scroll height
   local function layout(customCount)
@@ -309,6 +315,19 @@ end
 function ns.refreshOptions()
   refreshAll()
 end
+
+StaticPopupDialogs["TUIH_OVERWRITE_PRESET"] = {
+  text = "The custom preset \"%s\" already exists. Overwrite it with the current state?",
+  button1 = "Overwrite",
+  button2 = CANCEL,
+  OnAccept = function(_, name)
+    if ns.savePreset(name) and ns.clearSaveBox then ns.clearSaveBox() end
+  end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
 
 StaticPopupDialogs["TUIH_DELETE_PRESET"] = {
   text = "Delete the custom preset \"%s\"?",
