@@ -53,7 +53,7 @@ Presets: Not yet final, but change between some presets to leave things like the
 
 True UI Hide supports built in and custom presets.
 
-See the preset commands below (`/tuih preset ...`). The settings panel has one section for the built-in presets and one for your custom presets.
+See the preset commands below (`/tuih preset ...`). The settings panel has one section for the built-in presets and one for your custom presets. In the custom section, the small x next to a preset deletes it (after a confirmation), and the name field with "Save current as preset" saves the current state under a new name.
 
 Feature not yet fully tested and may change in the future.
 

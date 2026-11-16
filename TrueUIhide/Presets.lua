@@ -126,32 +126,48 @@ local RESERVED_NAMES = { save = true, delete = true, list = true, next = true, c
 local MAX_NAME_LENGTH = 24
 
 -- /tuih preset [<name> | save <name> | delete <name> | list]
+-- Save the current state as a custom preset. Returns true on success.
+function ns.savePreset(name)
+  name = (name or ""):lower()
+  if name == "" then
+    ns.log("Enter a name for the preset.", "preset")
+    return false
+  end
+  if ns.builtin[name] or RESERVED_NAMES[name] then
+    ns.log("That name is reserved (built-in preset or subcommand).", "preset")
+    return false
+  end
+  if #name > MAX_NAME_LENGTH or not name:match("^[%w_%-]+$") then
+    ns.log("Preset names may use letters, digits, - and _ (max " .. MAX_NAME_LENGTH .. " characters).", "preset")
+    return false
+  end
+  TUIHDB.presets[name] = {
+    keep = ns.copy(TUIHDB.keep),
+    combat = TUIHDB.combatShow and true or false,
+    players = ns.getStage(),
+  }
+  ns.log("Preset saved: " .. name .. " (current keep settings and player-name stage)", "preset")
+  if ns.refreshOptions then ns.refreshOptions() end
+  return true
+end
+
+function ns.deletePreset(name)
+  if TUIHDB.presets[name] then
+    TUIHDB.presets[name] = nil
+    ns.log("Preset deleted: " .. name, "preset")
+    if ns.refreshOptions then ns.refreshOptions() end
+    return true
+  end
+  ns.log("No custom preset named " .. name, "preset")
+  return false
+end
+
 function ns.presetCommand(arg)
   local sub, name = arg:match("^(%S*)%s*(%S*)")
   if sub == "save" and name ~= "" then
-    if ns.builtin[name] or RESERVED_NAMES[name] then
-      ns.log("That name is reserved (built-in preset or subcommand).", "preset")
-      return
-    end
-    if #name > MAX_NAME_LENGTH or not name:match("^[%w_%-]+$") then
-      ns.log("Preset names may use letters, digits, - and _ (max " .. MAX_NAME_LENGTH .. " characters).", "preset")
-      return
-    end
-    TUIHDB.presets[name] = {
-      keep = ns.copy(TUIHDB.keep),
-      combat = TUIHDB.combatShow and true or false,
-      players = ns.getStage(),
-    }
-    ns.log("Preset saved: " .. name .. " (current keep settings and player-name stage)", "preset")
-    if ns.refreshOptions then ns.refreshOptions() end
+    ns.savePreset(name)
   elseif sub == "delete" and name ~= "" then
-    if TUIHDB.presets[name] then
-      TUIHDB.presets[name] = nil
-      ns.log("Preset deleted: " .. name, "preset")
-      if ns.refreshOptions then ns.refreshOptions() end
-    else
-      ns.log("No custom preset named " .. name, "preset")
-    end
+    ns.deletePreset(name)
   elseif sub == "next" or sub == "cycle" then
     -- /tuih preset next [builtin | custom]
     ns.cyclePreset((name == "builtin" or name == "custom") and name or nil, 1)

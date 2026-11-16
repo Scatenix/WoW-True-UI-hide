@@ -21,19 +21,23 @@ local function buildConfig()
   content:SetSize(560, 900)
   scroll:SetScrollChild(content)
 
+  -- Parent of everything the helpers below create. Switched to the "tail"
+  -- frame for the sections that follow the (variable length) presets list.
+  local host = content
+
   local title = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("TOPLEFT", 16, -16)
   title:SetText("|cffa335eeTrue UI Hide|r")
 
   local function heading(y, text)
-    local fs = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local fs = host:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     fs:SetPoint("TOPLEFT", 20, y)
     fs:SetText(text)
     return fs
   end
 
   local function addCheck(y, text, get, set)
-    local cb = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
+    local cb = CreateFrame("CheckButton", nil, host, "UICheckButtonTemplate")
     cb:SetPoint("TOPLEFT", 16, y)
     cb:SetSize(24, 24)
     local fs = cb:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -45,7 +49,7 @@ local function buildConfig()
 
   -- Small text under a checkbox; warnings are orange, infos gray
   local function addNote(y, text, warning, plain)
-    local fs = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local fs = host:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     fs:SetPoint("TOPLEFT", 44, y)
     fs:SetWidth(420)
     fs:SetJustifyH("LEFT")
@@ -67,7 +71,7 @@ local function buildConfig()
   local function addSlider(y, label, min, max, step, get, set)
     sliderCount = sliderCount + 1
     local name = "TUIHSlider" .. sliderCount
-    local s = CreateFrame("Slider", name, content, "OptionsSliderTemplate")
+    local s = CreateFrame("Slider", name, host, "OptionsSliderTemplate")
     s:SetPoint("TOPLEFT", 28, y)
     s:SetWidth(220)
     s:SetMinMaxValues(min, max)
@@ -102,6 +106,65 @@ local function buildConfig()
       y = y - 26
     end
   end
+
+  local py = y - 14
+  heading(py, "Built-in presets:")
+  local function capitalize(name)
+    return name:sub(1, 1):upper() .. name:sub(2)
+  end
+  local function presetButton(x, by, name)
+    local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    b:SetSize(120, 24)
+    b:SetPoint("TOPLEFT", x, by)
+    b:SetText(capitalize(name))
+    b.preset = name  -- custom buttons are reused for other presets later
+    b:SetScript("OnClick", function(self)
+      ns.applyPreset(self.preset)
+      refreshAll()
+    end)
+    b:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:AddLine(self.preset)
+      GameTooltip:Show()
+    end)
+    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    return b
+  end
+  for i, name in ipairs(ns.presetOrder) do
+    presetButton(20 + ((i - 1) % 3) * 130, py - 24 - math.floor((i - 1) / 3) * 30, name)
+  end
+
+  -- Custom presets: the list changes while the game runs, so everything
+  -- below it is placed by layout() and the buttons are reused
+  local cy = py - 24 - math.ceil(#ns.presetOrder / 3) * 30 - 16
+  heading(cy, "Custom presets:")
+  local emptyNote = addNote(cy - 24, "None yet. Save the current state below.", false, true)
+
+  -- Save the current state as a new custom preset
+  local saveBox = CreateFrame("EditBox", "TUIHPresetName", content, "InputBoxTemplate")
+  saveBox:SetSize(140, 20)
+  saveBox:SetAutoFocus(false)
+  saveBox:SetMaxLetters(24)
+  local saveBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+  saveBtn:SetSize(150, 24)
+  saveBtn:SetText("Save current as preset")
+  local function savePreset()
+    if ns.savePreset(saveBox:GetText():match("^%s*(%S*)")) then
+      saveBox:SetText("")
+      saveBox:ClearFocus()
+    end
+  end
+  saveBtn:SetScript("OnClick", savePreset)
+  saveBox:SetScript("OnEnterPressed", savePreset)
+  saveBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+  local saveNote = addNote(0, "Saves the kept elements and the player-name stage you have right now. Letters, digits, - and _ only.", false, true)
+
+  -- Everything after the presets hangs on this frame; layout() moves it
+  -- down as the custom list grows
+  local tail = CreateFrame("Frame", nil, content)
+  tail:SetSize(1, 1)
+  host = tail
+  y = 0
 
   heading(y - 14, "Options:")
   addCheck(y - 36, "Show the UI during combat",
@@ -143,42 +206,10 @@ local function buildConfig()
     function(v) TUIHDB.shotAfter = v end)
   addNote(y - 444, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
 
-  local py = y - 490
-  heading(py, "Built-in presets:")
-  local function capitalize(name)
-    return name:sub(1, 1):upper() .. name:sub(2)
-  end
-  local function presetButton(x, by, name)
-    local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-    b:SetSize(120, 24)
-    b:SetPoint("TOPLEFT", x, by)
-    b:SetText(capitalize(name))
-    b.preset = name  -- custom buttons are reused for other presets later
-    b:SetScript("OnClick", function(self)
-      ns.applyPreset(self.preset)
-      refreshAll()
-    end)
-    b:SetScript("OnEnter", function(self)
-      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-      GameTooltip:AddLine(self.preset)
-      GameTooltip:Show()
-    end)
-    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    return b
-  end
-  for i, name in ipairs(ns.presetOrder) do
-    presetButton(20 + ((i - 1) % 3) * 130, py - 24 - math.floor((i - 1) / 3) * 30, name)
-  end
-
-  -- Custom presets: the list changes while the game runs, so everything
-  -- below it is placed by layout() and the buttons are reused
-  local cy = py - 24 - math.ceil(#ns.presetOrder / 3) * 30 - 16
-  heading(cy, "Custom presets:")
-  local emptyNote = addNote(cy - 24, "None yet. Save the current state with /tuih preset save <name>.", false, true)
-
+  local TAIL_MAINT = -480  -- below the Screenshot section
   local mHeading = heading(0, "If something is wrong:")
   local function addMaintButton(x, text, onClick)
-    local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    local b = CreateFrame("Button", nil, host, "UIPanelButtonTemplate")
     b:SetSize(140, 24)
     b:SetText(text)
     b:SetScript("OnClick", onClick)
@@ -194,10 +225,21 @@ local function buildConfig()
   local resetNote = addNote(0, "Reset: shows the UI, restores your game settings and clears the kept elements. Presets and your other options stay. Use it when the UI or names look wrong.", false, true)
   local wipeNote = addNote(0, "Delete all data: the nuclear option. Restores your game settings first, then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves.", true, true)
 
-  -- Places the section below the custom presets and sizes the scroll area
+
+  -- Places the save row, the tail sections and the scroll height
   local function layout(customCount)
     local rows = math.ceil(customCount / 3)
-    local my = cy - 24 - (customCount == 0 and 24 or rows * 30) - 16
+    local sy = cy - 24 - (customCount == 0 and 24 or rows * 30) - 4
+    saveBox:ClearAllPoints()
+    saveBox:SetPoint("TOPLEFT", 30, sy - 2)
+    saveBtn:ClearAllPoints()
+    saveBtn:SetPoint("TOPLEFT", 180, sy)
+    saveNote:ClearAllPoints()
+    saveNote:SetPoint("TOPLEFT", 44, sy - 30)
+    local ty = sy - 30 - 28 - 16
+    tail:ClearAllPoints()
+    tail:SetPoint("TOPLEFT", content, "TOPLEFT", 0, ty)
+    local my = TAIL_MAINT
     mHeading:ClearAllPoints()
     mHeading:SetPoint("TOPLEFT", 20, my)
     resetBtn:ClearAllPoints()
@@ -208,7 +250,7 @@ local function buildConfig()
     resetNote:SetPoint("TOPLEFT", 44, my - 56)
     wipeNote:ClearAllPoints()
     wipeNote:SetPoint("TOPLEFT", 44, my - 92)
-    content:SetHeight(-my + 92 + 48 + 24)
+    content:SetHeight(-ty - my + 92 + 48 + 24)
   end
 
   local customButtons = {}
@@ -225,12 +267,37 @@ local function buildConfig()
         customButtons[i] = b
       end
       b.preset = name
+      b:SetWidth(98)  -- room for the delete button
       b:SetText(capitalize(name))
       b:ClearAllPoints()
-      b:SetPoint("TOPLEFT", 20 + ((i - 1) % 3) * 130, cy - 24 - math.floor((i - 1) / 3) * 30)
+      local bx, by = 20 + ((i - 1) % 3) * 130, cy - 24 - math.floor((i - 1) / 3) * 30
+      b:SetPoint("TOPLEFT", bx, by)
       b:Show()
+      local d = b.delete
+      if not d then
+        d = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+        d:SetSize(22, 24)
+        d:SetText("x")
+        d:SetScript("OnClick", function(self)
+          StaticPopup_Show("TUIH_DELETE_PRESET", self.preset, nil, self.preset)
+        end)
+        d:SetScript("OnEnter", function(self)
+          GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+          GameTooltip:AddLine("Delete preset " .. self.preset)
+          GameTooltip:Show()
+        end)
+        d:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        b.delete = d
+      end
+      d.preset = name
+      d:ClearAllPoints()
+      d:SetPoint("TOPLEFT", bx + 100, by)
+      d:Show()
     end
-    for i = #names + 1, #customButtons do customButtons[i]:Hide() end
+    for i = #names + 1, #customButtons do
+      customButtons[i]:Hide()
+      if customButtons[i].delete then customButtons[i].delete:Hide() end
+    end
     emptyNote:SetShown(#names == 0)
     layout(#names)
   end
@@ -242,6 +309,17 @@ end
 function ns.refreshOptions()
   refreshAll()
 end
+
+StaticPopupDialogs["TUIH_DELETE_PRESET"] = {
+  text = "Delete the custom preset \"%s\"?",
+  button1 = DELETE or "Delete",
+  button2 = CANCEL,
+  OnAccept = function(_, name) ns.deletePreset(name) end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
 
 StaticPopupDialogs["TUIH_WIPE"] = {
   text = "Delete ALL True UI Hide data (presets, options) and start fresh?\nYour game settings are restored first. This cannot be undone.",
