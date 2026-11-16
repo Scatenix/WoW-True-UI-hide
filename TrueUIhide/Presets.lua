@@ -84,10 +84,12 @@ function ns.presetCommand(arg)
       players = ns.getStage(),
     }
     ns.log("Preset saved: " .. name .. " (current keep settings and player-name stage)", "preset")
+    if ns.refreshOptions then ns.refreshOptions() end
   elseif sub == "delete" and name ~= "" then
     if TUIHDB.presets[name] then
       TUIHDB.presets[name] = nil
       ns.log("Preset deleted: " .. name, "preset")
+      if ns.refreshOptions then ns.refreshOptions() end
     else
       ns.log("No custom preset named " .. name, "preset")
     end
