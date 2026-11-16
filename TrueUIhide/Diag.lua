@@ -43,4 +43,5 @@ function ns.status()
     end
   end
   ns.log("Show UI in combat: " .. (TUIHDB.combatShow and "on" or "off"))
+  ns.log("Mouselook while the UI is hidden: " .. (TUIHDB.mouselookAuto and "on" or "off"))
 end

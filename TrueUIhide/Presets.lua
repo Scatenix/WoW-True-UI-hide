@@ -5,6 +5,7 @@ function ns.resetState()
   TUIHDB.keep = {}
   TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT
   ns.userSetAll(true)
+  ns.setMouselook(false)  -- back to normal also means a visible cursor
 end
 
 function ns.applyPreset(name)

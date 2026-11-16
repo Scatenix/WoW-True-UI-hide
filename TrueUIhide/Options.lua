@@ -58,7 +58,21 @@ local function buildConfig()
     warn:SetTextColor(1, 0.6, 0.2)
     warn:SetText("Warning: " .. ns.COMBAT_WARNING)
   
-    local py = y - 116
+  local function addInfo(iy, text)
+    local info = cfg:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    info:SetPoint("TOPLEFT", 44, iy)
+    info:SetWidth(420)
+    info:SetJustifyH("LEFT")
+    info:SetTextColor(0.8, 0.8, 0.8)
+    info:SetText("Info: " .. text)
+  end
+
+  addCheck(y - 100, "Enter mouselook while the UI is hidden (right-click style)",
+    function() return TUIHDB.mouselookAuto end,
+    function(v) ns.setMouselookAuto(v) end)
+  addInfo(y - 124, ns.MOUSELOOK_INFO)
+
+  local py = y - 160
   heading(py, "Presets:")
   local function addButton(i, text, onClick)
     local b = CreateFrame("Button", nil, cfg, "UIPanelButtonTemplate")

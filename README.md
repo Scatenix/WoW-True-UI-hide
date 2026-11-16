@@ -83,6 +83,8 @@ Commands may change soon, since this addon is in early development.
 | `/tuih preset delete <name>` | | Delete one of your presets |
 | `/tuih preset list` | | List all presets |
 | `/tuih <preset>` | | Apply a built-in or custom preset |
+| `/tuih mouselook` | `look`, `ml` | Enter or leave mouselook, right-click style (right-click ends it) |
+| `/tuih mouselook auto` | | Toggle the setting that enters mouselook whenever the UI is hidden |
 | `/tuih shot` | `ss` | Take a screenshot without UI |
 | `/tuih config` | `cfg`, `options`, `o` | Open the options panel |
 | `/tuih status` | `s` | Show the current settings |
@@ -101,6 +103,7 @@ Options > Keybindings > True UI Hide
 | Peek: show UI while held | UI is visible only while the key is held |
 | Peek: hide UI while held | UI is hidden only while the key is held |
 | Screenshot without UI | Same as `/tuih shot` |
+| Mouselook (right-click style) | Same as `/tuih mouselook` |
 | Open options | Same as `/tuih config` |
 | Show help link | Same as `/tuih help` |
 | Preset: normal | Same as `/tuih normal` |
@@ -119,7 +122,7 @@ Options > Keybindings > True UI Hide
 | Keep: Questie tracker | Same as `/tuih questie` (does nothing without Questie) |
 | Keep: Cast bar | Same as `/tuih cast` |
 
-These commands have no keybinding and are chat-only: `/tuih on`, `/tuih off`, `/tuih combat`, `/tuih status`, `/tuih reset`, `/tuih diff`, `/tuih preset ...`.
+These commands have no keybinding and are chat-only: `/tuih on`, `/tuih off`, `/tuih combat`, `/tuih mouselook auto`, `/tuih status`, `/tuih reset`, `/tuih diff`, `/tuih preset ...`.
 
 ## Todos
 

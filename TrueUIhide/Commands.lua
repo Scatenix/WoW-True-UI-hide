@@ -14,6 +14,8 @@ SlashCmdList["TUIH"] = function(msg)
   elseif cmd == "help" or cmd == "h" or cmd == "?" then ns.showHelp()
   elseif cmd == "config" or cmd == "cfg" or cmd == "options" or cmd == "o" then ns.openConfig()
   elseif cmd == "combat" then ns.toggleCombat()
+  elseif cmd == "mouselook" or cmd == "look" or cmd == "ml" then
+    if arg == "auto" then ns.toggleMouselookAuto() else ns.toggleMouselook() end
   elseif cmd == "shot" or cmd == "ss" then ns.shot()
   elseif cmd == "reset" then ns.reset()
   elseif cmd == "preset" then ns.presetCommand(arg)

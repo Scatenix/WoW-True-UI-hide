@@ -12,6 +12,7 @@ Frames.lua
 Actions.lua
 Presets.lua
 Peek.lua
+Mouselook.lua
 Combat.lua
 Diag.lua
 Options.lua

@@ -14,6 +14,9 @@
   <Binding name="TUIH_SHOT" category="True UI Hide">
     TUIH_Shot()
   </Binding>
+  <Binding name="TUIH_MOUSELOOK" category="True UI Hide">
+    TUIH_Mouselook()
+  </Binding>
   <Binding name="TUIH_CONFIG" category="True UI Hide">
     TUIH_Config()
   </Binding>

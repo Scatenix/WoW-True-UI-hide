@@ -86,4 +86,6 @@ end
 function ns.applyUI(show)
   UIParent:SetShown(show)
   ns.sync()
+  -- Optional: enter mouselook together with hiding the UI, leave it when shown
+  if TUIHDB.mouselookAuto then ns.setMouselook(not show) end
 end

@@ -16,6 +16,8 @@ ns.help = {
   { "/tuih questie  (qt)", "keep the Questie tracker (if installed)" },
   { "/tuih cast  (cb)", "keep the cast bar" },
   { "/tuih combat", "show the UI during combat (may be blocked by the game)" },
+  { "/tuih mouselook  (look, ml)", "enter or leave mouselook (right-click style)" },
+  { "/tuih mouselook auto", "enter mouselook whenever the UI is hidden" },
   { "/tuih config  (cfg, o)", "open the options panel" },
   { "/tuih normal | explore | social", "apply a preset" },
   { "/tuih immersive | screenshot", "apply a preset" },

@@ -7,6 +7,7 @@ BINDING_NAME_TUIH_PLAYERS = "Cycle player names"
 BINDING_NAME_TUIH_PEEK = "Peek: show UI while held"
 BINDING_NAME_TUIH_PEEK_HIDE = "Peek: hide UI while held"
 BINDING_NAME_TUIH_SHOT = "Screenshot without UI"
+BINDING_NAME_TUIH_MOUSELOOK = "Mouselook (right-click style)"
 BINDING_NAME_TUIH_CONFIG = "Open options"
 BINDING_NAME_TUIH_HELP = "Show help link"
 BINDING_NAME_TUIH_PRESET_NORMAL = "Preset: normal"
@@ -26,6 +27,7 @@ function TUIH_Players() ns.cyclePlayers() end
 function TUIH_Peek(keystate) ns.peekShow(keystate) end
 function TUIH_PeekHide(keystate) ns.peekHide(keystate) end
 function TUIH_Shot() ns.shot() end
+function TUIH_Mouselook() ns.toggleMouselook() end
 function TUIH_Config() ns.openConfig() end
 function TUIH_Help() ns.showHelp() end
 function TUIH_Preset(name) ns.applyPreset(name) end
