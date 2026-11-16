@@ -2,14 +2,14 @@
   <Binding name="TUIH_TOGGLE" header="TUIH" category="True UI Hide">
     TUIH_Toggle()
   </Binding>
-  <Binding name="TUIH_PLAYERS" category="True UI Hide">
-    TUIH_Players()
-  </Binding>
   <Binding name="TUIH_PEEK" category="True UI Hide" runOnUp="true">
     TUIH_Peek(keystate)
   </Binding>
   <Binding name="TUIH_PEEK_HIDE" category="True UI Hide" runOnUp="true">
     TUIH_PeekHide(keystate)
+  </Binding>
+  <Binding name="TUIH_PLAYERS" category="True UI Hide">
+    TUIH_Players()
   </Binding>
   <Binding name="TUIH_SHOT" category="True UI Hide">
     TUIH_Shot()
@@ -17,14 +17,8 @@
   <Binding name="TUIH_MOUSELOOK" category="True UI Hide">
     TUIH_Mouselook()
   </Binding>
-  <Binding name="TUIH_CONFIG" category="True UI Hide">
-    TUIH_Config()
-  </Binding>
-  <Binding name="TUIH_HELP" category="True UI Hide">
-    TUIH_Help()
-  </Binding>
 
-  <Binding name="TUIH_PRESET_NORMAL" category="True UI Hide">
+  <Binding name="TUIH_PRESET_NORMAL" header="TUIH_PRESETS" category="True UI Hide">
     TUIH_Preset("normal")
   </Binding>
   <Binding name="TUIH_PRESET_EXPLORE" category="True UI Hide">
@@ -40,7 +34,7 @@
     TUIH_Preset("screenshot")
   </Binding>
 
-  <Binding name="TUIH_KEEP_MINIMAP" category="True UI Hide">
+  <Binding name="TUIH_KEEP_MINIMAP" header="TUIH_KEEP" category="True UI Hide">
     TUIH_Keep("minimap")
   </Binding>
   <Binding name="TUIH_KEEP_PLAYER" category="True UI Hide">
@@ -69,5 +63,12 @@
   </Binding>
   <Binding name="TUIH_KEEP_CASTBAR" category="True UI Hide">
     TUIH_Keep("castbar")
+  </Binding>
+
+  <Binding name="TUIH_CONFIG" header="TUIH_MISC" category="True UI Hide">
+    TUIH_Config()
+  </Binding>
+  <Binding name="TUIH_HELP" category="True UI Hide">
+    TUIH_Help()
   </Binding>
 </Bindings>

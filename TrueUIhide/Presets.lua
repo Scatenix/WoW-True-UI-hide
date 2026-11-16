@@ -33,12 +33,20 @@ function ns.reset()
   ns.log("Reset to normal. Saved state cleared.", "toggle")
 end
 
--- /tuih preset [save <name> | delete <name> | list | <name>]
+-- Names that cannot be used for custom presets: they are subcommands
+local RESERVED_NAMES = { save = true, delete = true, list = true, normal = true }
+local MAX_NAME_LENGTH = 24
+
+-- /tuih preset [<name> | save <name> | delete <name> | list]
 function ns.presetCommand(arg)
   local sub, name = arg:match("^(%S*)%s*(%S*)")
   if sub == "save" and name ~= "" then
-    if ns.builtin[name] or name == "normal" then
-      ns.log("That name is used by a built-in preset.", "preset")
+    if ns.builtin[name] or RESERVED_NAMES[name] then
+      ns.log("That name is reserved (built-in preset or subcommand).", "preset")
+      return
+    end
+    if #name > MAX_NAME_LENGTH or not name:match("^[%w_%-]+$") then
+      ns.log("Preset names may use letters, digits, - and _ (max " .. MAX_NAME_LENGTH .. " characters).", "preset")
       return
     end
     TUIHDB.presets[name] = {

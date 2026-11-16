@@ -29,7 +29,7 @@ If you have Questie installed, this addon automatically detects it and gives you
 
 ---
 
-You can type `/tuih help` to get a tooltip for all available commands, by simply hovering over the printed chat message. 'TUIH  -  hover here for help'.
+Every addon message starts with a `[TUIH]` tag: hover it for a short overview. Type `/tuih help` to get one hoverable link per topic (Main, Elements, Presets, Settings), each showing the commands for that topic in its own tooltip.
 
 ---
 
@@ -49,7 +49,7 @@ Presets: Not yet final, but change between some presets to leave things like the
 
 True UI Hide supports built in and custom presets.
 
-See preset commands to use.
+See the preset commands below (`/tuih preset ...`).
 
 Feature not yet fully tested and may change in the future.
 
@@ -57,72 +57,79 @@ Feature not yet fully tested and may change in the future.
 
 Commands may change soon, since this addon is in early development.
 
+The most used commands sit at the root. Everything else is grouped: `/tuih toggle ...` for UI elements, `/tuih preset ...` for presets and `/tuih set ...` for settings.
+
+### Root
+
 | Command | Aliases | Description |
 |---|---|---|
 | `/tuih` | | Toggle all UI, names and nameplates |
 | `/tuih on` | | Show everything and restore your saved settings |
 | `/tuih off` | | Hide everything |
-| `/tuih p` | `players`, `/tuihp` | Cycle player names: none, own only, others only, own and others (also hides player nameplates) |
-| `/tuih minimap` | `map`, `m` | Keep the minimap while the UI is hidden |
-| `/tuih player` | `pf` | Keep the player frame |
-| `/tuih target` | `tf`, `t` | Keep the target frame |
-| `/tuih plates` | `nameplates`, `np`, `ep` | Keep enemy nameplates |
-| `/tuih chat` | `c` | Keep the chat |
-| `/tuih bars` | `actionbar`, `ab` | Keep the action bars |
-| `/tuih buffs` | `auras`, `b` | Keep buffs and debuffs |
-| `/tuih quest` | `tracker`, `q` | Keep the quest tracker |
-| `/tuih questie` | `qt` | Keep the Questie tracker (only if Questie is installed) |
-| `/tuih cast` | `cb` | Keep the cast bar |
-| `/tuih combat` | | Show the UI automatically during combat |
-| `/tuih normal` | | Preset: reset everything |
-| `/tuih explore` | | Preset: keep minimap and chat |
-| `/tuih social` | | Preset: keep chat and player frame, show all player names |
-| `/tuih immersive` | | Preset: hide everything, UI returns in combat |
-| `/tuih screenshot` | | Preset: hide everything, also in combat |
-| `/tuih preset save <name>` | | Save the current state as your own preset |
-| `/tuih preset delete <name>` | | Delete one of your presets |
-| `/tuih preset list` | | List all presets |
-| `/tuih <preset>` | | Apply a built-in or custom preset |
-| `/tuih mouselook` | `look`, `ml` | Enter or leave mouselook, right-click style (right-click ends it) |
-| `/tuih mouselook auto` | | Toggle the setting that enters mouselook whenever the UI is hidden |
+| `/tuih players` | `p` | Cycle player names: none, own only, others only, own and others (also hides player nameplates) |
 | `/tuih shot` | `ss` | Take a screenshot without UI |
-| `/tuih config` | `cfg`, `options`, `o` | Open the options panel |
+| `/tuih mouselook` | `look`, `ml` | Enter or leave mouselook, right-click style (right-click ends it) |
 | `/tuih status` | `s` | Show the current settings |
+| `/tuih config` | `cfg`, `options`, `o` | Open the options panel |
 | `/tuih reset` | | Reset everything and clear the saved state |
+| `/tuih help` | `h`, `?` | Print the hoverable help links, one per topic |
 | `/tuih diff` | `d` | Find the CVar behind a menu option (run once, change the option, run again) |
-| `/tuih help` | `h`, `?` | Print a hoverable help link |
+
+### Elements kept visible: `/tuih toggle <element>`
+
+`/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements.
+
+| Element | Aliases | Keeps this visible while the UI is hidden |
+|---|---|---|
+| `/tuih toggle minimap` | `map`, `m` | Minimap |
+| `/tuih toggle player` | `pf` | Player frame |
+| `/tuih toggle target` | `tf`, `t` | Target frame |
+| `/tuih toggle enemyplates` | `plates`, `nameplates`, `np`, `ep` | Enemy nameplates |
+| `/tuih toggle chat` | `c` | Chat |
+| `/tuih toggle actionbars` | `bars`, `actionbar`, `ab` | Action bars |
+| `/tuih toggle buffs` | `b`, `auras` | Buffs and debuffs |
+| `/tuih toggle quest` | `q`, `tracker` | Quest tracker |
+| `/tuih toggle questie` | `qt` | Questie tracker (only if Questie is installed) |
+| `/tuih toggle castbar` | `cast`, `cb` | Cast bar |
+
+### Presets: `/tuih preset ...`
+
+| Command | Description |
+|---|---|
+| `/tuih preset <name>` | Apply a built-in or custom preset |
+| `/tuih preset list` | List all presets |
+| `/tuih preset save <name>` | Save the current state as your own preset |
+| `/tuih preset delete <name>` | Delete one of your presets |
+
+Built-in presets: `normal` (reset everything), `explore` (keep minimap and chat), `social` (keep chat and player frame, show all player names), `immersive` (hide everything, UI returns in combat), `screenshot` (hide everything, also in combat).
+
+Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `normal` and the built-in names are reserved.
+
+### Settings: `/tuih set ...`
+
+| Command | Description |
+|---|---|
+| `/tuih set combat` | Show the UI automatically during combat |
+| `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
 
 ### Keybindings
 
-Options > Keybindings > True UI Hide
+Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggle elements and Other.
 
 | Action | Description |
 |---|---|
 | Toggle UI and names | Same as `/tuih` |
-| Cycle player names | Same as `/tuih p` |
 | Peek: show UI while held | UI is visible only while the key is held |
 | Peek: hide UI while held | UI is hidden only while the key is held |
+| Cycle player names | Same as `/tuih players` |
 | Screenshot without UI | Same as `/tuih shot` |
 | Mouselook (right-click style) | Same as `/tuih mouselook` |
+| Preset: normal / explore / social / immersive / screenshot | Same as `/tuih preset <name>` |
+| Toggle: Minimap, Player frame, Target frame, Enemy nameplates, Chat, Action bars, Buffs and debuffs, Quest tracker, Questie tracker, Cast bar | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
 | Open options | Same as `/tuih config` |
-| Show help link | Same as `/tuih help` |
-| Preset: normal | Same as `/tuih normal` |
-| Preset: explore | Same as `/tuih explore` |
-| Preset: social | Same as `/tuih social` |
-| Preset: immersive | Same as `/tuih immersive` |
-| Preset: screenshot | Same as `/tuih screenshot` |
-| Keep: Minimap | Same as `/tuih minimap` |
-| Keep: Player frame | Same as `/tuih player` |
-| Keep: Target frame | Same as `/tuih target` |
-| Keep: Enemy nameplates | Same as `/tuih plates` |
-| Keep: Chat | Same as `/tuih chat` |
-| Keep: Action bars | Same as `/tuih bars` |
-| Keep: Buffs and debuffs | Same as `/tuih buffs` |
-| Keep: Quest tracker | Same as `/tuih quest` |
-| Keep: Questie tracker | Same as `/tuih questie` (does nothing without Questie) |
-| Keep: Cast bar | Same as `/tuih cast` |
+| Show help links | Same as `/tuih help` |
 
-These commands have no keybinding and are chat-only: `/tuih on`, `/tuih off`, `/tuih combat`, `/tuih mouselook auto`, `/tuih status`, `/tuih reset`, `/tuih diff`, `/tuih preset ...`.
+These commands have no keybinding and are chat-only: `/tuih on`, `/tuih off`, `/tuih status`, `/tuih reset`, `/tuih diff`, `/tuih set ...`, `/tuih preset save|delete|list` and custom presets.
 
 ## Todos
 
