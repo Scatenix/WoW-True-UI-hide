@@ -43,12 +43,15 @@ local function buildConfig()
   end
 
   -- Small text under a checkbox; warnings are orange, infos gray
-  local function addNote(y, text, warning)
+  local function addNote(y, text, warning, plain)
     local fs = content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     fs:SetPoint("TOPLEFT", 44, y)
     fs:SetWidth(420)
     fs:SetJustifyH("LEFT")
-    if warning then
+    if plain then
+      if warning then fs:SetTextColor(1, 0.6, 0.2) else fs:SetTextColor(0.8, 0.8, 0.8) end
+      fs:SetText(text)
+    elseif warning then
       fs:SetTextColor(1, 0.6, 0.2)
       fs:SetText("Warning: " .. text)
     else
@@ -147,18 +150,49 @@ local function buildConfig()
       refreshAll()
     end)
   end
-  addButton(#ns.presetOrder + 1, "Reset", function()
+
+  -- Maintenance: the two "start over" buttons, explained
+  local rows = math.ceil(#ns.presetOrder / 3)
+  local my = py - 24 - rows * 30 - 16
+  heading(my, "If something is wrong:")
+  local function addMaintButton(x, text, onClick)
+    local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    b:SetSize(140, 24)
+    b:SetPoint("TOPLEFT", x, my - 24)
+    b:SetText(text)
+    b:SetScript("OnClick", onClick)
+  end
+  addMaintButton(20, "Reset", function()
     ns.reset()
     refreshAll()
   end)
+  addMaintButton(170, "Delete all data", function()
+    StaticPopup_Show("TUIH_WIPE")
+  end)
+  addNote(my - 56, "Reset: shows the UI, restores your game settings and clears the kept elements. Presets and your other options stay. Use it when the UI or names look wrong.", false, true)
+  addNote(my - 92, "Delete all data: the nuclear option. Restores your game settings first, then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves.", true, true)
 
   -- Make the scrollable area exactly as tall as its content
-  local rows = math.ceil((#ns.presetOrder + 1) / 3)
-  content:SetHeight(-py + 24 + rows * 30 + 24)
+  content:SetHeight(-my + 92 + 48 + 24)
 
   -- Checkboxes always reflect the current settings when the panel opens
   cfg:SetScript("OnShow", refreshAll)
 end
+
+function ns.refreshOptions()
+  refreshAll()
+end
+
+StaticPopupDialogs["TUIH_WIPE"] = {
+  text = "Delete ALL True UI Hide data (presets, options) and start fresh?\nYour game settings are restored first. This cannot be undone.",
+  button1 = "Delete everything",
+  button2 = CANCEL,
+  OnAccept = function() ns.wipeAll() end,
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
 
 -- Registers the panel with whichever options system the client has
 local function registerConfig()

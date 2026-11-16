@@ -33,6 +33,34 @@ function ns.reset()
   ns.log("Reset to normal. Saved state cleared.", "toggle")
 end
 
+-- Nuclear option: put the game back to normal if we are in hide mode, then
+-- delete ALL addon data and start with a fresh database. Nothing is deleted
+-- if the game settings could not be restored (data is still needed for that).
+function ns.wipeAll()
+  if InCombatLockdown() then
+    ns.log("Not possible in combat. Try again after combat.")
+    return false
+  end
+  local active = TUIHDB.saved ~= nil or not UIParent:IsShown() or ns.hasDetached()
+    or ns.state.pending ~= nil or ns.state.autoShown or ns.state.peek.mode ~= nil
+  if active then
+    ns.userSetAll(true)
+    ns.setMouselook(false)
+    if TUIHDB.saved ~= nil then
+      ns.log("Could not restore your game settings. Nothing was deleted.")
+      return false
+    end
+  end
+  for k in pairs(TUIHDB) do TUIHDB[k] = nil end
+  ns.initDB()
+  local st = ns.state
+  st.pending, st.autoShown, st.autoStage, st.needsSync = nil, false, nil, false
+  if ns.refreshMinimap then ns.refreshMinimap() end
+  if ns.refreshOptions then ns.refreshOptions() end
+  ns.log("All data deleted. Fresh defaults are active.")
+  return true
+end
+
 -- Names that cannot be used for custom presets: they are subcommands
 local RESERVED_NAMES = { save = true, delete = true, list = true, normal = true }
 local MAX_NAME_LENGTH = 24

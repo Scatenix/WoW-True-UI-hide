@@ -66,6 +66,12 @@ function ns.setMinimapIcon(show)
   button:SetShown(TUIHDB.minimapIcon)
 end
 
+-- Re-read position and visibility from the settings (after a wipe)
+function ns.refreshMinimap()
+  updatePosition()
+  if button then button:SetShown(TUIHDB.minimapIcon) end
+end
+
 function ns.toggleMinimapIcon()
   ns.setMinimapIcon(not TUIHDB.minimapIcon)
   ns.log("Minimap icon: " .. (TUIHDB.minimapIcon and "shown" or "hidden"), "toggle")

@@ -55,6 +55,11 @@ See the preset commands below (`/tuih preset ...`).
 
 Feature not yet fully tested and may change in the future.
 
+## Reset vs. delete all data
+
+- **Reset** (`/tuih reset`, or the Reset button in the settings): back to normal. Shows the UI, restores your game settings and clears the kept elements. Your presets and options stay. Use it when the UI or the names look wrong.
+- **Delete all data** (`/tuih wipe`, or the button in the settings): the nuclear option. Restores your game settings first (only if the addon is in hide mode), then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves. Not possible in combat; nothing is deleted if the game settings cannot be restored.
+
 ## Available commands
 
 Commands may change soon, since this addon is in early development.
@@ -74,6 +79,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | `/tuih status` | `s` | Show the current settings |
 | `/tuih config` | `cfg`, `options`, `o` | Open the options panel |
 | `/tuih reset` | | Reset everything and clear the saved state |
+| `/tuih wipe` | | Nuclear option: restore your game settings, then delete ALL addon data and start fresh. Asks you to run `/tuih wipe confirm` |
 | `/tuih help` | `h`, `?` | Print the hoverable help links, one per topic |
 | `/tuih diff` | `d` | Find the CVar behind a menu option (run once, change the option, run again) |
 

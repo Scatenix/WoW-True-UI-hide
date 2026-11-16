@@ -1,7 +1,7 @@
 -- Commands: slash commands
 --
 -- Root level (most used):  /tuih, on, off, players, shot, mouselook, status,
---                          config, reset, help, diff
+--                          config, reset, wipe, help, diff
 -- Groups:                  /tuih toggle <element>     elements kept visible
 --                          /tuih preset <name | save | delete | list>
 --                          /tuih set <combat | mouselook>   settings
@@ -62,6 +62,13 @@ add(function() ns.toggleMouselook() end, "mouselook", "look", "ml")
 add(function() ns.status() end, "status", "s")
 add(function() ns.openConfig() end, "config", "cfg", "options", "o")
 add(function() ns.reset() end, "reset")
+add(function(arg)
+  if arg == "confirm" then
+    ns.wipeAll()
+  else
+    ns.log("This deletes ALL True UI Hide data (presets, options) after restoring your game settings. To continue, run /tuih wipe confirm")
+  end
+end, "wipe")
 add(function() ns.showHelp() end, "help", "h", "?")
 add(function() ns.diff() end, "diff", "d")
 add(toggleCommand, "toggle", "keep", "k")

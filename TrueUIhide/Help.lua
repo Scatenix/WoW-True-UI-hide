@@ -17,6 +17,7 @@ ns.helpGroups = {
       { "/tuih status  (s)", "show current settings" },
       { "/tuih config  (cfg, o)", "open the options panel" },
       { "/tuih reset", "back to normal, clear saved state" },
+      { "/tuih wipe", "delete all addon data and start fresh (asks first)" },
       { "/tuih help  (h, ?)", "show the help links" },
       { "/tuih diff  (d)", "find the CVar of a menu option" },
     },

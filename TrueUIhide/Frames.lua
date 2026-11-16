@@ -89,3 +89,8 @@ function ns.applyUI(show)
   -- Optional: enter mouselook together with hiding the UI, leave it when shown
   if TUIHDB.mouselookAuto then ns.setMouselook(not show) end
 end
+
+-- True while any frame is still moved out of UIParent
+function ns.hasDetached()
+  return next(detached) ~= nil
+end

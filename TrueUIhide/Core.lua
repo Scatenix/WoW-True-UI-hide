@@ -108,6 +108,21 @@ local function restoreSaved(quiet)
   return TUIHDB.saved == nil
 end
 
+-- Sets up TUIHDB: validates it, applies defaults. Also used after a wipe.
+function ns.initDB()
+  sanitize()
+  -- Migrate the old minimap flag
+  if TUIHDB.keepMinimap ~= nil then
+    TUIHDB.keep.minimap = TUIHDB.keepMinimap
+    TUIHDB.keepMinimap = nil
+  end
+  -- Show the UI during combat: on by default, with a one-time warning
+  if TUIHDB.combatShow == nil then
+    TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT
+    TUIHDB.combatNotice = true
+  end
+end
+
 -- SavedVariables are only available after ADDON_LOADED
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("ADDON_LOADED")
@@ -122,17 +137,7 @@ loader:SetScript("OnEvent", function(_, event, name)
   end
   if event == "ADDON_LOADED" then
     if name ~= ADDON_NAME then return end
-    sanitize()
-    -- Migrate the old minimap flag
-    if TUIHDB.keepMinimap ~= nil then
-      TUIHDB.keep.minimap = TUIHDB.keepMinimap
-      TUIHDB.keepMinimap = nil
-    end
-    -- Show the UI during combat: on by default, with a one-time warning
-    if TUIHDB.combatShow == nil then
-      TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT
-      TUIHDB.combatNotice = true
-    end
+    ns.initDB()
     loader:UnregisterEvent("ADDON_LOADED")
   else  -- PLAYER_LOGIN
     for _, fn in ipairs(ns.onLogin) do fn() end
