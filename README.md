@@ -39,6 +39,8 @@ You can setup a lot of keybindings in options -> keybindings -> True UI Hide.
 
 A small icon on the minimap border opens the settings with a click. Drag it to move it around the minimap. It can be hidden in the settings (or with `/tuih set icon`).
 
+A small red dot appears slightly up and left of the screen center when the UI is visible but hide settings are still applied, meaning we are in an unstable state (for example after the game showed the UI on Escape, or a restore was blocked by combat). Left-click restores everything, right-click hides the UI again. It disappears on its own once the state is clean.
+
 You can find some settings for True UI Hide in options, at the 'AddOns' tab at 'True UI Hide'.
 
 Configure which UI elements should stay visible when toggling off the UI.
