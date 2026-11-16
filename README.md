@@ -107,13 +107,17 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | Command | Description |
 |---|---|
 | `/tuih preset <name>` | Apply a built-in or custom preset |
+| `/tuih preset next` | Apply the next preset, built-in first, then your custom ones (alphabetical), wrapping around |
+| `/tuih preset next builtin` | Apply the next built-in preset only |
+| `/tuih preset next custom` | Apply the next custom preset only |
+| `/tuih preset prev` | Same, backwards. Also `prev builtin` and `prev custom` (alias `previous`) |
 | `/tuih preset list` | List all presets |
 | `/tuih preset save <name>` | Save the current state as your own preset |
 | `/tuih preset delete <name>` | Delete one of your presets |
 
 Built-in presets: `normal` (reset everything), `explore` (keep minimap and chat), `social` (keep chat and player frame, show all player names), `immersive` (hide everything, UI returns in combat), `screenshot` (hide everything, also in combat).
 
-Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `normal` and the built-in names are reserved.
+Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `next`, `prev`, `previous`, `cycle`, `normal` and the built-in names are reserved.
 
 ### Settings: `/tuih set ...`
 
@@ -123,6 +127,7 @@ Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). 
 | `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
 | `/tuih set icon` | Show or hide the minimap icon |
 | `/tuih set shotcombat` | Show the UI if combat starts during a screenshot (on by default) |
+| `/tuih set cyclemessage` | Show a chat message when cycling presets (on by default) |
 | `/tuih set dot` | Show or hide the red warning dot (on by default) |
 | `/tuih set verbose` | Show True UI Hide events in chat for debugging ("UI on", "Preset: ...", ...). Off by default |
 
@@ -138,6 +143,9 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 | Cycle player names | Same as `/tuih players` |
 | Screenshot without UI | Same as `/tuih shot` |
 | Mouselook (right-click style) | Same as `/tuih mouselook` |
+| Cycle through all presets | Same as `/tuih preset next` (also shows which preset was applied) |
+| Cycle through built-in presets / custom presets | Same as `/tuih preset next builtin` / `custom` |
+| Cycle backwards through all / built-in / custom presets | Same as `/tuih preset prev [builtin\|custom]` |
 | Preset: normal / explore / social / immersive / screenshot | Same as `/tuih preset <name>` |
 | Toggle: Minimap, Player frame, Target frame, Enemy nameplates, Chat, Action bars, Buffs and debuffs, Quest tracker, Questie tracker, Cast bar | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
 | Open options | Same as `/tuih config` |

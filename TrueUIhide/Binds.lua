@@ -15,6 +15,12 @@ BINDING_NAME_TUIH_SHOT = "Screenshot without UI"
 BINDING_NAME_TUIH_MOUSELOOK = "Mouselook (right-click style)"
 BINDING_NAME_TUIH_CONFIG = "Open options"
 BINDING_NAME_TUIH_HELP = "Show help links"
+BINDING_NAME_TUIH_PRESET_CYCLE = "Cycle through all presets"
+BINDING_NAME_TUIH_PRESET_CYCLE_BUILTIN = "Cycle through built-in presets"
+BINDING_NAME_TUIH_PRESET_CYCLE_CUSTOM = "Cycle through custom presets"
+BINDING_NAME_TUIH_PRESET_BACK = "Cycle backwards through all presets"
+BINDING_NAME_TUIH_PRESET_BACK_BUILTIN = "Cycle backwards through built-in presets"
+BINDING_NAME_TUIH_PRESET_BACK_CUSTOM = "Cycle backwards through custom presets"
 BINDING_NAME_TUIH_PRESET_NORMAL = "Preset: normal"
 BINDING_NAME_TUIH_PRESET_EXPLORE = "Preset: explore"
 BINDING_NAME_TUIH_PRESET_SOCIAL = "Preset: social"
@@ -35,5 +41,6 @@ function TUIH_Shot() ns.shot() end
 function TUIH_Mouselook() ns.toggleMouselook() end
 function TUIH_Config() ns.openConfig() end
 function TUIH_Help() ns.showHelp() end
+function TUIH_PresetCycle(kind, step) ns.cyclePreset(kind, step) end
 function TUIH_Preset(name) ns.applyPreset(name) end
 function TUIH_Keep(key) ns.toggleKeep(key) end

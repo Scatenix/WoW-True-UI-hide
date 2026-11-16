@@ -126,20 +126,24 @@ local function buildConfig()
     function() return TUIHDB.indicator end,
     function(v) TUIHDB.indicator = v; ns.updateIndicator() end)
 
-  heading(y - 246, "Screenshot:")
-  addCheck(y - 268, "Show the UI if combat starts during a screenshot",
+  addCheck(y - 228, "Show a chat message when cycling presets with the keybind",
+    function() return TUIHDB.cycleMessage end,
+    function(v) TUIHDB.cycleMessage = v end)
+
+  heading(y - 272, "Screenshot:")
+  addCheck(y - 294, "Show the UI if combat starts during a screenshot",
     function() return TUIHDB.shotCombatShow end,
     function(v) TUIHDB.shotCombatShow = v end)
-  addNote(y - 294, ns.SHOT_COMBAT_WARNING, true)
-  addSlider(y - 348, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addNote(y - 320, ns.SHOT_COMBAT_WARNING, true)
+  addSlider(y - 374, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotBefore end,
     function(v) TUIHDB.shotBefore = v end)
-  addSlider(y - 396, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addSlider(y - 422, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotAfter end,
     function(v) TUIHDB.shotAfter = v end)
-  addNote(y - 418, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
+  addNote(y - 444, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
 
-  local py = y - 464
+  local py = y - 490
   heading(py, "Built-in presets:")
   local function capitalize(name)
     return name:sub(1, 1):upper() .. name:sub(2)

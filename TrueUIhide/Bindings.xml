@@ -18,7 +18,25 @@
     TUIH_Mouselook()
   </Binding>
 
-  <Binding name="TUIH_PRESET_NORMAL" header="TUIH_PRESETS" category="True UI Hide">
+  <Binding name="TUIH_PRESET_CYCLE" header="TUIH_PRESETS" category="True UI Hide">
+    TUIH_PresetCycle()
+  </Binding>
+  <Binding name="TUIH_PRESET_CYCLE_BUILTIN" category="True UI Hide">
+    TUIH_PresetCycle("builtin")
+  </Binding>
+  <Binding name="TUIH_PRESET_CYCLE_CUSTOM" category="True UI Hide">
+    TUIH_PresetCycle("custom")
+  </Binding>
+  <Binding name="TUIH_PRESET_BACK" category="True UI Hide">
+    TUIH_PresetCycle(nil, -1)
+  </Binding>
+  <Binding name="TUIH_PRESET_BACK_BUILTIN" category="True UI Hide">
+    TUIH_PresetCycle("builtin", -1)
+  </Binding>
+  <Binding name="TUIH_PRESET_BACK_CUSTOM" category="True UI Hide">
+    TUIH_PresetCycle("custom", -1)
+  </Binding>
+  <Binding name="TUIH_PRESET_NORMAL" category="True UI Hide">
     TUIH_Preset("normal")
   </Binding>
   <Binding name="TUIH_PRESET_EXPLORE" category="True UI Hide">

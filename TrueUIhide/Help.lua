@@ -31,6 +31,10 @@ ns.helpGroups = {
     key = "presets", label = "Presets",
     rows = {
       { "/tuih preset <name>", "apply a built-in or custom preset" },
+      { "/tuih preset next  (cycle)", "apply the next preset (built-in and custom)" },
+      { "/tuih preset next builtin", "apply the next built-in preset" },
+      { "/tuih preset next custom", "apply the next custom preset" },
+      { "/tuih preset prev  (previous)", "same, backwards (also: prev builtin, prev custom)" },
       { "/tuih preset list", "list all presets" },
       { "/tuih preset save <name>", "save the current state as a preset" },
       { "/tuih preset delete <name>", "delete one of your presets" },
@@ -43,6 +47,7 @@ ns.helpGroups = {
       { "/tuih set mouselook", "enter mouselook whenever the UI is hidden" },
       { "/tuih set icon", "show or hide the minimap icon" },
       { "/tuih set shotcombat", "show the UI if combat starts during a screenshot" },
+      { "/tuih set cyclemessage", "chat message when cycling presets" },
       { "/tuih set dot  (indicator)", "show or hide the red warning dot" },
       { "/tuih set verbose  (chat)", "show True UI Hide events in chat (for debugging)" },
     },
