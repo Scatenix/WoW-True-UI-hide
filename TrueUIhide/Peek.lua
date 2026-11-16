@@ -1,6 +1,10 @@
 -- Peek: hold a key to show/hide the UI; screenshot without UI
 local _, ns = ...
 
+-- Timings to disable all UI before screenshot and re-enable after
+local shotTimerBefore = 0.4
+local shotTimerAfter = 0.6
+
 -- Hold to show the UI while it is hidden
 function ns.peekShow(keystate)
   local peek = ns.state.peek
@@ -49,9 +53,9 @@ function ns.shot()
     ns.sync()
     if not InCombatLockdown() then pcall(SetCVar, "nameplateShowEnemies", "0") end
   end
-  C_Timer.After(0.4, function()
+  C_Timer.After(shotTimerBefore, function()
     Screenshot()
-    C_Timer.After(0.6, function()
+    C_Timer.After(shotTimerAfter, function()
       st.shotMode = false
       if wasShown then
         ns.setAll(true)
