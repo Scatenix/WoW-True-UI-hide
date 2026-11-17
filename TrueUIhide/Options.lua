@@ -168,7 +168,6 @@ local function buildConfig()
   -- Your own frames: windows the player added by name. The list changes
   -- while the game runs, so everything below it hangs on `mid`, which is
   -- moved by the refresher further down.
-  local MAX_CUSTOM = 24
   local cfY = y
   local midY = cfY - 22 - 26 - 6 - 30 - 42
   groupHeader(cfY, "Your own windows")

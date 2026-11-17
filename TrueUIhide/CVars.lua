@@ -145,22 +145,23 @@ function ns.restore(quiet)
     local left, pending = {}, false
     for c, v in pairs(s) do
       local now = GetCVar(c)
-      if now == nil then
-        -- CVar no longer exists in this client: nothing to restore
-      elseif sameValue(now, v) then
-        -- Already has the original value: nothing to restore, nothing to say
-        applied[c] = nil
-      elseif applied[c] ~= nil and not sameValue(now, applied[c]) then
-        -- The player changed it while the UI was hidden: keep their value
-        applied[c] = nil
-        if keptShown[c] ~= tostring(now) then  -- say it once per value
-          keptShown[c] = tostring(now)
-          ns.info("Kept your change: " .. c .. " = " .. tostring(now))
+      -- A CVar that no longer exists in this client has nothing to restore
+      if now ~= nil then
+        if sameValue(now, v) then
+          -- Already has the original value: nothing to restore, nothing to say
+          applied[c] = nil
+        elseif applied[c] ~= nil and not sameValue(now, applied[c]) then
+          -- The player changed it while the UI was hidden: keep their value
+          applied[c] = nil
+          if keptShown[c] ~= tostring(now) then  -- say it once per value
+            keptShown[c] = tostring(now)
+            ns.info("Kept your change: " .. c .. " = " .. tostring(now))
+          end
+        elseif ns.isPlate(c) and InCombatLockdown() then
+          left[c], pending = v, true
+        elseif not ns.setCVar(c, v, true) then
+          left[c], pending = v, true
         end
-      elseif ns.isPlate(c) and InCombatLockdown() then
-        left[c], pending = v, true
-      elseif not ns.setCVar(c, v, true) then
-        left[c], pending = v, true
       end
     end
     TUIHDB.saved = pending and left or nil
