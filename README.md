@@ -238,6 +238,27 @@ And this is also not a promise.
 - Review the save system with the DB and check what all of the stuff in `<YOUR-WOW-INSTALL-DIR>/_forever_/WTF/Account/<ACCOUNT_ID>/SavedVariables/TrueUIhide.lua` is
 - What happens if the game is restarted with UI hidden?
 
+## Releasing (for the maintainer)
+
+A release is built by GitHub Actions when you push a tag that starts with `v`.
+
+1. Commit and push everything to `main`.
+2. Create and push the tag (the tag is the version, for example `v0.2.0`):
+   ```
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+
+Notes:
+- Tags like `v0.2.0-beta1` become pre-releases.
+- If the workflow fails (for example the lint step), fix the problem on `main`, then delete the tag and create it again:
+  ```
+  git tag -d v0.2.0
+  git push origin :refs/tags/v0.2.0
+  ```
+  If a release was already created, delete it on the GitHub releases page first.
+- The `## Interface:` number in the `.toc` is not changed by the workflow. Update it by hand when the game version changes.
+
 ## Legal
 
 MIT License (see `LICENSE` in the repository root. Release zips contain it as `LICENSE.txt` inside the addon folder).
