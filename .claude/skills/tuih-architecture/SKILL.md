@@ -36,8 +36,8 @@ Every file starts with `local _, ns = ...` (shared namespace). Cross-module call
 - `presets` {name -> {keep, combat, players}}: custom presets.
 - `saved` {cvar -> string} or nil: original CVar values while hidden (or leftovers after a failed restore). `nil` means "nothing to restore".
 - `playerNames` 0..3, `combatShow`, `mouselookAuto`, `shotCombatShow`, `shotBefore`/`shotAfter` (0.1..3), `cycleMessage`, `indicator`, `minimapIcon`, `minimapAngle`, `verbose`, `welcomed`, `combatNotice` (one-time flag).
-- Leftovers that break the "no legacy code" rule and can be deleted: the `keepMinimap` migration in `ns.initDB()` and `TUIHDB.freelookAuto = nil` in `sanitize()`.
 - The file is only written on logout or `/reload`.
+- Migrations: none exist today (pre-1.0 green field). From `v1.0.0` on, existing users have saved data, so key renames/removals/meaning changes need a deliberate decision (see CLAUDE.md). There is no schema version field; add one only if a migration needs it.
 
 ## Hide / show flow
 `ns.toggle` -> `ns.userSetAll(show)` (aborts a running screenshot, clears pending/autoShown/peek) -> `ns.setAll(show)`:

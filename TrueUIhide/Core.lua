@@ -61,7 +61,6 @@ local function sanitize()
   if type(TUIHDB.presets) ~= "table" then TUIHDB.presets = {} end
   if type(TUIHDB.combatShow) ~= "boolean" then TUIHDB.combatShow = nil end
   if type(TUIHDB.mouselookAuto) ~= "boolean" then TUIHDB.mouselookAuto = false end
-  TUIHDB.freelookAuto = nil  -- removed feature (protected game function)
   if type(TUIHDB.shotCombatShow) ~= "boolean" then TUIHDB.shotCombatShow = true end
   for key, default in pairs({ shotBefore = ns.SHOT_BEFORE_DEFAULT, shotAfter = ns.SHOT_AFTER_DEFAULT }) do
     local v = tonumber(TUIHDB[key])
@@ -127,11 +126,6 @@ end
 -- Sets up TUIHDB: validates it, applies defaults. Also used after a wipe.
 function ns.initDB()
   sanitize()
-  -- Migrate the old minimap flag
-  if TUIHDB.keepMinimap ~= nil then
-    TUIHDB.keep.minimap = TUIHDB.keepMinimap
-    TUIHDB.keepMinimap = nil
-  end
   -- Show the UI during combat: on by default, with a one-time warning
   if TUIHDB.combatShow == nil then
     TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT

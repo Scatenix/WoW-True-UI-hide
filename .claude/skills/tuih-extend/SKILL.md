@@ -39,7 +39,7 @@ for n,p in pairs(ns.builtin) do for k in pairs(p.keep) do assert(ns.keepByKey[k]
 - Reserved custom names live in `RESERVED_NAMES` (Presets.lua); built-in names are reserved automatically.
 
 ## Add a setting (saved option)
-1. Core.lua `sanitize()`: validate type/range and set the default (a wrong type must never survive a load).
+1. Core.lua `sanitize()`: validate type/range and set the default (a wrong type must never survive a load). Renaming or removing a saved key, a keep element key or a preset field after `v1.0.0` may need a migration (see CLAUDE.md).
 2. Read it where needed via `TUIHDB.<key>`.
 3. Panel: Options.lua. Checkbox with `addCheck(y, text, get, set)` in the right section (all `y` values are relative to the section's host; later sections use their own base, see `tuih-architecture`). If you add rows, shift the later fixed offsets (`TAIL_MAINT`, the `y - N` values) and re-check `setHeight()`. A setting that is changed from commands must call `ns.refreshOptions()`.
 4. Command: Commands.lua `setCommand` (word -> `ns.toggleXxx`), the usage string, a toggle function that logs with `ns.log` (it is a deliberate user action, not routine info).
