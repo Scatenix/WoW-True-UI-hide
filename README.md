@@ -229,13 +229,7 @@ These commands have no keybinding and are chat-only: `/tuih on`, `/tuih off`, `/
 Don't mind this. It's for me, the dev :)
 And this is also not a promise.
 
-- Better pre-built presets
-- Better custom presets support (especially the command to set a custom preset, which easily leads to name collisions)
-- change some commands, because its confusing
 - Improve readme (descripe commands like diff, add troubleshooting, document quirks, add pictures)
-- Add/Change/Remove keybinds
-- Maybe publish addon somewhere
-- Review the save system with the DB and check what all of the stuff in `<YOUR-WOW-INSTALL-DIR>/_forever_/WTF/Account/<ACCOUNT_ID>/SavedVariables/TrueUIhide.lua` is
 - What happens if the game is restarted with UI hidden?
 
 ## Releasing (for the maintainer)
