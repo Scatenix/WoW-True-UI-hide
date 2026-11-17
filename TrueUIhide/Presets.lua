@@ -22,8 +22,8 @@ function ns.applyPreset(name, silent)
   TUIHDB.keep = ns.copy(p.keep)
   -- Only presets that specify the combat option change it
   if p.combat ~= nil then TUIHDB.combatShow = p.combat end
+  TUIHDB.playerNames = p.players or 0
   ns.userSetAll(false)
-  ns.setStage(p.players or 0)
   ns.syncPlates()
   ns.state.presetCurrent = name
   if not silent then ns.info("Preset: " .. name, "preset") end
@@ -34,16 +34,11 @@ end
 -- the combat option), does not hide the UI and leaves the game settings alone
 function ns.applyPresetSettings(name)
   name = (name or ""):lower()
-  if name == "normal" then
-    TUIHDB.keep = {}
-    TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT
-    ns.state.presetCurrent = "normal"
-    return true
-  end
   local p = ns.builtin[name] or TUIHDB.presets[name]
   if not p then return false end
   TUIHDB.keep = ns.copy(p.keep)
   if p.combat ~= nil then TUIHDB.combatShow = p.combat end
+  TUIHDB.playerNames = p.players or 0
   ns.state.presetCurrent = name
   ns.info("Preset settings: " .. name .. " (the UI stays as it is)", "preset")
   return true
@@ -163,7 +158,7 @@ function ns.savePreset(name)
   TUIHDB.presets[name] = {
     keep = ns.copy(TUIHDB.keep),
     combat = TUIHDB.combatShow and true or false,
-    players = ns.getStage(),
+    players = TUIHDB.playerNames or 0,
   }
   ns.log("Preset saved: " .. name .. " (current keep settings and player-name stage)", "preset")
   if ns.refreshOptions then ns.refreshOptions() end
