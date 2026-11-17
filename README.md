@@ -79,7 +79,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | `/tuih` | | Toggle all UI, names and nameplates |
 | `/tuih on` | | Show everything and restore your saved settings |
 | `/tuih off` | | Hide everything |
-| `/tuih players` | `p` | Cycle player names: none, own only, others only, own and others (also hides player nameplates) |
+| `/tuih players` | `p` | Cycle the player names shown while the UI is hidden: none, own only, others only, own and others. The choice is saved (also set in the settings panel dropdown) |
 | `/tuih shot` | `ss` | Take a screenshot without UI |
 | `/tuih mouselook` | `look`, `ml` | Enter or leave mouselook, right-click style (right-click ends it) |
 | `/tuih status` | `s` | Show the current settings |
@@ -93,19 +93,61 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 
 `/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements.
 
+Keeping an element only leaves it as it is. If it is already turned off in the game (for example friendly nameplates), True UI Hide does not turn it on. The exception is the player names choice (dropdown in the settings, `/tuih players`): it is actually set while the UI is hidden, even if those names were off.
+
 | Element | Aliases | Keeps this visible while the UI is hidden |
 |---|---|---|
+| **Unit frames and minimap** | | |
 | `/tuih toggle minimap` | `map`, `m` | Minimap |
 | `/tuih toggle player` | `pf` | Player frame |
 | `/tuih toggle target` | `tf`, `t` | Target frame |
+| `/tuih toggle pet` | `petframe` | Pet frame |
+| `/tuih toggle party` | `group`, `raid` | Party and raid frames |
+| `/tuih toggle castbar` | `cast`, `cb` | Cast bar |
+| **Names and nameplates** | | |
 | `/tuih toggle enemyplates` | `plates`, `nameplates`, `np`, `ep` | Enemy nameplates |
-| `/tuih toggle softtarget` | `soft`, `st` | Soft-target highlight (the game's soft-target settings; hidden together with the UI by default) |
+| `/tuih toggle friendlyplates` | `fplates`, `fnp` | Friendly nameplates |
+| `/tuih toggle friendlynames` | `fnames`, `fn` | Friendly player names |
+| `/tuih toggle npcnames` | `npc`, `npcs` | General NPC names (nPC, hostile NPC and non-combat creature names) |
+| `/tuih toggle interactivenpcs` | `inpc`, `interactive` | Interactive NPC names (the game's setting for NPCs you can interact with. In practice this shows most friendly NPC names) |
+| `/tuih toggle specialnpcs` | `snpc`, `special` | Special NPC names (the game's setting for special friendly NPCs) |
+| `/tuih toggle friendlypets` | `fpets`, `pets` | Friendly pet names (friendly pet, guardian, minion and totem names) |
+| `/tuih toggle enemypets` | `epets` | Enemy pet names (enemy pet, guardian, minion and totem names) |
+| `/tuih toggle guildtitles` | `guild`, `titles` | Guild names and titles |
+| `/tuih toggle softtarget` | `soft`, `st` | Soft-target highlight (the game's soft-target settings (hidden together with the UI by default)) |
+| `/tuih toggle questcircles` | `circles`, `qc` | Quest circles (the circles under quest objectives in the world) |
+| **Windows** | | |
+| `/tuih toggle npcdialogs` | `dialogs`, `gossip` | NPC dialogs (gossip and quest windows, vendors, trainers, flight maps, bank and similar) |
+| `/tuih toggle bags` | `bag`, `inventory` | Bags (combined or separate bag windows (needed to sell items to a vendor)) |
+| `/tuih toggle loot` | `looting` | Loot windows (the loot window and the group loot roll windows) |
+| `/tuih toggle popups` | `popup`, `invites` | Popups and invites (group invites, resurrect and summon requests, duels, ready checks and queue pops) |
+| `/tuih toggle trademail` | `trade`, `mail`, `auction` | Trade, mail, auctions (trade, mail, auction house and crafting windows) |
+| `/tuih toggle charwindows` | `character`, `spellbook`, `talents`, `worldmap` | Character windows (character, spellbook, talents, friends and the world map) |
+| **Bars, chat and text** | | |
 | `/tuih toggle chat` | `c` | Chat |
-| `/tuih toggle actionbars` | `bars`, `actionbar`, `ab` | Action bars |
+| `/tuih toggle actionbars` | `bars`, `ab`, `actionbar` | Action bars (all action bars, including the stance and pet bars) |
+| `/tuih toggle statusbars` | `xp`, `exp`, `rep` | Experience and reputation |
 | `/tuih toggle buffs` | `b`, `auras` | Buffs and debuffs |
 | `/tuih toggle quest` | `q`, `tracker` | Quest tracker |
 | `/tuih toggle questie` | `qt` | Questie tracker (only if Questie is installed) |
-| `/tuih toggle castbar` | `cast`, `cb` | Cast bar |
+| `/tuih toggle messages` | `errors`, `zonetext` | Error and zone text (error messages ("Out of range"), zone names and raid warnings) |
+| `/tuih toggle combattext` | `fct`, `damage` | Floating combat text (damage and healing numbers in the world. Hidden by default while the UI is hidden) |
+
+Floating combat text (damage and healing numbers) is hidden together with the UI by default, like the names. Keep it to leave it as it is.
+
+### Your own windows: `/tuih keepframe ...`
+
+Any window that is not in the list above (also windows of other addons) can be kept visible by its frame name.
+
+| Command | Description |
+|---|---|
+| `/tuih keepframe pick` | Point the mouse at a window within 3 seconds: it is added to your list |
+| `/tuih keepframe add <name>` | Add a frame by its name (case-sensitive) |
+| `/tuih keepframe toggle <name>` | Turn keeping a listed window on or off (saved per preset) |
+| `/tuih keepframe remove <name>` | Remove it from your list |
+| `/tuih keepframe` | List your windows |
+
+Aliases: `kf`, `frame`. The same is available in the settings ("Your own windows") and as a keybind (hover a window, press the key). The window has to be open when you pick it. The list of windows is saved with your settings. Whether each one is kept is part of the keep settings, so presets (built-in ones keep none) and "Reset" switch them on or off, while the list itself stays. "Delete all data" removes it. The list holds up to 100 windows; the limit can be raised in the settings ("Limits"). You can also find frame names yourself with the game's `/fstack` command.
 
 ### Presets: `/tuih preset ...`
 
@@ -120,7 +162,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | `/tuih preset save <name>` | Save the current state as your own preset |
 | `/tuih preset delete <name>` | Delete one of your presets |
 
-Built-in presets: `normal` (reset everything), `explore` (keep minimap and chat), `social` (keep chat and player frame, show all player names), `immersive` (hide everything, UI returns in combat), `screenshot` (hide everything, also in combat).
+Built-in presets: `normal` (reset everything), `explore` (keep minimap and chat), `social` (keep chat and player frame, show all player names), `screenshot` (hide everything, also in combat).
 
 Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `next`, `prev`, `previous`, `cycle`, `normal` and the built-in names are reserved.
 
@@ -151,8 +193,9 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 | Cycle through all presets | Same as `/tuih preset next` (also shows which preset was applied) |
 | Cycle through built-in presets / custom presets | Same as `/tuih preset next builtin` / `custom` |
 | Cycle backwards through all / built-in / custom presets | Same as `/tuih preset prev [builtin\|custom]` |
-| Preset: normal / explore / social / immersive / screenshot | Same as `/tuih preset <name>` |
-| Toggle: Minimap, Player frame, Target frame, Enemy nameplates, Soft-target highlight, Chat, Action bars, Buffs and debuffs, Quest tracker, Questie tracker, Cast bar | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
+| Preset: normal / explore / social / screenshot | Same as `/tuih preset <name>` |
+| Toggle: one per element in the table above | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
+| Keep the window under the mouse visible | Same as `/tuih keepframe pick`, without the wait |
 | Open options | Same as `/tuih config` |
 | Show help links | Same as `/tuih help` |
 

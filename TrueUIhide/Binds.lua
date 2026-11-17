@@ -14,6 +14,7 @@ BINDING_NAME_TUIH_PEEK_HIDE = "Peek: hide UI while held"
 BINDING_NAME_TUIH_SHOT = "Screenshot without UI"
 BINDING_NAME_TUIH_MOUSELOOK = "Mouselook (right-click style)"
 BINDING_NAME_TUIH_CONFIG = "Open options"
+BINDING_NAME_TUIH_KEEPFRAME = "Keep the window under the mouse visible"
 BINDING_NAME_TUIH_HELP = "Show help links"
 BINDING_NAME_TUIH_PRESET_CYCLE = "Cycle through all presets"
 BINDING_NAME_TUIH_PRESET_CYCLE_BUILTIN = "Cycle through built-in presets"
@@ -24,7 +25,6 @@ BINDING_NAME_TUIH_PRESET_BACK_CUSTOM = "Cycle backwards through custom presets"
 BINDING_NAME_TUIH_PRESET_NORMAL = "Preset: normal"
 BINDING_NAME_TUIH_PRESET_EXPLORE = "Preset: explore"
 BINDING_NAME_TUIH_PRESET_SOCIAL = "Preset: social"
-BINDING_NAME_TUIH_PRESET_IMMERSIVE = "Preset: immersive"
 BINDING_NAME_TUIH_PRESET_SCREENSHOT = "Preset: screenshot"
 
 -- One "Toggle: ..." binding per keepable element
@@ -44,3 +44,4 @@ function TUIH_Help() ns.showHelp() end
 function TUIH_PresetCycle(kind, step) ns.cyclePreset(kind, step) end
 function TUIH_Preset(name) ns.applyPreset(name) end
 function TUIH_Keep(key) ns.toggleKeep(key) end
+function TUIH_KeepFrame() ns.pickFrame() end

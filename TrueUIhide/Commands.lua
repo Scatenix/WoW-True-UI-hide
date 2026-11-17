@@ -5,6 +5,7 @@
 -- Groups:                  /tuih toggle <element>     elements kept visible
 --                          /tuih preset <name | save | delete | list>
 --                          /tuih set <combat | mouselook>   settings
+--                          /tuih keepframe <pick | add | remove>   own frames
 local _, ns = ...
 
 local function firstWord(s)
@@ -27,6 +28,33 @@ local function toggleCommand(arg)
     ns.toggleKeep(key)
   else
     ns.log("Unknown element: " .. word .. ". Run /tuih toggle for the list.")
+  end
+end
+
+-- /tuih keepframe [pick | add <name> | remove <name> | toggle <name> | list]
+-- Frame names are case-sensitive, so this one gets the text as typed
+local function keepFrameCommand(arg, raw)
+  local sub, name = (raw or arg):match("^(%S*)%s*(%S*)")
+  sub = sub:lower()
+  if sub == "pick" then
+    ns.pickFrameLater(3)
+  elseif sub == "add" then
+    ns.addCustomFrame(name)
+  elseif sub == "remove" or sub == "delete" then
+    ns.removeCustomFrame(name)
+  elseif sub == "toggle" then
+    if ns.setCustomKeepToggle(name) then
+      ns.info("Keep " .. name .. ": " .. (ns.customKept(name) and "on" or "off"), "toggle")
+    end
+  elseif sub == "" or sub == "list" then
+    local list = ns.customFrameList()
+    local parts = {}
+    for _, n in ipairs(list) do parts[#parts + 1] = n .. (ns.customKept(n) and " (kept)" or " (off)") end
+    ns.log("Your own windows: " .. (#parts > 0 and table.concat(parts, ", ") or "none"))
+    ns.log("Usage: /tuih keepframe pick | add <name> | remove <name> | toggle <name>")
+  else
+    -- /tuih keepframe <name> is the same as add
+    ns.addCustomFrame(sub == "" and name or (raw or arg):match("^%s*(%S+)"))
   end
 end
 
@@ -77,14 +105,16 @@ add(function() ns.showHelp() end, "help", "h", "?")
 add(function() ns.diff() end, "diff", "d")
 add(toggleCommand, "toggle", "keep", "k")
 add(function(arg) ns.presetCommand(arg) end, "preset", "presets", "pr")
+add(keepFrameCommand, "keepframe", "kf", "frame")
 add(setCommand, "set", "option", "opt")
 
 SLASH_TUIH1 = "/tuih"
 SlashCmdList["TUIH"] = function(msg)
-  msg = (msg or ""):lower():match("^%s*(.-)%s*$")
-  local cmd, arg = msg:match("^(%S*)%s*(.-)$")
+  msg = (msg or ""):match("^%s*(.-)%s*$")
+  local cmd, raw = msg:match("^(%S*)%s*(.-)$")
+  cmd = cmd:lower()
   if cmd == "" then ns.toggle() return end
   local fn = handlers[cmd]
-  if fn then fn(arg) return end
+  if fn then fn(raw:lower(), raw) return end
   ns.log("Unknown command. Run /tuih help.")
 end

@@ -45,9 +45,6 @@
   <Binding name="TUIH_PRESET_SOCIAL" category="True UI Hide">
     TUIH_Preset("social")
   </Binding>
-  <Binding name="TUIH_PRESET_IMMERSIVE" category="True UI Hide">
-    TUIH_Preset("immersive")
-  </Binding>
   <Binding name="TUIH_PRESET_SCREENSHOT" category="True UI Hide">
     TUIH_Preset("screenshot")
   </Binding>
@@ -61,17 +58,74 @@
   <Binding name="TUIH_KEEP_TARGET" category="True UI Hide">
     TUIH_Keep("target")
   </Binding>
+  <Binding name="TUIH_KEEP_PET" category="True UI Hide">
+    TUIH_Keep("pet")
+  </Binding>
+  <Binding name="TUIH_KEEP_PARTY" category="True UI Hide">
+    TUIH_Keep("party")
+  </Binding>
+  <Binding name="TUIH_KEEP_CASTBAR" category="True UI Hide">
+    TUIH_Keep("castbar")
+  </Binding>
   <Binding name="TUIH_KEEP_ENEMYPLATES" category="True UI Hide">
     TUIH_Keep("enemyplates")
   </Binding>
+  <Binding name="TUIH_KEEP_FRIENDLYPLATES" category="True UI Hide">
+    TUIH_Keep("friendlyplates")
+  </Binding>
+  <Binding name="TUIH_KEEP_FRIENDLYNAMES" category="True UI Hide">
+    TUIH_Keep("friendlynames")
+  </Binding>
+  <Binding name="TUIH_KEEP_NPCNAMES" category="True UI Hide">
+    TUIH_Keep("npcnames")
+  </Binding>
+  <Binding name="TUIH_KEEP_INTERACTIVENPCS" category="True UI Hide">
+    TUIH_Keep("interactivenpcs")
+  </Binding>
+  <Binding name="TUIH_KEEP_SPECIALNPCS" category="True UI Hide">
+    TUIH_Keep("specialnpcs")
+  </Binding>
+  <Binding name="TUIH_KEEP_FRIENDLYPETS" category="True UI Hide">
+    TUIH_Keep("friendlypets")
+  </Binding>
+  <Binding name="TUIH_KEEP_ENEMYPETS" category="True UI Hide">
+    TUIH_Keep("enemypets")
+  </Binding>
+  <Binding name="TUIH_KEEP_GUILDTITLES" category="True UI Hide">
+    TUIH_Keep("guildtitles")
+  </Binding>
   <Binding name="TUIH_KEEP_SOFTTARGET" category="True UI Hide">
     TUIH_Keep("softtarget")
+  </Binding>
+  <Binding name="TUIH_KEEP_QUESTCIRCLES" category="True UI Hide">
+    TUIH_Keep("questcircles")
+  </Binding>
+  <Binding name="TUIH_KEEP_NPCDIALOGS" category="True UI Hide">
+    TUIH_Keep("npcdialogs")
+  </Binding>
+  <Binding name="TUIH_KEEP_BAGS" category="True UI Hide">
+    TUIH_Keep("bags")
+  </Binding>
+  <Binding name="TUIH_KEEP_LOOT" category="True UI Hide">
+    TUIH_Keep("loot")
+  </Binding>
+  <Binding name="TUIH_KEEP_POPUPS" category="True UI Hide">
+    TUIH_Keep("popups")
+  </Binding>
+  <Binding name="TUIH_KEEP_TRADEMAIL" category="True UI Hide">
+    TUIH_Keep("trademail")
+  </Binding>
+  <Binding name="TUIH_KEEP_CHARWINDOWS" category="True UI Hide">
+    TUIH_Keep("charwindows")
   </Binding>
   <Binding name="TUIH_KEEP_CHAT" category="True UI Hide">
     TUIH_Keep("chat")
   </Binding>
   <Binding name="TUIH_KEEP_ACTIONBARS" category="True UI Hide">
     TUIH_Keep("actionbars")
+  </Binding>
+  <Binding name="TUIH_KEEP_STATUSBARS" category="True UI Hide">
+    TUIH_Keep("statusbars")
   </Binding>
   <Binding name="TUIH_KEEP_BUFFS" category="True UI Hide">
     TUIH_Keep("buffs")
@@ -82,8 +136,14 @@
   <Binding name="TUIH_KEEP_QUESTIE" category="True UI Hide">
     TUIH_Keep("questie")
   </Binding>
-  <Binding name="TUIH_KEEP_CASTBAR" category="True UI Hide">
-    TUIH_Keep("castbar")
+  <Binding name="TUIH_KEEP_MESSAGES" category="True UI Hide">
+    TUIH_Keep("messages")
+  </Binding>
+  <Binding name="TUIH_KEEP_COMBATTEXT" category="True UI Hide">
+    TUIH_Keep("combattext")
+  </Binding>
+  <Binding name="TUIH_KEEPFRAME" category="True UI Hide">
+    TUIH_KeepFrame()
   </Binding>
 
   <Binding name="TUIH_CONFIG" header="TUIH_MISC" category="True UI Hide">

@@ -96,16 +96,203 @@ local function buildConfig()
   end
 
   heading(-52, "Keep visible while the UI is hidden:")
-  local y = -74
-  for _, e in ipairs(ns.keepList) do
-    if ns.available(e) then
-      local key = e.key
-      addCheck(y, e.label,
-        function() return TUIHDB.keep[key] end,
-        function(v) ns.setKeep(key, v) end)
-      y = y - 26
+  addNote(-70, "Keeping an element only leaves it as it is. If it is already turned off in the game, True UI Hide does not turn it on. The player names choice below is the exception: it is actually turned on, even if it was off.")
+  -- Section title with a thin line below it
+  local function groupHeader(y, text)
+    local fs = host:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    fs:SetPoint("TOPLEFT", 20, y)
+    fs:SetText(text)
+    fs:SetTextColor(0.64, 0.21, 0.93)
+    local line = host:CreateTexture(nil, "ARTWORK")
+    line:SetColorTexture(1, 1, 1, 0.15)
+    line:SetHeight(1)
+    line:SetPoint("TOPLEFT", host, "TOPLEFT", 20, y - 14)
+    line:SetPoint("TOPRIGHT", host, "TOPLEFT", 540, y - 14)
+  end
+
+  -- Keep elements: grouped, two per row; hover for a short description
+  local COL_X = { 16, 286 }
+  local function addKeepCheck(x, y, e)
+    local cb = CreateFrame("CheckButton", nil, host, "UICheckButtonTemplate")
+    cb:SetPoint("TOPLEFT", x, y)
+    cb:SetSize(24, 24)
+    local fs = cb:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    fs:SetPoint("LEFT", cb, "RIGHT", 4, 1)
+    fs:SetWidth(225)
+    fs:SetJustifyH("LEFT")
+    fs:SetWordWrap(false)
+    fs:SetText(e.label)
+    cb:SetScript("OnClick", function(self) ns.setKeep(e.key, self:GetChecked() and true or false) end)
+    if e.tip then
+      cb:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(e.label, 1, 1, 1)
+        GameTooltip:AddLine(e.tip, 0.8, 0.8, 0.8, true)
+        GameTooltip:Show()
+      end)
+      cb:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    end
+    refreshers[#refreshers + 1] = function() cb:SetChecked(TUIHDB.keep[e.key]) end
+  end
+
+  local y = -114
+  for _, g in ipairs(ns.keepGroups) do
+    local items = {}
+    for _, e in ipairs(ns.keepList) do
+      if e.group == g.key and ns.available(e) then items[#items + 1] = e end
+    end
+    if #items > 0 then
+      groupHeader(y, g.label)
+      y = y - 22
+      for i, e in ipairs(items) do
+        addKeepCheck(COL_X[(i - 1) % 2 + 1], y - math.floor((i - 1) / 2) * 26, e)
+      end
+      y = y - math.ceil(#items / 2) * 26 - 10
     end
   end
+
+  -- Your own frames: windows the player added by name. The list changes
+  -- while the game runs, so everything below it hangs on `mid`, which is
+  -- moved by the refresher further down.
+  local MAX_CUSTOM = 24
+  local cfY = y
+  local midY = cfY - 22 - 26 - 6 - 30 - 42
+  groupHeader(cfY, "Your own windows")
+  local cfEmpty = addNote(cfY - 22, "None yet. Add a window by its frame name, or point at it and use Pick.", false, true)
+  local cfRows = {}
+  local cfBox = CreateFrame("EditBox", "TUIHFrameName", host, "InputBoxTemplate")
+  cfBox:SetSize(150, 20)
+  cfBox:SetAutoFocus(false)
+  cfBox:SetMaxLetters(64)
+  local cfAdd = CreateFrame("Button", nil, host, "UIPanelButtonTemplate")
+  cfAdd:SetSize(60, 24)
+  cfAdd:SetText("Add")
+  local cfPick = CreateFrame("Button", nil, host, "UIPanelButtonTemplate")
+  cfPick:SetSize(190, 24)
+  cfPick:SetText("Pick the window under the mouse")
+  local cfNote = addNote(0, "Pick closes this window and waits 3 seconds: point at the window you want to keep. Same as the keybind or /tuih keepframe pick. Frame names are case-sensitive.", false, true)
+  local function addFrameFromBox()
+    if ns.addCustomFrame(cfBox:GetText()) then
+      cfBox:SetText("")
+      cfBox:ClearFocus()
+    end
+  end
+  cfAdd:SetScript("OnClick", addFrameFromBox)
+  cfBox:SetScript("OnEnterPressed", addFrameFromBox)
+  cfBox:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+  cfPick:SetScript("OnClick", function()
+    if SettingsPanel and SettingsPanel:IsShown() then
+      HideUIPanel(SettingsPanel)
+    elseif InterfaceOptionsFrame and InterfaceOptionsFrame:IsShown() then
+      InterfaceOptionsFrame:Hide()
+    end
+    ns.pickFrameLater(3)
+  end)
+  local function cfRow(i)
+    local r = cfRows[i]
+    if r then return r end
+    r = {}
+    r.cb = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
+    r.cb:SetSize(24, 24)
+    r.cb:SetScript("OnClick", function(self)
+      ns.setCustomKeep(self.frameName, self:GetChecked() and true or false)
+    end)
+    r.cb:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:AddLine(self.frameName, 1, 1, 1)
+      GameTooltip:AddLine("Keep this window visible (saved per preset)", 0.8, 0.8, 0.8, true)
+      GameTooltip:Show()
+    end)
+    r.cb:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    r.text = r.cb:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    r.text:SetPoint("LEFT", r.cb, "RIGHT", 4, 1)
+    r.text:SetWidth(180)
+    r.text:SetJustifyH("LEFT")
+    r.text:SetWordWrap(false)
+    r.del = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    r.del:SetSize(22, 22)
+    r.del:SetText("x")
+    r.del:SetScript("OnClick", function(self) ns.removeCustomFrame(self.frameName) end)
+    r.del:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+      GameTooltip:AddLine("Remove " .. self.frameName .. " from the list")
+      GameTooltip:Show()
+    end)
+    r.del:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    cfRows[i] = r
+    return r
+  end
+  refreshers[#refreshers + 1] = function()
+    local list = ns.customFrameList()
+    for i, name in ipairs(list) do
+      local r = cfRow(i)
+      local x = 16 + ((i - 1) % 2) * 270
+      local ry = cfY - 22 - math.floor((i - 1) / 2) * 26
+      r.cb:ClearAllPoints()
+      r.cb:SetPoint("TOPLEFT", x, ry)
+      r.cb.frameName = name
+      r.cb:SetChecked(ns.customKept(name))
+      r.cb:Show()
+      r.text:SetText(name)
+      r.del:ClearAllPoints()
+      r.del:SetPoint("TOPLEFT", x + 214, ry - 1)
+      r.del.frameName = name
+      r.del:Show()
+    end
+    for i = #list + 1, #cfRows do
+      cfRows[i].cb:Hide()
+      cfRows[i].del:Hide()
+    end
+    cfEmpty:SetShown(#list == 0)
+    local rows = math.max(1, math.ceil(#list / 2))
+    local iy = cfY - 22 - rows * 26 - 6
+    cfBox:ClearAllPoints()
+    cfBox:SetPoint("TOPLEFT", 30, iy - 2)
+    cfAdd:ClearAllPoints()
+    cfAdd:SetPoint("TOPLEFT", 188, iy)
+    cfPick:ClearAllPoints()
+    cfPick:SetPoint("TOPLEFT", 256, iy)
+    cfNote:ClearAllPoints()
+    cfNote:SetPoint("TOPLEFT", 44, iy - 30)
+    midY = iy - 30 - 42
+    if ns.moveMid then ns.moveMid(midY) end
+  end
+
+  local mid = CreateFrame("Frame", nil, content)
+  mid:SetSize(1, 1)
+  mid:SetPoint("TOPLEFT", content, "TOPLEFT", 0, midY)
+  function ns.moveMid(v)
+    mid:ClearAllPoints()
+    mid:SetPoint("TOPLEFT", content, "TOPLEFT", 0, v)
+  end
+  host = mid
+  y = 0
+
+  -- Player names while the UI is hidden (a dropdown, like the game's own menu)
+  local nameChoices = { [0] = "No player names", "Own name only", "Other players only", "Own and other players" }
+  groupHeader(y, "Player names")
+  local nameLabel = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  nameLabel:SetPoint("TOPLEFT", 20, y - 26)
+  nameLabel:SetText("Show these player names while the UI is hidden:")
+  local nameDD = CreateFrame("Frame", "TUIHPlayerNamesDropDown", host, "UIDropDownMenuTemplate")
+  nameDD:SetPoint("TOPLEFT", 4, y - 42)
+  UIDropDownMenu_SetWidth(nameDD, 200)
+  UIDropDownMenu_Initialize(nameDD, function()
+    for i = 0, 3 do
+      local info = UIDropDownMenu_CreateInfo()
+      info.text = nameChoices[i]
+      info.checked = (TUIHDB.playerNames or 0) == i
+      info.func = function()
+        ns.setPlayerNames(i)
+        UIDropDownMenu_SetText(nameDD, nameChoices[i])
+      end
+      UIDropDownMenu_AddButton(info)
+    end
+  end)
+  refreshers[#refreshers + 1] = function()
+    UIDropDownMenu_SetText(nameDD, nameChoices[TUIHDB.playerNames or 0])
+  end
+  y = y - 84
 
   local py = y - 14
   heading(py, "Built-in presets:")
@@ -113,7 +300,7 @@ local function buildConfig()
     return name:sub(1, 1):upper() .. name:sub(2)
   end
   local function presetButton(x, by, name)
-    local b = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+    local b = CreateFrame("Button", nil, mid, "UIPanelButtonTemplate")
     b:SetSize(120, 24)
     b:SetPoint("TOPLEFT", x, by)
     b:SetText(capitalize(name))
@@ -130,22 +317,28 @@ local function buildConfig()
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     return b
   end
-  for i, name in ipairs(ns.presetOrder) do
+  -- "normal" is not listed here: in the panel it would change nothing (the
+  -- Reset button below and /tuih on cover "back to normal")
+  local panelPresets = {}
+  for _, name in ipairs(ns.presetOrder) do
+    if name ~= "normal" then panelPresets[#panelPresets + 1] = name end
+  end
+  for i, name in ipairs(panelPresets) do
     presetButton(20 + ((i - 1) % 3) * 130, py - 24 - math.floor((i - 1) / 3) * 30, name)
   end
 
   -- Custom presets: the list changes while the game runs, so everything
   -- below it is placed by layout() and the buttons are reused
-  local cy = py - 24 - math.ceil(#ns.presetOrder / 3) * 30 - 16
+  local cy = py - 24 - math.ceil(#panelPresets / 3) * 30 - 16
   heading(cy, "Custom presets:")
   local emptyNote = addNote(cy - 24, "None yet. Save the current state below.", false, true)
 
   -- Save the current state as a new custom preset
-  local saveBox = CreateFrame("EditBox", "TUIHPresetName", content, "InputBoxTemplate")
+  local saveBox = CreateFrame("EditBox", "TUIHPresetName", mid, "InputBoxTemplate")
   saveBox:SetSize(140, 20)
   saveBox:SetAutoFocus(false)
   saveBox:SetMaxLetters(24)
-  local saveBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+  local saveBtn = CreateFrame("Button", nil, mid, "UIPanelButtonTemplate")
   saveBtn:SetSize(150, 24)
   saveBtn:SetText("Save current as preset")
   function ns.clearSaveBox()
@@ -213,7 +406,35 @@ local function buildConfig()
     function(v) TUIHDB.shotAfter = v end)
   addNote(y - 444, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
 
-  local TAIL_MAINT = -480  -- below the Screenshot section
+  -- Limits: only a safety net against runaway lists
+  heading(y - 484, "Limits:")
+  local limitLabel = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  limitLabel:SetPoint("TOPLEFT", 44, y - 510)
+  limitLabel:SetText("Max windows in \"Your own windows\":")
+  local limitBox = CreateFrame("EditBox", "TUIHCustomLimit", host, "InputBoxTemplate")
+  limitBox:SetSize(60, 20)
+  limitBox:SetPoint("TOPLEFT", 280, y - 508)
+  limitBox:SetAutoFocus(false)
+  limitBox:SetNumeric(true)
+  limitBox:SetMaxLetters(5)
+  local function applyLimit(self)
+    local n = math.floor(tonumber(self:GetText()) or 0)
+    if n < 1 then n = ns.customLimit() end
+    if n > 10000 then n = 10000 end
+    TUIHDB.customLimit = (n ~= ns.DEFAULT_CUSTOM_LIMIT) and n or nil
+    self:SetText(tostring(ns.customLimit()))
+    self:ClearFocus()
+  end
+  limitBox:SetScript("OnEnterPressed", applyLimit)
+  limitBox:SetScript("OnEditFocusLost", applyLimit)
+  limitBox:SetScript("OnEscapePressed", function(self)
+    self:SetText(tostring(ns.customLimit()))
+    self:ClearFocus()
+  end)
+  refreshers[#refreshers + 1] = function() limitBox:SetText(tostring(ns.customLimit())) end
+  addNote(y - 536, "This is just a small limit so the list cannot grow by accident. Raise it if you really need more windows (default " .. ns.DEFAULT_CUSTOM_LIMIT .. ").", false, true)
+
+  local TAIL_MAINT = -590  -- below the Limits section
   local mHeading = heading(0, "If something is wrong:")
   local function addMaintButton(x, text, onClick)
     local b = CreateFrame("Button", nil, host, "UIPanelButtonTemplate")
@@ -322,7 +543,7 @@ local function buildConfig()
     saveNote:SetPoint("TOPLEFT", 44, sy - 30)
     local ty = sy - 30 - 28 - 16
     tail:ClearAllPoints()
-    tail:SetPoint("TOPLEFT", content, "TOPLEFT", 0, ty)
+    tail:SetPoint("TOPLEFT", mid, "TOPLEFT", 0, ty)
     local my = TAIL_MAINT
     mHeading:ClearAllPoints()
     mHeading:SetPoint("TOPLEFT", 20, my)
@@ -338,7 +559,7 @@ local function buildConfig()
     namesNote:SetPoint("TOPLEFT", 44, my - 92)
     wipeNote:ClearAllPoints()
     wipeNote:SetPoint("TOPLEFT", 44, my - 128)
-    baseTy = ty
+    baseTy = midY + ty
     setHeight()
   end
 
@@ -364,7 +585,7 @@ local function buildConfig()
       b:Show()
       local d = b.delete
       if not d then
-        d = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+        d = CreateFrame("Button", nil, mid, "UIPanelButtonTemplate")
         d:SetSize(22, 24)
         d:SetText("x")
         d:SetScript("OnClick", function(self)

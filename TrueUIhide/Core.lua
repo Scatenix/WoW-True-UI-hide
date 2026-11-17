@@ -71,6 +71,20 @@ local function sanitize()
   if type(TUIHDB.welcomed) ~= "boolean" then TUIHDB.welcomed = nil end
   if type(TUIHDB.verbose) ~= "boolean" then TUIHDB.verbose = false end
   if type(TUIHDB.cycleMessage) ~= "boolean" then TUIHDB.cycleMessage = true end
+  do
+    local n = tonumber(TUIHDB.playerNames)
+    TUIHDB.playerNames = (n and n >= 0 and n <= 3) and math.floor(n) or 0
+  end
+  if type(TUIHDB.customFrames) ~= "table" then TUIHDB.customFrames = {} end
+  for name, v in pairs(TUIHDB.customFrames) do
+    if type(name) ~= "string" or v ~= true or not name:match("^[%w_]+$") or #name > 64 then
+      TUIHDB.customFrames[name] = nil
+    end
+  end
+  do
+    local n = tonumber(TUIHDB.customLimit)
+    TUIHDB.customLimit = (n and n >= 1 and n <= 10000) and math.floor(n) or nil
+  end
   if type(TUIHDB.indicator) ~= "boolean" then TUIHDB.indicator = true end
   if type(TUIHDB.minimapIcon) ~= "boolean" then TUIHDB.minimapIcon = true end
   if type(TUIHDB.minimapAngle) ~= "number" then TUIHDB.minimapAngle = nil end

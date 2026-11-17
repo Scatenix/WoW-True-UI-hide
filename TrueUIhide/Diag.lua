@@ -42,9 +42,13 @@ function ns.status()
       ns.log(e.label .. ": " .. (TUIHDB.keep[e.key] and "kept" or "hidden"))
     end
   end
+  local own = ns.customFrameList()
+  for i, n in ipairs(own) do own[i] = n .. (ns.customKept(n) and " (kept)" or " (off)") end
+  ns.log("Your own windows: " .. (#own > 0 and table.concat(own, ", ") or "none"))
   ns.log("Show UI in combat: " .. (TUIHDB.combatShow and "on" or "off"))
   ns.log("Show UI if combat starts during a screenshot: " .. (TUIHDB.shotCombatShow and "on" or "off"))
   ns.log("Mouselook while the UI is hidden: " .. (TUIHDB.mouselookAuto and "on" or "off"))
+  ns.log("Player names while hidden: " .. ns.stageNames[TUIHDB.playerNames or 0])
   ns.log("Chat message when cycling presets: " .. (TUIHDB.cycleMessage and "on" or "off"))
   ns.log("Warning dot: " .. (TUIHDB.indicator and "on" or "off"))
   ns.log("Events in chat: " .. (TUIHDB.verbose and "on" or "off"))

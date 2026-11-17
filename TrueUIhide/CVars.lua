@@ -44,6 +44,30 @@ function ns.isSoftTarget(c)
   return c:lower():sub(1, 10) == "softtarget"
 end
 
+-- Keep elements that own game settings (see `cvars`/`match` in Data.lua)
+local function owns(e, c)
+  if e.match then return e.match(c) end
+  return e.cvarSet ~= nil and e.cvarSet[c:lower()] == true
+end
+
+-- Is the setting owned by any element (kept or not)?
+function ns.ownsCVar(c)
+  for _, e in ipairs(ns.keepList) do
+    if (e.cvarSet or e.match) and owns(e, c) then return true end
+  end
+  return false
+end
+
+-- Is the setting owned by an element the player keeps visible?
+function ns.isKept(c)
+  for _, e in ipairs(ns.keepList) do
+    if TUIHDB.keep[e.key] and ns.available(e) and (e.cvarSet or e.match) and owns(e, c) then
+      return true
+    end
+  end
+  return false
+end
+
 -- Put every setting that matches back to the game's own default value (all of
 -- them, including numeric ones). Returns how many were reset.
 local function resetToDefaults(matches, what)
@@ -101,6 +125,7 @@ end
 -- CVar whose current value differs was changed by the player in the
 -- meantime (menu, /console): their value is kept.
 local applied = {}
+local keptShown = {}  -- [cvar] = last value reported as "kept"
 
 -- Set a CVar and check that it really changed. pcall alone is not enough:
 -- blocked actions (combat) usually do not raise an error. Returns true on success.
@@ -122,10 +147,16 @@ function ns.restore(quiet)
       local now = GetCVar(c)
       if now == nil then
         -- CVar no longer exists in this client: nothing to restore
+      elseif sameValue(now, v) then
+        -- Already has the original value: nothing to restore, nothing to say
+        applied[c] = nil
       elseif applied[c] ~= nil and not sameValue(now, applied[c]) then
         -- The player changed it while the UI was hidden: keep their value
         applied[c] = nil
-        ns.info("Kept your change: " .. c .. " = " .. tostring(now))
+        if keptShown[c] ~= tostring(now) then  -- say it once per value
+          keptShown[c] = tostring(now)
+          ns.info("Kept your change: " .. c .. " = " .. tostring(now))
+        end
       elseif ns.isPlate(c) and InCombatLockdown() then
         left[c], pending = v, true
       elseif not ns.setCVar(c, v, true) then
@@ -152,7 +183,7 @@ function ns.hideAll()
   ns.snapshot()  -- adds only values that are not saved yet
   for _, c in ipairs(ns.cvarList()) do
     local skip = (c == "nameplateShowEnemies" and TUIHDB.keep.enemyplates)
-      or (ns.isSoftTarget(c) and TUIHDB.keep.softtarget)
+      or ns.isKept(c)
       or (ns.isPlate(c) and InCombatLockdown())
     local v = GetCVar(c)
     if v ~= nil and v ~= "0" and not skip then
@@ -175,9 +206,11 @@ function ns.setStage(i)
   if i < 0 or i > 3 then i = 0 end
   local o = (i % 2 == 1) and "1" or "0"
   local p = (i >= 2) and "1" or "0"
-  ns.setCVar("UnitNameOwn", o)
-  ns.setCVar("UnitNameFriendlyPlayerName", p)
-  ns.setCVar("UnitNameEnemyPlayerName", p)
+  -- Settings the player keeps visible are left alone
+  local function set(c, v) if not ns.isKept(c) then ns.setCVar(c, v) end end
+  set("UnitNameOwn", o)
+  set("UnitNameFriendlyPlayerName", p)
+  set("UnitNameEnemyPlayerName", p)
 end
 
 -- Player nameplates follow the name cycle: always off.
@@ -187,7 +220,7 @@ function ns.hidePlayerPlates()
   if InCombatLockdown() then return end
   TUIHDB.saved = TUIHDB.saved or {}
   for _, c in ipairs({ "nameplateShowFriends", "nameplateShowEnemies" }) do
-    local skip = (c == "nameplateShowEnemies" and TUIHDB.keep.enemyplates)
+    local skip = (c == "nameplateShowEnemies" and TUIHDB.keep.enemyplates) or ns.isKept(c)
     if not skip then
       if TUIHDB.saved[c] == nil then TUIHDB.saved[c] = GetCVar(c) end
       ns.setCVar(c, "0")

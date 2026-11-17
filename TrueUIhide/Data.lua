@@ -14,7 +14,21 @@ ns.baseCVars = {
   "UnitNamePlayerGuild","UnitNamePlayerPVPTitle",
   "nameplateShowAll","nameplateShowEnemies","nameplateShowFriends",
   "nameplateShowFriendlyNPCs",
+  "ShowQuestUnitCircles",
 }
+-- Floating combat text: hidden with the UI unless kept (names that do not exist
+-- in the client are ignored)
+ns.combatTextCVars = {
+  "enableFloatingCombatText", "floatingCombatTextCombatDamage",
+  "floatingCombatTextCombatHealing", "floatingCombatTextCombatState",
+  "floatingCombatTextEnergyGains", "floatingCombatTextReactives",
+  "floatingCombatTextLowManaHealth", "floatingCombatTextHonorGains",
+  "floatingCombatTextRepChanges", "floatingCombatTextDamageReduction",
+  "floatingCombatTextPetMeleeDamage", "floatingCombatTextPetSpellDamage",
+  "floatingCombatTextCombatLogPeriodicSpells", "floatingCombatTextFriendlyHealers",
+  "floatingCombatTextAuras", "floatingCombatTextPeriodicEnergyGains",
+}
+for _, c in ipairs(ns.combatTextCVars) do ns.baseCVars[#ns.baseCVars + 1] = c end
 ns.prefixes = { "unitname", "nameplateshow", "softtarget" }
 
 local function chatNames()
@@ -51,47 +65,184 @@ local function actionBarFrames()
   return out
 end
 
--- Elements that can stay visible while the UI is hidden.
--- Entries without "frames" are handled through CVars.
+-- Frame names that exist more than once (party members, popups, ...)
+local function numbered(prefix, count, first)
+  local n = {}
+  for i = first or 1, count do n[#n + 1] = prefix .. i end
+  return n
+end
+
+local function partyFrames()
+  local n = numbered("PartyMemberFrame", 4)
+  for _, f in ipairs({ "PartyFrame", "CompactPartyFrame", "CompactRaidFrameContainer",
+                       "CompactRaidFrameManager" }) do n[#n + 1] = f end
+  return n
+end
+
+local function lootFrames()
+  local n = { "LootFrame", "GroupLootContainer", "MasterLooterFrame", "BonusRollFrame" }
+  for _, f in ipairs(numbered("GroupLootFrame", 4)) do n[#n + 1] = f end
+  return n
+end
+
+local function popupFrames()
+  local n = numbered("StaticPopup", 4)
+  for _, f in ipairs({ "ReadyCheckFrame", "PVPReadyDialog", "LFGDungeonReadyDialog",
+                       "LFGDungeonReadyPopup" }) do n[#n + 1] = f end
+  return n
+end
+
+-- Groups of the keep list: shown as sections in the settings panel
+ns.keepGroups = {
+  { key = "frames",  label = "Unit frames and minimap" },
+  { key = "names",   label = "Names and nameplates" },
+  { key = "windows", label = "Windows" },
+  { key = "bars",    label = "Bars, chat and text" },
+}
+
+-- Elements that can stay visible while the UI is hidden, in display order
+-- (grouped by `group`). `tip` is shown when hovering the checkbox.
+-- Entries without "frames" are handled through CVars (`cvars` or `match`).
 -- Entries with "requires" only work when that global exists (other addons).
--- "frames" can be a list of names or a function that returns names/frames.
+-- "frames" can be a list of names or a function that returns names/frames;
+-- names that do not exist in this client are skipped.
 ns.keepList = {
-  { key = "minimap", label = "Minimap",
+  -- Unit frames and minimap
+  { key = "minimap", group = "frames", label = "Minimap",
     alias = { "map", "m" },
     frames = { "MinimapCluster" } },
-  { key = "player", label = "Player frame",
+  { key = "player", group = "frames", label = "Player frame",
     alias = { "pf" },
     frames = { "PlayerFrame" } },
-  { key = "target", label = "Target frame",
+  { key = "target", group = "frames", label = "Target frame",
     alias = { "tf", "t" },
     frames = { "TargetFrame" } },
-  { key = "enemyplates", label = "Enemy nameplates",
+  { key = "pet", group = "frames", label = "Pet frame",
+    alias = { "petframe" },
+    frames = { "PetFrame" } },
+  { key = "party", group = "frames", label = "Party and raid frames",
+    alias = { "group", "raid" },
+    frames = partyFrames },
+  { key = "castbar", group = "frames", label = "Cast bar",
+    alias = { "cast", "cb" },
+    frames = { "CastingBarFrame", "PlayerCastingBarFrame" } },
+
+  -- Names and nameplates
+  { key = "enemyplates", group = "names", label = "Enemy nameplates",
     alias = { "plates", "nameplates", "np", "ep" } },
-  { key = "softtarget", label = "Soft-target highlight",
-    alias = { "soft", "st" } },
-  { key = "chat", label = "Chat",
+  { key = "friendlyplates", group = "names", label = "Friendly nameplates",
+    alias = { "fplates", "fnp" },
+    cvars = { "nameplateShowFriends", "nameplateShowFriendlyPlayers", "nameplateShowFriendlyNpcs" } },
+  { key = "friendlynames", group = "names", label = "Friendly player names",
+    alias = { "fnames", "fn" },
+    cvars = { "UnitNameFriendlyPlayerName" } },
+  { key = "npcnames", group = "names", label = "General NPC names",
+    alias = { "npc", "npcs" },
+    tip = "NPC, hostile NPC and non-combat creature names",
+    cvars = { "UnitNameNPC", "UnitNameNonCombatCreatureName", "UnitNameHostleNPC" } },
+  { key = "interactivenpcs", group = "names", label = "Interactive NPC names",
+    alias = { "inpc", "interactive" },
+    tip = "The game's setting for NPCs you can interact with. In practice this shows most friendly NPC names",
+    cvars = { "UnitNameInteractiveNPC" } },
+  { key = "specialnpcs", group = "names", label = "Special NPC names",
+    alias = { "snpc", "special" },
+    tip = "The game's setting for special friendly NPCs",
+    cvars = { "UnitNameFriendlySpecialNPCName" } },
+  { key = "friendlypets", group = "names", label = "Friendly pet names",
+    alias = { "fpets", "pets" },
+    tip = "Friendly pet, guardian, minion and totem names",
+    cvars = { "UnitNameFriendlyPetName", "UnitNameFriendlyGuardianName",
+              "UnitNameFriendlyMinionName", "UnitNameFriendlyTotemName" } },
+  { key = "enemypets", group = "names", label = "Enemy pet names",
+    alias = { "epets" },
+    tip = "Enemy pet, guardian, minion and totem names",
+    cvars = { "UnitNameEnemyPetName", "UnitNameEnemyGuardianName",
+              "UnitNameEnemyMinionName", "UnitNameEnemyTotemName" } },
+  { key = "guildtitles", group = "names", label = "Guild names and titles",
+    alias = { "guild", "titles" },
+    cvars = { "UnitNameGuildTitle", "UnitNamePlayerGuild", "UnitNamePlayerPVPTitle" } },
+  { key = "softtarget", group = "names", label = "Soft-target highlight",
+    alias = { "soft", "st" },
+    tip = "The game's soft-target settings (hidden together with the UI by default)",
+    match = function(c) return c:lower():sub(1, 10) == "softtarget" end },
+  { key = "questcircles", group = "names", label = "Quest circles",
+    alias = { "circles", "qc" },
+    tip = "The circles under quest objectives in the world",
+    cvars = { "ShowQuestUnitCircles" } },
+
+  -- Windows
+  { key = "npcdialogs", group = "windows", label = "NPC dialogs",
+    alias = { "dialogs", "gossip" },
+    tip = "Gossip and quest windows, vendors, trainers, flight maps, bank and similar",
+    frames = { "GossipFrame", "QuestFrame", "MerchantFrame", "ClassTrainerFrame",
+               "TrainerFrame", "TaxiFrame", "BankFrame", "ItemTextFrame",
+               "QuestLogFrame", "PetStableFrame", "TabardFrame" } },
+  { key = "bags", group = "windows", label = "Bags",
+    alias = { "bag", "inventory" },
+    tip = "Combined or separate bag windows (needed to sell items to a vendor)",
+    -- the bag windows themselves follow the game's fullscreen-frame hook (Frames.lua);
+    -- their container must be visible too, or the game lays the bags out wrongly
+    frames = { "ContainerFrameContainer" },
+    fullscreen = true },
+  { key = "loot", group = "windows", label = "Loot windows",
+    alias = { "looting" },
+    tip = "The loot window and the group loot roll windows",
+    frames = lootFrames },
+  { key = "popups", group = "windows", label = "Popups and invites",
+    alias = { "popup", "invites" },
+    tip = "Group invites, resurrect and summon requests, duels, ready checks and queue pops",
+    frames = popupFrames },
+  { key = "trademail", group = "windows", label = "Trade, mail, auctions",
+    alias = { "trade", "mail", "auction" },
+    tip = "Trade, mail, auction house and crafting windows",
+    frames = { "TradeFrame", "MailFrame", "OpenMailFrame", "AuctionFrame",
+               "AuctionHouseFrame", "CraftFrame", "TradeSkillFrame", "ProfessionsFrame" } },
+  { key = "charwindows", group = "windows", label = "Character windows",
+    alias = { "character", "spellbook", "talents", "worldmap" },
+    tip = "Character, spellbook, talents, friends and the world map",
+    frames = { "CharacterFrame", "SpellBookFrame", "PlayerSpellsFrame", "TalentFrame",
+               "PlayerTalentFrame", "FriendsFrame", "WorldMapFrame" } },
+
+  -- Bars, chat and text
+  { key = "chat", group = "bars", label = "Chat",
     alias = { "c" },
     frames = chatNames },
-  { key = "actionbars", label = "Action bars",
+  { key = "actionbars", group = "bars", label = "Action bars",
     alias = { "bars", "ab", "actionbar" },
+    tip = "All action bars, including the stance and pet bars",
     frames = actionBarFrames },
-  { key = "buffs", label = "Buffs and debuffs",
+  { key = "statusbars", group = "bars", label = "Experience and reputation",
+    alias = { "xp", "exp", "rep" },
+    frames = { "StatusTrackingBarManager", "MainStatusTrackingBarContainer",
+               "SecondaryStatusTrackingBarContainer", "MainMenuExpBar", "ReputationWatchBar" } },
+  { key = "buffs", group = "bars", label = "Buffs and debuffs",
     alias = { "b", "auras" },
     frames = { "BuffFrame", "TemporaryEnchantFrame" } },
-  { key = "quest", label = "Quest tracker",
+  { key = "quest", group = "bars", label = "Quest tracker",
     alias = { "q", "tracker" },
     frames = { "QuestWatchFrame", "ObjectiveTrackerFrame", "WatchFrame" } },
-  { key = "questie", label = "Questie tracker",
+  { key = "questie", group = "bars", label = "Questie tracker",
     alias = { "qt" },
     requires = "Questie",
     frames = { "Questie_BaseFrame" } },
-  { key = "castbar", label = "Cast bar",
-    alias = { "cast", "cb" },
-    frames = { "CastingBarFrame", "PlayerCastingBarFrame" } },
+  { key = "messages", group = "bars", label = "Error and zone text",
+    alias = { "errors", "zonetext" },
+    tip = "Error messages (\"Out of range\"), zone names and raid warnings",
+    frames = { "UIErrorsFrame", "ZoneTextFrame", "SubZoneTextFrame", "RaidWarningFrame",
+               "RaidBossEmoteFrame" } },
+  { key = "combattext", group = "bars", label = "Floating combat text",
+    alias = { "fct", "damage" },
+    tip = "Damage and healing numbers in the world. Hidden by default while the UI is hidden",
+    cvars = ns.combatTextCVars },
 }
 
 ns.keepByKey, ns.keepAliases = {}, {}
 for _, e in ipairs(ns.keepList) do
+  -- Elements that own game settings: `cvars` (names) or `match` (function)
+  if e.cvars then
+    e.cvarSet = {}
+    for _, c in ipairs(e.cvars) do e.cvarSet[c:lower()] = true end
+  end
   ns.keepByKey[e.key] = e
   ns.keepAliases[e.key] = e.key
   for _, a in ipairs(e.alias or {}) do ns.keepAliases[a] = e.key end
@@ -107,10 +258,9 @@ end
 ns.builtin = {
   explore    = { keep = { minimap = true, chat = true }, players = 0 },
   social     = { keep = { chat = true, player = true }, players = 3 },
-  immersive  = { keep = {}, players = 0, combat = true },
   screenshot = { keep = {}, players = 0 },
 }
-ns.presetOrder = { "normal", "explore", "social", "immersive", "screenshot" }
+ns.presetOrder = { "normal", "explore", "social", "screenshot" }
 
 -- Player name stages: 0 none, 1 own only, 2 others only, 3 own + others
 ns.stageNames = { [0] = "none", "own only", "others only", "own + others" }
