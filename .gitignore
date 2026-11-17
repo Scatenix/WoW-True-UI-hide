@@ -5,3 +5,6 @@
 
 # Release zips (built by the release workflow)
 *.zip
+
+# Local AI scratchpad
+AUDIT.md
