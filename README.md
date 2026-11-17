@@ -251,6 +251,7 @@ A release is built by GitHub Actions when you push a tag that starts with `v`.
 
 Notes:
 - Tags like `v0.2.0-beta1` become pre-releases.
+- The tag must be on the latest `main`. If you pushed more commits to `main` after creating the tag, the workflow stops before releasing: pull, delete the tag and create it again.
 - If the workflow fails (for example the lint step), fix the problem on `main`, then delete the tag and create it again:
   ```
   git tag -d v0.2.0

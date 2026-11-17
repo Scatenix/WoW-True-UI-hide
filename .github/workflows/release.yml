@@ -35,10 +35,23 @@ jobs:
             exit 1
           fi
 
-      - name: Set the version in the .toc
+      # The version change becomes a commit on top of the tagged commit. It is
+      # pushed to main (fast-forward only: the tag must be on the latest main)
+      # and the tag is moved to it, so tag and .toc version match.
+      - name: Set the version, commit it and move the tag
         run: |
           sed -i "s/^## Version:.*/## Version: $TAG/" TrueUIhide/TrueUIhide.toc
           grep -x "## Version: $TAG" TrueUIhide/TrueUIhide.toc
+          if git diff --quiet; then
+            echo "Version is already $TAG, the tag stays where it is."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Release $TAG"
+          git push origin HEAD:main
+          git tag -f "$TAG"
+          git push -f origin "refs/tags/$TAG"
 
       # Only the addon folder goes into the zip (no README, .gitignore, workflow
       # files). The license from the repo root is added to it.
@@ -52,24 +65,3 @@ jobs:
           FLAGS=""
           if [[ "$TAG" == *-* ]]; then FLAGS="--prerelease"; fi
           gh release create "$TAG" "TrueUIhide-$TAG.zip" --title "$TAG" --generate-notes $FLAGS
-
-      # Keep the version line on main in sync (the tagged commit keeps the old
-      # one). Done in a separate checkout of main, so the zip build above is untouched.
-      - name: Check out main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: main-branch
-
-      - name: Commit the version to main
-        working-directory: main-branch
-        run: |
-          sed -i "s/^## Version:.*/## Version: $TAG/" TrueUIhide/TrueUIhide.toc
-          if git diff --quiet; then
-            echo "Version on main is already $TAG."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Release $TAG"
-          git push origin main
