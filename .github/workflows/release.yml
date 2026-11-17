@@ -1,0 +1,75 @@
+name: Release
+
+# Push a tag like v1.2.0 to build a release. The tag becomes the addon version.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install luacheck
+        run: sudo apt-get update && sudo apt-get install -y lua-check
+      - name: Lint
+        run: luacheck TrueUIhide
+
+  release:
+    needs: lint
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag
+        run: |
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag '$TAG' does not look like v1.2.3 (or v1.2.3-beta1)."
+            exit 1
+          fi
+
+      - name: Set the version in the .toc
+        run: |
+          sed -i "s/^## Version:.*/## Version: $TAG/" TrueUIhide/TrueUIhide.toc
+          grep -x "## Version: $TAG" TrueUIhide/TrueUIhide.toc
+
+      # Only the addon folder goes into the zip (no README, .gitignore, workflow
+      # files). The license from the repo root is added to it.
+      - name: Build the zip
+        run: |
+          cp LICENSE TrueUIhide/LICENSE.txt
+          zip -r "TrueUIhide-$TAG.zip" TrueUIhide -x "*.DS_Store"
+
+      - name: Create the release
+        run: |
+          FLAGS=""
+          if [[ "$TAG" == *-* ]]; then FLAGS="--prerelease"; fi
+          gh release create "$TAG" "TrueUIhide-$TAG.zip" --title "$TAG" --generate-notes $FLAGS
+
+      # Keep the version line on main in sync (the tagged commit keeps the old
+      # one). Done in a separate checkout of main, so the zip build above is untouched.
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-branch
+
+      - name: Commit the version to main
+        working-directory: main-branch
+        run: |
+          sed -i "s/^## Version:.*/## Version: $TAG/" TrueUIhide/TrueUIhide.toc
+          if git diff --quiet; then
+            echo "Version on main is already $TAG."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Release $TAG"
+          git push origin main

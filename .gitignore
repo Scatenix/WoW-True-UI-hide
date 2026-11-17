@@ -1,0 +1,7 @@
+# macOS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Release zips (built by the release workflow)
+*.zip

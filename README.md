@@ -13,10 +13,9 @@ Second Disclaimer: This addon might permanently overwrite some of your settings,
 
 ## Getting started
 
-Todo: Add automatic release pipeline to bundle addon into a zip.
 Todo: think about publishing on some mod website
 
-Simply copy paste the `TrueUIhide` folder to your addons folder.
+Download the latest zip from the GitHub releases page and extract it, or copy the `TrueUIhide` folder from this repository,
 into: `<YOUR-WOW-INSTALL-DIR>/_forever_/Interface/AddOns/`
 
 If your game is running, make sure to run `/reload` in the in-game chat.
@@ -53,7 +52,7 @@ Presets: Not yet final, but change between some presets to leave things like the
 
 True UI Hide supports built in and custom presets.
 
-See the preset commands below (`/tuih preset ...`). The settings panel has one section for the built-in presets and one for your custom presets. Clicking a preset there only changes the settings (kept elements and the combat option) and does not hide the UI; the commands and keybinds apply the preset and hide the UI. In the custom section, the small x next to a preset deletes it (after a confirmation), and the name field with "Save current as preset" saves the current state under a new name. If the name already exists, the panel asks before overwriting it (the command does not).
+See the preset commands below (`/tuih preset ...`). The settings panel has one section for the built-in presets and one for your custom presets. Clicking a preset there only changes the settings (kept elements and the combat option) and does not hide the UI. The commands and keybinds apply the preset and hide the UI. In the custom section, the small x next to a preset deletes it (after a confirmation), and the name field with "Save current as preset" saves the current state under a new name. If the name already exists, the panel asks before overwriting it (the command does not).
 
 Feature not yet fully tested and may change in the future.
 
@@ -64,7 +63,21 @@ At the bottom of the settings panel, "Show soft-target settings (advanced)" list
 ## Reset vs. delete all data
 
 - **Reset** (`/tuih reset`, or the Reset button in the settings): back to normal. Shows the UI, restores your game settings and clears the kept elements. Your presets and options stay. Use it when the UI or the names look wrong.
-- **Delete all data** (`/tuih wipe`, or the button in the settings): the nuclear option. Restores your game settings first (only if the addon is in hide mode), then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves. Not possible in combat; nothing is deleted if the game settings cannot be restored.
+- **Delete all data** (`/tuih wipe`, or the button in the settings): the nuclear option. Restores your game settings first (only if the addon is in hide mode), then deletes everything the addon saved (presets, options, icon position) and starts fresh. Use it when the addon itself misbehaves. Not possible in combat. Nothing is deleted if the game settings cannot be restored.
+
+## Restart, crash and the red dot
+
+- **Restart or `/reload` while the UI is hidden:** your original game settings are put back when you log out or reload. If the game crashes, the addon restores them automatically at the next login (it tells you in chat).
+- **Red dot:** if you see a red dot slightly up and left of the screen center while the UI is visible, hide settings are still applied (for example after Escape showed the UI). Left-click restores everything, right-click hides the UI again.
+
+## Troubleshooting
+
+- **The UI or the names look wrong:** run `/tuih reset` (or the Reset button in the settings). It shows the UI, restores your game settings and clears the kept elements.
+- **Names or nameplates still look wrong afterwards:** use "Reset name settings" in the settings. It puts all name tag and nameplate settings back to the game's defaults.
+- **The addon itself misbehaves:** `/tuih wipe confirm` (or "Delete all data") restores your game settings and deletes everything the addon saved.
+- **After a crash:** just log in again. If the addon could not restore everything (for example in combat), it says so: run `/tuih on` after combat.
+- **A kept window does not show or looks off:** not every window of the game was tested. Turn the element off and report which one as an issue on GitHub. For your own windows, `/fstack` shows frame names.
+- **Soft-target highlight:** hidden together with the UI by default. Keep "Soft-target highlight" to leave it as it is. The game's soft-target settings can also be changed in the settings (advanced section).
 
 ## Available commands
 
@@ -91,7 +104,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 
 ### Elements kept visible: `/tuih toggle <element>`
 
-`/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements. `/tuih toggle all` keeps every element and every window of your own list at once, or stops keeping all of them when everything is already kept (also the "Toggle all" button in the settings). It does not touch the UI itself; `/tuih reset` is the full way back to normal.
+`/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements. `/tuih toggle all` keeps every element and every window of your own list at once, or stops keeping all of them when everything is already kept (also the "Toggle all" button in the settings). It does not touch the UI itself. `/tuih reset` is the full way back to normal.
 
 Keeping an element only leaves it as it is. If it is already turned off in the game (for example friendly nameplates), True UI Hide does not turn it on. The exception is the player names choice (dropdown in the settings, `/tuih players`): it is actually set while the UI is hidden, even if those names were off.
 
@@ -147,7 +160,7 @@ Any window that is not in the list above (also windows of other addons) can be k
 | `/tuih keepframe remove <name>` | Remove it from your list |
 | `/tuih keepframe` | List your windows |
 
-Aliases: `kf`, `frame`. The same is available in the settings ("Your own windows") and as a keybind (hover a window, press the key). The window has to be open when you pick it. The list of windows is saved with your settings. Whether each one is kept is part of the keep settings, so presets (built-in ones keep none) and "Reset" switch them on or off, while the list itself stays. "Delete all data" removes it. The list holds up to 100 windows; the limit can be raised in the settings ("Limits"). You can also find frame names yourself with the game's `/fstack` command.
+Aliases: `kf`, `frame`. The same is available in the settings ("Your own windows") and as a keybind (hover a window, press the key). The window has to be open when you pick it. The list of windows is saved with your settings. Whether each one is kept is part of the keep settings, so presets (built-in ones keep none) and "Reset" switch them on or off, while the list itself stays. "Delete all data" removes it. The list holds up to 100 windows. The limit can be raised in the settings ("Limits"). You can also find frame names yourself with the game's `/fstack` command.
 
 ### Presets: `/tuih preset ...`
 
@@ -221,13 +234,12 @@ And this is also not a promise.
 - change some commands, because its confusing
 - Improve readme (descripe commands like diff, add troubleshooting, document quirks, add pictures)
 - Add/Change/Remove keybinds
-- Release Pipeline
 - Maybe publish addon somewhere
 - Review the save system with the DB and check what all of the stuff in `<YOUR-WOW-INSTALL-DIR>/_forever_/WTF/Account/<ACCOUNT_ID>/SavedVariables/TrueUIhide.lua` is
 - What happens if the game is restarted with UI hidden?
 
 ## Legal
 
-MIT License (exists within the Addon directory)
+MIT License (see `LICENSE` in the repository root. Release zips contain it as `LICENSE.txt` inside the addon folder).
 
-Please give me credit if modifying and or redistributing :)
+The license only requires keeping the license notice. On top of that I would appreciate credit if you modify or redistribute this addon :) This is a courtesy request, not a license condition.
