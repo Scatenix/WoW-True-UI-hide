@@ -36,14 +36,20 @@
   <Binding name="TUIH_PRESET_BACK_CUSTOM" category="True UI Hide">
     TUIH_PresetCycle("custom", -1)
   </Binding>
-  <Binding name="TUIH_PRESET_NORMAL" category="True UI Hide">
-    TUIH_Preset("normal")
-  </Binding>
   <Binding name="TUIH_PRESET_EXPLORE" category="True UI Hide">
     TUIH_Preset("explore")
   </Binding>
+  <Binding name="TUIH_PRESET_QUESTING" category="True UI Hide">
+    TUIH_Preset("questing")
+  </Binding>
   <Binding name="TUIH_PRESET_SOCIAL" category="True UI Hide">
     TUIH_Preset("social")
+  </Binding>
+  <Binding name="TUIH_PRESET_ROLEPLAY" category="True UI Hide">
+    TUIH_Preset("roleplay")
+  </Binding>
+  <Binding name="TUIH_PRESET_MINIMAL" category="True UI Hide">
+    TUIH_Preset("minimal")
   </Binding>
   <Binding name="TUIH_PRESET_SCREENSHOT" category="True UI Hide">
     TUIH_Preset("screenshot")

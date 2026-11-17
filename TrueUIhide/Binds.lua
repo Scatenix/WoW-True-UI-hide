@@ -13,6 +13,7 @@ BINDING_NAME_TUIH_PEEK = "Peek: show UI while held"
 BINDING_NAME_TUIH_PEEK_HIDE = "Peek: hide UI while held"
 BINDING_NAME_TUIH_SHOT = "Screenshot without UI"
 BINDING_NAME_TUIH_MOUSELOOK = "Mouselook (right-click style)"
+BINDING_NAME_TUIH_RESET = "Reset (back to normal)"
 BINDING_NAME_TUIH_CONFIG = "Open options"
 BINDING_NAME_TUIH_KEEPFRAME = "Keep the window under the mouse visible"
 BINDING_NAME_TUIH_HELP = "Show help links"
@@ -22,9 +23,11 @@ BINDING_NAME_TUIH_PRESET_CYCLE_CUSTOM = "Cycle through custom presets"
 BINDING_NAME_TUIH_PRESET_BACK = "Cycle backwards through all presets"
 BINDING_NAME_TUIH_PRESET_BACK_BUILTIN = "Cycle backwards through built-in presets"
 BINDING_NAME_TUIH_PRESET_BACK_CUSTOM = "Cycle backwards through custom presets"
-BINDING_NAME_TUIH_PRESET_NORMAL = "Preset: normal"
 BINDING_NAME_TUIH_PRESET_EXPLORE = "Preset: explore"
+BINDING_NAME_TUIH_PRESET_QUESTING = "Preset: questing"
 BINDING_NAME_TUIH_PRESET_SOCIAL = "Preset: social"
+BINDING_NAME_TUIH_PRESET_ROLEPLAY = "Preset: roleplay"
+BINDING_NAME_TUIH_PRESET_MINIMAL = "Preset: minimal"
 BINDING_NAME_TUIH_PRESET_SCREENSHOT = "Preset: screenshot"
 
 -- One "Toggle: ..." binding per keepable element
@@ -39,6 +42,7 @@ function TUIH_Peek(keystate) ns.peekShow(keystate) end
 function TUIH_PeekHide(keystate) ns.peekHide(keystate) end
 function TUIH_Shot() ns.shot() end
 function TUIH_Mouselook() ns.toggleMouselook() end
+function TUIH_Reset() ns.reset() end
 function TUIH_Config() ns.openConfig() end
 function TUIH_Help() ns.showHelp() end
 function TUIH_PresetCycle(kind, step) ns.cyclePreset(kind, step) end

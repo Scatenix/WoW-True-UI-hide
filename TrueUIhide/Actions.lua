@@ -23,6 +23,28 @@ function ns.setKeep(key, value)
   ns.syncPlates()
 end
 
+-- Turns every element and every own window on, or all of them off when
+-- everything is already on. Presets, other settings and the UI stay as they are.
+function ns.toggleKeepAll()
+  local keys, all = {}, true
+  for _, e in ipairs(ns.keepList) do
+    if ns.available(e) then
+      keys[#keys + 1] = e.key
+      if not TUIHDB.keep[e.key] then all = false end
+    end
+  end
+  for _, name in ipairs(ns.customFrameList()) do
+    keys[#keys + 1] = "frame:" .. name
+    if not TUIHDB.keep["frame:" .. name] then all = false end
+  end
+  for _, k in ipairs(keys) do TUIHDB.keep[k] = (not all) or nil end
+  ns.state.presetCurrent = nil
+  ns.sync()
+  ns.syncPlates()
+  ns.info("Keep everything: " .. (all and "off" or "on"), "toggle")
+  if ns.refreshOptions then ns.refreshOptions() end
+end
+
 function ns.toggleKeep(key)
   local e = ns.keepByKey[key]
   if not e then return end

@@ -2,7 +2,7 @@
 local _, ns = ...
 
 function ns.resetState()
-  ns.state.presetCurrent = "normal"
+  ns.state.presetCurrent = nil
   TUIHDB.keep = {}
   TUIHDB.combatShow = ns.COMBAT_SHOW_DEFAULT
   ns.userSetAll(true)
@@ -12,11 +12,6 @@ end
 -- silent: the caller reports the result itself (preset cycling)
 function ns.applyPreset(name, silent)
   name = (name or ""):lower()
-  if name == "normal" then
-    ns.resetState()
-    if not silent then ns.info("Preset: normal", "preset") end
-    return true
-  end
   local p = ns.builtin[name] or TUIHDB.presets[name]
   if not p then return false end
   TUIHDB.keep = ns.copy(p.keep)
@@ -67,8 +62,7 @@ end
 
 -- Apply the next preset of the list (see presetList), wrapping around. The
 -- position is the preset applied last. If it is not in this list (or was
--- deleted), "all" and "builtin" continue after "normal", "custom" starts
--- with its first preset.
+-- deleted), forwards starts with the first preset, backwards with the last.
 function ns.cyclePreset(kind, step)
   step = step or 1  -- 1 = next, -1 = previous
   local list = ns.presetList(kind)
@@ -83,10 +77,8 @@ function ns.cyclePreset(kind, step)
   local nextPos
   if pos then
     nextPos = (pos - 1 + step) % #list + 1
-  elseif kind == "custom" then
-    nextPos = step > 0 and 1 or #list
   else
-    nextPos = (1 - 1 + step) % #list + 1  -- as if "normal" were the current one
+    nextPos = step > 0 and 1 or #list
   end
   local name = list[nextPos]
   if ns.applyPreset(name, true) and TUIHDB.cycleMessage then
@@ -136,7 +128,7 @@ function ns.wipeAll()
 end
 
 -- Names that cannot be used for custom presets: they are subcommands
-local RESERVED_NAMES = { save = true, delete = true, list = true, next = true, cycle = true, prev = true, previous = true, normal = true }
+local RESERVED_NAMES = { save = true, delete = true, list = true, next = true, cycle = true, prev = true, previous = true }
 local MAX_NAME_LENGTH = 24
 
 -- /tuih preset [<name> | save <name> | delete <name> | list]

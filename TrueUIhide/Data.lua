@@ -254,13 +254,33 @@ function ns.available(e)
   return _G[e.requires] ~= nil
 end
 
--- Built-in presets (all of them hide the UI; "normal" is a reset)
+-- Built-in presets (all of them hide the UI). "Back to normal" is /tuih reset.
+-- Kept elements only stay as they are; player names: 0 none, 1 own, 2 others, 3 both.
 ns.builtin = {
-  explore    = { keep = { minimap = true, chat = true }, players = 0 },
-  social     = { keep = { chat = true, player = true }, players = 3 },
-  screenshot = { keep = {}, players = 0 },
+  -- Walking around: the minimap, plus what you need to loot and trade
+  explore = { players = 0, keep = {
+    minimap = true, loot = true, popups = true, npcdialogs = true, bags = true } },
+  -- Questing: everything to find, accept and hand in quests
+  questing = { players = 0, keep = {
+    minimap = true, chat = true, quest = true, questcircles = true, interactivenpcs = true,
+    npcdialogs = true, bags = true, loot = true, popups = true, castbar = true,
+    messages = true, trademail = true, charwindows = true } },
+  -- Being around other players
+  social = { players = 3, keep = {
+    chat = true, player = true, party = true, friendlynames = true, guildtitles = true,
+    popups = true, trademail = true, npcdialogs = true } },
+  -- Role-playing: names, dialogs and chat, nothing else
+  roleplay = { players = 2, keep = {
+    chat = true, friendlynames = true, guildtitles = true, npcnames = true, interactivenpcs = true,
+    specialnpcs = true, npcdialogs = true, popups = true, loot = true } },
+  -- Minimal combat HUD: your frames, bars and enemy nameplates
+  minimal = { players = 0, keep = {
+    player = true, target = true, castbar = true, actionbars = true, buffs = true,
+    party = true, enemyplates = true, messages = true, popups = true, loot = true } },
+  -- Nothing at all
+  screenshot = { players = 0, keep = {} },
 }
-ns.presetOrder = { "normal", "explore", "social", "screenshot" }
+ns.presetOrder = { "explore", "questing", "social", "roleplay", "minimal", "screenshot" }
 
 -- Player name stages: 0 none, 1 own only, 2 others only, 3 own + others
 ns.stageNames = { [0] = "none", "own only", "others only", "own + others" }

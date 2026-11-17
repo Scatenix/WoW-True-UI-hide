@@ -91,7 +91,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 
 ### Elements kept visible: `/tuih toggle <element>`
 
-`/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements.
+`/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements. `/tuih toggle all` keeps every element and every window of your own list at once, or stops keeping all of them when everything is already kept (also the "Toggle all" button in the settings). It does not touch the UI itself; `/tuih reset` is the full way back to normal.
 
 Keeping an element only leaves it as it is. If it is already turned off in the game (for example friendly nameplates), True UI Hide does not turn it on. The exception is the player names choice (dropdown in the settings, `/tuih players`): it is actually set while the UI is hidden, even if those names were off.
 
@@ -162,9 +162,18 @@ Aliases: `kf`, `frame`. The same is available in the settings ("Your own windows
 | `/tuih preset save <name>` | Save the current state as your own preset |
 | `/tuih preset delete <name>` | Delete one of your presets |
 
-Built-in presets: `normal` (reset everything), `explore` (keep minimap and chat), `social` (keep chat and player frame, show all player names), `screenshot` (hide everything, also in combat).
+Built-in presets (each one hides the UI and keeps only what is listed):
 
-Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `next`, `prev`, `previous`, `cycle`, `normal` and the built-in names are reserved.
+| Preset | Keeps | Player names |
+|---|---|---|
+| `explore` | Minimap, loot windows, popups, NPC dialogs, bags | none |
+| `questing` | Minimap, chat, quest tracker, quest circles, interactive NPC names, NPC dialogs, bags, loot windows, popups, cast bar, error text, trade/mail/auctions, character windows | none |
+| `social` | Chat, player frame, party and raid frames, friendly player names, guild names and titles, popups, trade/mail/auctions, NPC dialogs | own and others |
+| `roleplay` | Chat, friendly player names, guild names and titles, all three NPC name elements, NPC dialogs, popups, loot windows | others only |
+| `minimal` | Player and target frame, cast bar, action bars, buffs, party and raid frames, enemy nameplates, error text, popups, loot windows | none |
+| `screenshot` | Nothing | none |
+
+Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `next`, `prev`, `previous`, `cycle` and the built-in names are reserved.
 
 ### Settings: `/tuih set ...`
 
@@ -190,10 +199,11 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 | Cycle player names | Same as `/tuih players` |
 | Screenshot without UI | Same as `/tuih shot` |
 | Mouselook (right-click style) | Same as `/tuih mouselook` |
+| Reset (back to normal) | Same as `/tuih reset` |
 | Cycle through all presets | Same as `/tuih preset next` (also shows which preset was applied) |
 | Cycle through built-in presets / custom presets | Same as `/tuih preset next builtin` / `custom` |
 | Cycle backwards through all / built-in / custom presets | Same as `/tuih preset prev [builtin\|custom]` |
-| Preset: normal / explore / social / screenshot | Same as `/tuih preset <name>` |
+| Preset: explore / questing / social / roleplay / minimal / screenshot | Same as `/tuih preset <name>` |
 | Toggle: one per element in the table above | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
 | Keep the window under the mouse visible | Same as `/tuih keepframe pick`, without the wait |
 | Open options | Same as `/tuih config` |

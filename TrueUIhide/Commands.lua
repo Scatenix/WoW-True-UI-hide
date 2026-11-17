@@ -20,7 +20,11 @@ local function toggleCommand(arg)
     for _, e in ipairs(ns.keepList) do
       if ns.available(e) then names[#names + 1] = e.key end
     end
-    ns.log("Usage: /tuih toggle <element>. Elements: " .. table.concat(names, ", "))
+    ns.log("Usage: /tuih toggle <element>. Elements: " .. table.concat(names, ", ") .. ". /tuih toggle all turns all of them on, or off if all are on.")
+    return
+  end
+  if word == "all" then
+    ns.toggleKeepAll()
     return
   end
   local key = ns.keepAliases[word]

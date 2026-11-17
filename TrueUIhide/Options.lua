@@ -96,7 +96,21 @@ local function buildConfig()
   end
 
   heading(-52, "Keep visible while the UI is hidden:")
-  addNote(-70, "Keeping an element only leaves it as it is. If it is already turned off in the game, True UI Hide does not turn it on. The player names choice below is the exception: it is actually turned on, even if it was off.")
+  local clearBtn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
+  clearBtn:SetSize(120, 22)
+  clearBtn:SetPoint("TOPLEFT", 420, -48)
+  clearBtn:SetText("Toggle all")
+  clearBtn:SetScript("OnClick", function()
+    ns.toggleKeepAll()
+    refreshAll()
+  end)
+  clearBtn:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddLine("Keeps every element below (and your own windows), or none of them if all are kept already. Does not change the UI.", 1, 1, 1, true)
+    GameTooltip:Show()
+  end)
+  clearBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  addNote(-70, "Keeping an element only leaves it as it is: if it is already turned off in the game, True UI Hide does not turn it on. Everything you do not keep is hidden or turned off while the UI is hidden.")
   -- Section title with a thin line below it
   local function groupHeader(y, text)
     local fs = host:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -135,7 +149,7 @@ local function buildConfig()
     refreshers[#refreshers + 1] = function() cb:SetChecked(TUIHDB.keep[e.key]) end
   end
 
-  local y = -114
+  local y = -112
   for _, g in ipairs(ns.keepGroups) do
     local items = {}
     for _, e in ipairs(ns.keepList) do
@@ -292,12 +306,25 @@ local function buildConfig()
   refreshers[#refreshers + 1] = function()
     UIDropDownMenu_SetText(nameDD, nameChoices[TUIHDB.playerNames or 0])
   end
-  y = y - 84
+  addNote(y - 76, "This is the exception to the list above: the names you choose here are actually turned on while the UI is hidden, even if they were off in the game.", false, true)
+  y = y - 114
 
   local py = y - 14
   heading(py, "Built-in presets:")
   local function capitalize(name)
     return name:sub(1, 1):upper() .. name:sub(2)
+  end
+  -- Labels of what a preset keeps, for its tooltip
+  local function keptText(name)
+    local p = ns.builtin[name] or TUIHDB.presets[name]
+    if not p or not p.keep then return nil end
+    local labels = {}
+    for k in pairs(p.keep) do
+      local e = ns.keepByKey[k]
+      labels[#labels + 1] = e and e.label or (k:match("^frame:(.+)") or k)
+    end
+    table.sort(labels)
+    return #labels > 0 and table.concat(labels, ", ") or "nothing"
   end
   local function presetButton(x, by, name)
     local b = CreateFrame("Button", nil, mid, "UIPanelButtonTemplate")
@@ -311,18 +338,17 @@ local function buildConfig()
     end)
     b:SetScript("OnEnter", function(self)
       GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-      GameTooltip:AddLine(self.preset)
+      GameTooltip:AddLine(self.preset, 1, 1, 1)
+      local kept = keptText(self.preset)
+      if kept then GameTooltip:AddLine("Keeps: " .. kept, 0.8, 0.8, 0.8, true) end
+      GameTooltip:AddLine("Only changes the settings. Use the keybind or /tuih preset to apply it.", 0.6, 0.6, 0.6, true)
       GameTooltip:Show()
     end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     return b
   end
-  -- "normal" is not listed here: in the panel it would change nothing (the
-  -- Reset button below and /tuih on cover "back to normal")
   local panelPresets = {}
-  for _, name in ipairs(ns.presetOrder) do
-    if name ~= "normal" then panelPresets[#panelPresets + 1] = name end
-  end
+  for _, name in ipairs(ns.presetOrder) do panelPresets[#panelPresets + 1] = name end
   for i, name in ipairs(panelPresets) do
     presetButton(20 + ((i - 1) % 3) * 130, py - 24 - math.floor((i - 1) / 3) * 30, name)
   end

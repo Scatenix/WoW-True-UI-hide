@@ -58,7 +58,8 @@ ns.helpGroups = {
 do
   local rows = ns.helpGroups[2].rows
   rows[1] = { "/tuih toggle <element>  (keep, k)", "keep it visible, or not" }
-  rows[2] = { "/tuih keepframe  (kf)", "pick | add | remove | toggle <name>: your own windows" }
+  rows[2] = { "/tuih toggle all", "keep everything, or nothing if all are kept" }
+  rows[3] = { "/tuih keepframe  (kf)", "pick | add | remove | toggle <name>: your own windows" }
   for _, e in ipairs(ns.keepList) do
     local aliases = (e.alias and #e.alias > 0) and ("  (" .. table.concat(e.alias, ", ") .. ")") or ""
     rows[#rows + 1] = {
