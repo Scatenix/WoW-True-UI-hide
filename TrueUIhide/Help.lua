@@ -28,8 +28,22 @@ ns.helpGroups = {
     rows = {},  -- filled below from the element list
   },
   {
+    key = "frames", label = "Own windows",
+    title = "Keep any window visible by its frame name",
+    rows = {
+      { "/tuih keepframe pick  (kf)", "point at a window within 3 s: it is added" },
+      { "/tuih keepframe add <name>", "add a frame by name (case-sensitive)" },
+      { "/tuih keepframe remove <name>", "remove it from your list" },
+      { "/tuih keepframe toggle <name>", "keep it or not (saved per preset)" },
+      { "/tuih keepframe", "list your windows" },
+      { "Keybind", "\"Keep the window under the mouse visible\": hover, press" },
+      { "Settings", "\"Your own windows\": checkbox per window, Pick button" },
+    },
+  },
+  {
     key = "presets", label = "Presets",
     rows = {
+      { "Built-in", "PRESETLIST" },
       { "/tuih preset <name>", "apply a built-in or custom preset" },
       { "/tuih preset next  (cycle)", "apply the next preset (built-in and custom)" },
       { "/tuih preset next builtin", "apply the next built-in preset" },
@@ -59,7 +73,6 @@ do
   local rows = ns.helpGroups[2].rows
   rows[1] = { "/tuih toggle <element>  (keep, k)", "keep it visible, or not" }
   rows[2] = { "/tuih toggle all", "keep everything, or nothing if all are kept" }
-  rows[3] = { "/tuih keepframe  (kf)", "pick | add | remove | toggle <name>: your own windows" }
   for _, e in ipairs(ns.keepList) do
     local aliases = (e.alias and #e.alias > 0) and ("  (" .. table.concat(e.alias, ", ") .. ")") or ""
     rows[#rows + 1] = {
@@ -67,6 +80,11 @@ do
       e.label:lower() .. (e.requires and (" (if " .. e.requires .. " is installed)") or ""),
     }
   end
+end
+
+-- The built-in preset names come from the data, so this list cannot go stale
+for _, g in ipairs(ns.helpGroups) do
+  if g.key == "presets" then g.rows[1][2] = table.concat(ns.presetOrder, ", ") end
 end
 
 local groupByLinkKey = {}
@@ -95,6 +113,7 @@ local function showGeneral()
   GameTooltip:AddLine(" ")
   GameTooltip:AddDoubleLine("/tuih", "toggle all UI", 1, 0.82, 0, 0.8, 0.8, 0.8)
   GameTooltip:AddDoubleLine("/tuih on | off", "show or hide all UI", 1, 0.82, 0, 0.8, 0.8, 0.8)
+  GameTooltip:AddDoubleLine("/tuih config", "open the settings", 1, 0.82, 0, 0.8, 0.8, 0.8)
   GameTooltip:AddDoubleLine("/tuih help", "show more available commands", 1, 0.82, 0, 0.8, 0.8, 0.8)
   GameTooltip:AddLine(" ")
   GameTooltip:AddLine("Keybinds for TUIH are available", 1, 1, 1)
