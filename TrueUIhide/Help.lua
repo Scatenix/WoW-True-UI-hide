@@ -11,7 +11,8 @@ ns.helpGroups = {
     rows = {
       { "/tuih", "toggle all UI" },
       { "/tuih on | off", "show or hide all UI" },
-      { "/tuih players  (p)", "cycle player names (and hide player plates)" },
+      { "/tuih players  (p)", "cycle own / friendly player names" },
+      { "/tuih enemies  (e)", "cycle enemy player / hostile mob names" },
       { "/tuih shot  (ss)", "screenshot without UI" },
       { "/tuih mouselook  (look, ml)", "enter or leave mouselook (right-click style)" },
       { "/tuih status  (s)", "show current settings" },
@@ -61,7 +62,7 @@ ns.helpGroups = {
       { "/tuih set mouselook", "enter mouselook whenever the UI is hidden" },
       { "/tuih set icon", "show or hide the minimap icon" },
       { "/tuih set shotcombat", "show the UI if combat starts during a screenshot" },
-      { "/tuih set cyclemessage", "chat message when cycling presets" },
+      { "/tuih set messages  (toast)", "on-screen messages when toggling or cycling" },
       { "/tuih set dot  (indicator)", "show or hide the red warning dot" },
       { "/tuih set verbose  (chat)", "show True UI Hide events in chat (for debugging)" },
     },

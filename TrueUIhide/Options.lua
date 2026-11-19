@@ -281,32 +281,39 @@ local function buildConfig()
   host = mid
   y = 0
 
-  -- Player names while the UI is hidden (a dropdown, like the game's own menu)
-  local nameChoices = { [0] = "No player names", "Own name only", "Other players only", "Own and other players" }
-  groupHeader(y, "Player names")
-  local nameLabel = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  nameLabel:SetPoint("TOPLEFT", 20, y - 26)
-  nameLabel:SetText("Show these player names while the UI is hidden:")
-  local nameDD = CreateFrame("Frame", "TUIHPlayerNamesDropDown", host, "UIDropDownMenuTemplate")
-  nameDD:SetPoint("TOPLEFT", 4, y - 42)
-  UIDropDownMenu_SetWidth(nameDD, 200)
-  UIDropDownMenu_Initialize(nameDD, function()
-    for i = 0, 3 do
-      local info = UIDropDownMenu_CreateInfo()
-      info.text = nameChoices[i]
-      info.checked = (TUIHDB.playerNames or 0) == i
-      info.func = function()
-        ns.setPlayerNames(i)
-        UIDropDownMenu_SetText(nameDD, nameChoices[i])
+  -- Names while the UI is hidden: two dropdowns, like the game's own menu
+  groupHeader(y, "Names while the UI is hidden")
+  local function nameDropdown(frameName, ly, label, choices, key, setter)
+    local fs = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    fs:SetPoint("TOPLEFT", 20, ly)
+    fs:SetText(label)
+    local dd = CreateFrame("Frame", frameName, host, "UIDropDownMenuTemplate")
+    dd:SetPoint("TOPLEFT", 4, ly - 16)
+    UIDropDownMenu_SetWidth(dd, 260)
+    UIDropDownMenu_Initialize(dd, function()
+      for i = 0, 3 do
+        local info = UIDropDownMenu_CreateInfo()
+        info.text = choices[i]
+        info.checked = (TUIHDB[key] or 0) == i
+        info.func = function()
+          setter(i)
+          UIDropDownMenu_SetText(dd, choices[i])
+        end
+        UIDropDownMenu_AddButton(info)
       end
-      UIDropDownMenu_AddButton(info)
+    end)
+    refreshers[#refreshers + 1] = function()
+      UIDropDownMenu_SetText(dd, choices[TUIHDB[key] or 0])
     end
-  end)
-  refreshers[#refreshers + 1] = function()
-    UIDropDownMenu_SetText(nameDD, nameChoices[TUIHDB.playerNames or 0])
   end
-  addNote(y - 76, "This is the exception to the list above: the names you choose here are actually turned on while the UI is hidden, even if they were off in the game.", false, true)
-  y = y - 114
+  nameDropdown("TUIHPlayerNamesDropDown", y - 26, "Own and friendly players:",
+    { [0] = "No names", "Own name only", "Friendly players only", "Own name and friendly players" },
+    "playerNames", ns.setPlayerNames)
+  nameDropdown("TUIHEnemyNamesDropDown", y - 82, "Enemies:",
+    { [0] = "No names", "Enemy players only", "Hostile mobs only", "Enemy players and hostile mobs" },
+    "enemyNames", ns.setEnemyNames)
+  addNote(y - 134, "This is the exception to the list above: the names you choose here are actually turned on while the UI is hidden, even if they were off in the game.", false, true)
+  y = y - 172
 
   local py = y - 14
   heading(py, "Built-in presets:")
@@ -417,31 +424,34 @@ local function buildConfig()
     function() return TUIHDB.indicator end,
     function(v) TUIHDB.indicator = v; ns.updateIndicator() end)
 
-  addCheck(y - 228, "Show a chat message when cycling presets with the keybind",
-    function() return TUIHDB.cycleMessage end,
-    function(v) TUIHDB.cycleMessage = v end)
+  addCheck(y - 228, "Show on-screen messages when toggling or cycling",
+    function() return TUIHDB.toasts end,
+    function(v) TUIHDB.toasts = v; if not v then ns.clearToast() end end)
+  addSlider(y - 282, "Message duration", ns.TOAST_SECONDS_MIN, ns.TOAST_SECONDS_MAX, 0.5,
+    function() return TUIHDB.toastSeconds or ns.TOAST_SECONDS_DEFAULT end,
+    function(v) TUIHDB.toastSeconds = v end)
 
-  heading(y - 272, "Screenshot:")
-  addCheck(y - 294, "Show the UI if combat starts during a screenshot",
+  heading(y - 332, "Screenshot:")
+  addCheck(y - 354, "Show the UI if combat starts during a screenshot",
     function() return TUIHDB.shotCombatShow end,
     function(v) TUIHDB.shotCombatShow = v end)
-  addNote(y - 320, ns.SHOT_COMBAT_WARNING, true)
-  addSlider(y - 374, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addNote(y - 380, ns.SHOT_COMBAT_WARNING, true)
+  addSlider(y - 434, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotBefore end,
     function(v) TUIHDB.shotBefore = v end)
-  addSlider(y - 422, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addSlider(y - 482, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotAfter end,
     function(v) TUIHDB.shotAfter = v end)
-  addNote(y - 444, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
+  addNote(y - 504, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
 
   -- Limits: only a safety net against runaway lists
-  heading(y - 484, "Limits:")
+  heading(y - 544, "Limits:")
   local limitLabel = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  limitLabel:SetPoint("TOPLEFT", 44, y - 510)
+  limitLabel:SetPoint("TOPLEFT", 44, y - 570)
   limitLabel:SetText("Max windows in \"Your own windows\":")
   local limitBox = CreateFrame("EditBox", "TUIHCustomLimit", host, "InputBoxTemplate")
   limitBox:SetSize(60, 20)
-  limitBox:SetPoint("TOPLEFT", 280, y - 508)
+  limitBox:SetPoint("TOPLEFT", 280, y - 568)
   limitBox:SetAutoFocus(false)
   limitBox:SetNumeric(true)
   limitBox:SetMaxLetters(5)
@@ -460,9 +470,9 @@ local function buildConfig()
     self:ClearFocus()
   end)
   refreshers[#refreshers + 1] = function() limitBox:SetText(tostring(ns.customLimit())) end
-  addNote(y - 536, "This is just a small limit so the list cannot grow by accident. Raise it if you really need more windows (default " .. ns.DEFAULT_CUSTOM_LIMIT .. ").", false, true)
+  addNote(y - 596, "This is just a small limit so the list cannot grow by accident. Raise it if you really need more windows (default " .. ns.DEFAULT_CUSTOM_LIMIT .. ").", false, true)
 
-  local TAIL_MAINT = -590  -- below the Limits section
+  local TAIL_MAINT = -650  -- below the Limits section
   local mHeading = heading(0, "If something is wrong:")
   local function addMaintButton(x, text, onClick)
     local b = CreateFrame("Button", nil, host, "UIPanelButtonTemplate")

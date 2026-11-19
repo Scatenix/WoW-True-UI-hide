@@ -181,6 +181,83 @@ function ns.pickFrameLater(seconds)
   C_Timer.After(seconds, ns.pickFrame)
 end
 
+-- On-screen message: the game's yellow center text (the same frame that shows
+-- "Screenshot saved"). The frame belongs to the hidden UI, so while a message is
+-- running it is moved under the stand-in parent like any kept frame.
+local toastUntil = 0
+local normalTimeVisible  -- the text frame's own hold time, while ours is set
+local fallbackText
+
+local function toastActive()
+  return GetTime() < toastUntil
+end
+
+-- The text frame's usual hold time for its other messages goes back
+local function restoreHoldTime()
+  if normalTimeVisible and UIErrorsFrame and UIErrorsFrame.SetTimeVisible then
+    UIErrorsFrame:SetTimeVisible(normalTimeVisible)
+  end
+  normalTimeVisible = nil
+end
+
+local function showFallback(text, seconds)
+  if not fallbackText then
+    local holder = CreateFrame("Frame", nil, WorldFrame)
+    holder:SetAllPoints(WorldFrame)
+    fallbackText = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+    fallbackText:SetPoint("TOP", holder, "TOP", 0, -150)
+    fallbackText:SetTextColor(1, 1, 0)
+  end
+  local mine = text
+  fallbackText:SetText(mine)
+  fallbackText:Show()
+  C_Timer.After(seconds, function()
+    if fallbackText:GetText() == mine then fallbackText:Hide() end
+  end)
+end
+
+-- Remove a running on-screen message right now (screenshot start, setting off)
+function ns.clearToast()
+  toastUntil = 0
+  if UIErrorsFrame and UIErrorsFrame.Clear then UIErrorsFrame:Clear() end
+  restoreHoldTime()
+  if fallbackText then fallbackText:Hide() end
+  if ns.sync then ns.sync() end  -- puts the text frame back
+end
+
+function ns.toast(text)
+  if not (TUIHDB and TUIHDB.toasts) then return end
+  if ns.state.shotMode or ns.state.shotBusy then return end  -- never into a screenshot
+  local seconds = TUIHDB.toastSeconds or ns.TOAST_SECONDS_DEFAULT
+  local f = UIErrorsFrame
+  if f and f.AddMessage then
+    -- Hold time of the message, plus the frame's fade, plus a little margin
+    local fade = (f.GetFadeDuration and f:GetFadeDuration()) or 1.5
+    local window = seconds + fade + 0.3
+    toastUntil = GetTime() + window
+    if f.SetTimeVisible then
+      normalTimeVisible = normalTimeVisible or f:GetTimeVisible()
+      f:SetTimeVisible(seconds)
+    end
+    if not UIParent:IsShown() then ns.sync() end
+    C_Timer.After(window + 0.2, function()
+      if toastActive() then return end  -- a newer message is running
+      restoreHoldTime()
+      if not UIParent:IsShown() then ns.sync() end
+    end)
+    f:AddMessage(text, 1, 1, 0)
+  else
+    showFallback(text, seconds)
+  end
+end
+
+-- A change made with a keybind or command: on-screen message, plus the chat
+-- line when the verbose setting is on
+function ns.notify(text, key)
+  ns.info(text, key)
+  ns.toast(text)
+end
+
 -- Make the frame state match "UI hidden" + the keep settings
 function ns.sync()
   if InCombatLockdown() then ns.state.needsSync = true return end
@@ -206,6 +283,7 @@ function ns.sync()
     local f = frameByName(name)
     if f then consider(f, active and TUIHDB.keep[customKey(name)] and true or false) end
   end
+  if active and toastActive() and UIErrorsFrame then consider(UIErrorsFrame, true) end
   for f in pairs(detached) do consider(f, false) end  -- e.g. just removed from the list
   for _, f in ipairs(all) do
     if wanted[f] then detach(f) else attach(f) end
@@ -215,7 +293,7 @@ end
 -- Settings owned by keep elements follow those options while hidden: kept =
 -- original values back, not kept = off. The player-name settings are set by
 -- the name stage instead.
-local stageCVar = { unitnameown = true, unitnamefriendlyplayername = true, unitnameenemyplayername = true }
+local stageCVar = { unitnameown = true, unitnamefriendlyplayername = true, unitnameenemyplayername = true, unitnamehostlenpc = true }
 function ns.syncKeptCVars()
   for _, c in ipairs(ns.cvarList()) do
     if ns.ownsCVar(c) then
@@ -227,7 +305,7 @@ function ns.syncKeptCVars()
       end
     end
   end
-  ns.setStage(TUIHDB.playerNames or 0)
+  ns.setStage(TUIHDB.playerNames, TUIHDB.enemyNames)
 end
 
 -- Enemy nameplates and the settings of keep elements are settings, not frames

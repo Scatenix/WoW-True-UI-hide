@@ -22,7 +22,7 @@ ignore = {
 read_globals = {
   "CANCEL", "C_Console", "C_Timer", "ConsoleGetAllCommands",
   "ContainerFrame_ClearFullScreenFrame", "ContainerFrame_SetFullScreenFrame",
-  "CreateFrame", "DELETE", "FCF_OpenTemporaryWindow", "GameTooltip",
+  "CreateFrame", "DELETE", "FCF_OpenTemporaryWindow", "GameTooltip", "GetTime", "UIErrorsFrame",
   "GetCVar", "GetCVarDefault", "GetCursorPosition", "GetMouseFoci", "GetMouseFocus",
   "HideUIPanel", "InCombatLockdown", "InterfaceOptionsFrame",
   "InterfaceOptionsFrame_OpenToCategory", "InterfaceOptions_AddCategory",

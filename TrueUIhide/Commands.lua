@@ -48,7 +48,7 @@ local function keepFrameCommand(arg, raw)
     ns.removeCustomFrame(name)
   elseif sub == "toggle" then
     if ns.setCustomKeepToggle(name) then
-      ns.info("Keep " .. name .. ": " .. (ns.customKept(name) and "on" or "off"), "toggle")
+      ns.notify("Keep " .. name .. ": " .. (ns.customKept(name) and "on" or "off"), "toggle")
     end
   elseif sub == "" or sub == "list" then
     local list = ns.customFrameList()
@@ -62,7 +62,7 @@ local function keepFrameCommand(arg, raw)
   end
 end
 
--- /tuih set <combat | mouselook | icon | shotcombat | dot | cyclemessage | verbose>
+-- /tuih set <combat | mouselook | icon | shotcombat | dot | messages | verbose>
 local function setCommand(arg)
   local word = firstWord(arg)
   if word == "combat" then
@@ -73,14 +73,14 @@ local function setCommand(arg)
     ns.toggleMinimapIcon()
   elseif word == "shotcombat" then
     ns.toggleShotCombat()
-  elseif word == "cyclemessage" or word == "cycle" then
-    ns.toggleCycleMessage()
+  elseif word == "messages" or word == "message" or word == "toast" then
+    ns.toggleToasts()
   elseif word == "dot" or word == "indicator" then
     ns.toggleIndicator()
   elseif word == "verbose" or word == "chat" then
     ns.toggleVerbose()
   else
-    ns.log("Usage: /tuih set combat | mouselook | icon | shotcombat | dot | cyclemessage | verbose")
+    ns.log("Usage: /tuih set combat | mouselook | icon | shotcombat | dot | messages | verbose")
   end
 end
 
@@ -93,6 +93,7 @@ end
 add(function() ns.userSetAll(true) end, "on")
 add(function() ns.userSetAll(false) end, "off")
 add(function() ns.cyclePlayers() end, "players", "p")
+add(function() ns.cycleEnemies() end, "enemies", "e")
 add(function() ns.shot() end, "shot", "ss")
 add(function() ns.toggleMouselook() end, "mouselook", "look", "ml")
 add(function() ns.status() end, "status", "s")

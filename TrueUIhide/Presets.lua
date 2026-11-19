@@ -30,10 +30,11 @@ function ns.applyPreset(name, silent)
   -- Only presets that specify the combat option change it
   if p.combat ~= nil then TUIHDB.combatShow = p.combat end
   TUIHDB.playerNames = p.players or 0
+  TUIHDB.enemyNames = p.enemies or 0
   ns.userSetAll(false)
   ns.syncPlates()
   ns.state.presetCurrent = name
-  if not silent then ns.info("Preset: " .. name, "preset") end
+  if not silent then ns.notify("Preset: " .. name, "preset") end
   return true
 end
 
@@ -46,6 +47,7 @@ function ns.applyPresetSettings(name)
   TUIHDB.keep = ns.copy(p.keep)
   if p.combat ~= nil then TUIHDB.combatShow = p.combat end
   TUIHDB.playerNames = p.players or 0
+  TUIHDB.enemyNames = p.enemies or 0
   ns.state.presetCurrent = name
   ns.info("Preset settings: " .. name .. " (the UI stays as it is)", "preset")
   return true
@@ -97,14 +99,15 @@ function ns.cyclePreset(kind, step)
     nextPos = step > 0 and 1 or #list
   end
   local name = list[nextPos]
-  if ns.applyPreset(name, true) and TUIHDB.cycleMessage then
-    ns.log("Preset: " .. name .. " (" .. nextPos .. "/" .. #list .. ")", "preset")
+  if ns.applyPreset(name, true) then
+    ns.notify("Preset: " .. name .. " (" .. nextPos .. "/" .. #list .. ")", "preset")
   end
 end
 
-function ns.toggleCycleMessage()
-  TUIHDB.cycleMessage = not TUIHDB.cycleMessage
-  ns.log("Chat message when cycling presets: " .. (TUIHDB.cycleMessage and "on" or "off"), "toggle")
+function ns.toggleToasts()
+  TUIHDB.toasts = not TUIHDB.toasts
+  if not TUIHDB.toasts then ns.clearToast() end
+  ns.log("On-screen messages: " .. (TUIHDB.toasts and "on" or "off"), "toggle")
 end
 
 function ns.reset()
@@ -135,7 +138,7 @@ function ns.wipeAll()
   ns.initDB()
   local st = ns.state
   st.presetCurrent = nil
-  st.pending, st.autoShown, st.autoStage, st.needsSync = nil, false, nil, false
+  st.pending, st.autoShown, st.autoStage, st.autoEnemies, st.needsSync = nil, false, nil, nil, false
   if ns.refreshMinimap then ns.refreshMinimap() end
   if ns.refreshOptions then ns.refreshOptions() end
   if ns.updateIndicator then ns.updateIndicator() end
@@ -173,8 +176,9 @@ function ns.savePreset(name)
     keep = ns.copy(TUIHDB.keep),
     combat = TUIHDB.combatShow and true or false,
     players = TUIHDB.playerNames or 0,
+    enemies = TUIHDB.enemyNames or 0,
   }
-  ns.log("Preset saved: " .. name .. " (current keep settings and player-name stage)", "preset")
+  ns.log("Preset saved: " .. name .. " (current keep settings and name settings)", "preset")
   if ns.refreshOptions then ns.refreshOptions() end
   return true
 end

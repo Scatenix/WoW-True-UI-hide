@@ -8,7 +8,8 @@ BINDING_HEADER_TUIH_KEEP = "True UI Hide: Toggle which elements stay visible"
 BINDING_HEADER_TUIH_MISC = "True UI Hide: Other"
 
 BINDING_NAME_TUIH_TOGGLE = "Toggle UI and names"
-BINDING_NAME_TUIH_PLAYERS = "Cycle player names"
+BINDING_NAME_TUIH_PLAYERS = "Cycle player names (own, friendly)"
+BINDING_NAME_TUIH_ENEMIES = "Cycle enemy names (players, mobs)"
 BINDING_NAME_TUIH_PEEK = "Peek: flip the UI while held"
 BINDING_NAME_TUIH_SHOT = "Screenshot without UI"
 BINDING_NAME_TUIH_MOUSELOOK = "Mouselook (right-click style)"
@@ -37,6 +38,7 @@ end
 -- Globals called from Bindings.xml
 function TUIH_Toggle() ns.toggle() end
 function TUIH_Players() ns.cyclePlayers() end
+function TUIH_Enemies() ns.cycleEnemies() end
 function TUIH_Peek(keystate) ns.peek(keystate) end
 function TUIH_Shot() ns.shot() end
 function TUIH_Mouselook() ns.toggleMouselook() end

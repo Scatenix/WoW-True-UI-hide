@@ -195,26 +195,31 @@ function ns.hideAll()
   end
 end
 
+-- Name settings while the UI is hidden, two small numbers:
+-- players: 0 none, 1 own, 2 friendly players, 3 own + friendly players
+-- enemies: 0 none, 1 enemy players, 2 hostile mobs, 3 enemy players + hostile mobs
+-- getStage reads the current game settings (to put them back later).
 function ns.getStage()
-  local own = GetCVar("UnitNameOwn") == "1"
-  local others = GetCVar("UnitNameFriendlyPlayerName") == "1"
-    or GetCVar("UnitNameEnemyPlayerName") == "1"
-  return (own and 1 or 0) + (others and 2 or 0)
+  local function on(c) return GetCVar(c) == "1" end
+  local players = (on("UnitNameOwn") and 1 or 0) + (on("UnitNameFriendlyPlayerName") and 2 or 0)
+  local enemies = (on("UnitNameEnemyPlayerName") and 1 or 0) + (on("UnitNameHostleNPC") and 2 or 0)
+  return players, enemies
 end
 
-function ns.setStage(i)
-  i = tonumber(i) or 0
-  if i < 0 or i > 3 then i = 0 end
-  local o = (i % 2 == 1) and "1" or "0"
-  local p = (i >= 2) and "1" or "0"
+function ns.setStage(players, enemies)
+  players, enemies = tonumber(players) or 0, tonumber(enemies) or 0
+  if players < 0 or players > 3 then players = 0 end
+  if enemies < 0 or enemies > 3 then enemies = 0 end
+  local function flag(on) return on and "1" or "0" end
   -- Settings the player keeps visible are left alone
   local function set(c, v) if not ns.isKept(c) then ns.setCVar(c, v) end end
-  set("UnitNameOwn", o)
-  set("UnitNameFriendlyPlayerName", p)
-  set("UnitNameEnemyPlayerName", p)
+  set("UnitNameOwn", flag(players % 2 == 1))
+  set("UnitNameFriendlyPlayerName", flag(players >= 2))
+  set("UnitNameEnemyPlayerName", flag(enemies % 2 == 1))
+  set("UnitNameHostleNPC", flag(enemies >= 2))
 end
 
--- Player nameplates follow the name cycle: always off.
+-- Player nameplates are always off while hidden.
 -- Enemy plates are left alone when "Keep: Enemy nameplates" is on.
 -- The original values are saved so the normal restore brings them back.
 function ns.hidePlayerPlates()

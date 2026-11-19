@@ -8,6 +8,9 @@
   <Binding name="TUIH_PLAYERS" category="True UI Hide">
     TUIH_Players()
   </Binding>
+  <Binding name="TUIH_ENEMIES" category="True UI Hide">
+    TUIH_Enemies()
+  </Binding>
   <Binding name="TUIH_SHOT" category="True UI Hide">
     TUIH_Shot()
   </Binding>

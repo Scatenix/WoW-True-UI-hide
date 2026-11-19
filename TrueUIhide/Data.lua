@@ -282,5 +282,6 @@ ns.builtin = {
 }
 ns.presetOrder = { "explore", "questing", "social", "roleplay", "minimal", "screenshot" }
 
--- Player name stages: 0 none, 1 own only, 2 others only, 3 own + others
-ns.stageNames = { [0] = "none", "own only", "others only", "own + others" }
+-- Name stages while hidden: players 0..3 (own / friendly players), enemies 0..3 (enemy players / hostile mobs)
+ns.stageNames = { [0] = "none", "own only", "friendly players", "own + friendly players" }
+ns.enemyStageNames = { [0] = "none", "enemy players", "hostile mobs", "enemy players + hostile mobs" }

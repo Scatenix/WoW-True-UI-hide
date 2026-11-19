@@ -5,7 +5,7 @@ function ns.setAll(show, quiet)
   if show then ns.restore(quiet) else ns.hideAll() end
   ns.applyUI(show)
   -- Player names while hidden follow the saved setting (default: none)
-  if not show then ns.setStage(TUIHDB.playerNames or 0) end
+  if not show then ns.setStage(TUIHDB.playerNames, TUIHDB.enemyNames) end
 end
 
 -- Used for everything the player triggers directly
@@ -41,7 +41,7 @@ function ns.toggleKeepAll()
   ns.state.presetCurrent = nil
   ns.sync()
   ns.syncPlates()
-  ns.info("Keep everything: " .. (all and "off" or "on"), "toggle")
+  ns.notify("Keep everything: " .. (all and "off" or "on"), "toggle")
   if ns.refreshOptions then ns.refreshOptions() end
 end
 
@@ -54,26 +54,45 @@ function ns.toggleKeep(key)
   end
   local on = not TUIHDB.keep[key]
   ns.setKeep(key, on)
-  ns.info("Keep " .. e.label:lower() .. ": " .. (on and "on" or "off"), "toggle")
+  ns.notify("Keep " .. e.label:lower() .. ": " .. (on and "on" or "off"), "toggle")
 end
 
--- Player names while the UI is hidden: 0 none, 1 own only, 2 others only,
--- 3 own + others. A saved setting; applied right away when already hidden.
-function ns.setPlayerNames(i)
-  i = tonumber(i) or 0
-  if i < 0 or i > 3 then i = 0 end
-  TUIHDB.playerNames = i
+-- Names while the UI is hidden (see ns.setStage): players 0 none, 1 own,
+-- 2 friendly players, 3 both; enemies 0 none, 1 enemy players, 2 hostile mobs,
+-- 3 both. Saved settings, applied right away when the UI is already hidden.
+local function applyNames()
   if not UIParent:IsShown() then
-    ns.setStage(i)
+    ns.setStage(TUIHDB.playerNames, TUIHDB.enemyNames)
     ns.hidePlayerPlates()
   end
 end
 
--- Cycle: none -> own only -> others only -> own + others -> none
+function ns.setPlayerNames(i)
+  i = tonumber(i) or 0
+  if i < 0 or i > 3 then i = 0 end
+  TUIHDB.playerNames = i
+  applyNames()
+end
+
+function ns.setEnemyNames(i)
+  i = tonumber(i) or 0
+  if i < 0 or i > 3 then i = 0 end
+  TUIHDB.enemyNames = i
+  applyNames()
+end
+
+-- Cycle: none -> own -> friendly players -> own + friendly -> none
 function ns.cyclePlayers()
   local i = ((TUIHDB.playerNames or 0) + 1) % 4
   ns.setPlayerNames(i)
-  ns.info(ns.stageNames[i] .. (UIParent:IsShown() and " (applies when the UI is hidden)" or ""), "players")
+  ns.notify("Players: " .. ns.stageNames[i] .. (UIParent:IsShown() and " (applies when the UI is hidden)" or ""), "players")
+end
+
+-- Cycle: none -> enemy players -> hostile mobs -> both -> none
+function ns.cycleEnemies()
+  local i = ((TUIHDB.enemyNames or 0) + 1) % 4
+  ns.setEnemyNames(i)
+  ns.notify("Enemies: " .. ns.enemyStageNames[i] .. (UIParent:IsShown() and " (applies when the UI is hidden)" or ""), "players")
 end
 
 function ns.toggle()

@@ -92,7 +92,8 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | `/tuih` | | Toggle all UI, names and nameplates |
 | `/tuih on` | | Show everything and restore your saved settings |
 | `/tuih off` | | Hide everything |
-| `/tuih players` | `p` | Cycle the player names shown while the UI is hidden: none, own only, others only, own and others. The choice is saved (also set in the settings panel dropdown) |
+| `/tuih players` | `p` | Cycle your own and friendly player names shown while the UI is hidden: none, own only, friendly players only, own and friendly. The choice is saved (also set in the settings panel dropdown) |
+| `/tuih enemies` | `e` | Cycle the enemy names shown while the UI is hidden: none, enemy players, hostile mobs, both. The choice is saved (also set in the settings panel dropdown) |
 | `/tuih shot` | `ss` | Take a screenshot without UI |
 | `/tuih mouselook` | `look`, `ml` | Enter or leave mouselook, right-click style (right-click ends it) |
 | `/tuih status` | `s` | Show the current settings |
@@ -106,7 +107,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 
 `/tuih toggle` (aliases `keep`, `k`) without an element lists the available elements. `/tuih toggle all` keeps every element and every window of your own list at once, or stops keeping all of them when everything is already kept (also the "Toggle all" button in the settings). It does not touch the UI itself. `/tuih reset` is the full way back to normal.
 
-Keeping an element only leaves it as it is. If it is already turned off in the game (for example friendly nameplates), True UI Hide does not turn it on. The exception is the player names choice (dropdown in the settings, `/tuih players`): it is actually set while the UI is hidden, even if those names were off.
+Keeping an element only leaves it as it is. If it is already turned off in the game (for example friendly nameplates), True UI Hide does not turn it on. The exception is the names choices (the two dropdowns in the settings, `/tuih players` and `/tuih enemies`): it is actually set while the UI is hidden, even if those names were off.
 
 | Element | Aliases | Keeps this visible while the UI is hidden |
 |---|---|---|
@@ -177,12 +178,12 @@ Aliases: `kf`, `frame`. The same is available in the settings ("Your own windows
 
 Built-in presets (each one hides the UI and keeps only what is listed):
 
-| Preset | Keeps | Player names |
+| Preset | Keeps | Names shown |
 |---|---|---|
 | `explore` | Minimap, loot windows, popups, NPC dialogs, bags | none |
 | `questing` | Minimap, chat, quest tracker, quest circles, interactive NPC names, NPC dialogs, bags, loot windows, popups, cast bar, error text, trade/mail/auctions, character windows | none |
-| `social` | Chat, player frame, party and raid frames, friendly player names, guild names and titles, popups, trade/mail/auctions, NPC dialogs | own and others |
-| `roleplay` | Chat, friendly player names, guild names and titles, all three NPC name elements, NPC dialogs, popups, loot windows | others only |
+| `social` | Chat, player frame, party and raid frames, friendly player names, guild names and titles, popups, trade/mail/auctions, NPC dialogs | own and friendly players |
+| `roleplay` | Chat, friendly player names, guild names and titles, all three NPC name elements, NPC dialogs, popups, loot windows | friendly players |
 | `minimal` | Player and target frame, cast bar, action bars, buffs, party and raid frames, enemy nameplates, error text, popups, loot windows | none |
 | `screenshot` | Nothing | none |
 
@@ -196,7 +197,7 @@ Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). 
 | `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
 | `/tuih set icon` | Show or hide the minimap icon |
 | `/tuih set shotcombat` | Show the UI if combat starts during a screenshot (on by default) |
-| `/tuih set cyclemessage` | Show a chat message when cycling presets (on by default) |
+| `/tuih set messages` | Show the yellow on-screen text (like the screenshot message, also while the UI is hidden) when you toggle an element, cycle names or presets (on by default). How long it stays is set in the settings (0 to 10 seconds in steps of 0.5, default 3; 0 fades the text at once) |
 | `/tuih set dot` | Show or hide the red warning dot (on by default) |
 | `/tuih set verbose` | Show True UI Hide events in chat for debugging ("UI on", "Preset: ...", ...). Off by default |
 
@@ -208,7 +209,8 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 |---|---|
 | Toggle UI and names | Same as `/tuih` |
 | Peek: flip the UI while held | While the key is held the UI is flipped: shown if it was hidden, hidden if it was visible. Releasing the key flips it back |
-| Cycle player names | Same as `/tuih players` |
+| Cycle player names (own, friendly) | Same as `/tuih players` |
+| Cycle enemy names (players, mobs) | Same as `/tuih enemies` |
 | Screenshot without UI | Same as `/tuih shot` |
 | Mouselook (right-click style) | Same as `/tuih mouselook` |
 | Reset (back to normal) | Same as `/tuih reset` |

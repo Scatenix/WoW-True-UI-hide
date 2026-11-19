@@ -8,7 +8,7 @@ function ns.endPeek()
   if peek.mode == "show" then
     peek.mode = nil
     ns.setAll(false)
-    ns.setStage(peek.stage or 0)
+    ns.setStage(peek.stage, peek.enemies)
   elseif peek.mode == "hide" then
     peek.mode = nil
     ns.setAll(true)
@@ -27,7 +27,7 @@ function ns.peek(keystate)
       ns.setAll(false)
     else
       peek.mode = "show"
-      peek.stage = ns.getStage()
+      peek.stage, peek.enemies = ns.getStage()
       ns.setAll(true)
     end
   elseif peek.mode then
@@ -83,6 +83,7 @@ function ns.shot()
     plates = GetCVar("nameplateShowEnemies"),
   }
   st.shotCtx, st.shotBusy, st.shotMode = ctx, true, true
+  ns.clearToast()  -- a message that is still fading must not end up in the picture
   if ctx.wasShown then
     ns.setAll(false)
   else

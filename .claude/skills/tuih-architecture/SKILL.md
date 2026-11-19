@@ -35,15 +35,15 @@ Every file starts with `local _, ns = ...` (shared namespace). Cross-module call
 `sanitize()` in Core.lua validates every key on load (corrupted/hand-edited files must not break commands). Add new keys there.
 - `keep` {key -> true}: kept elements; own windows are stored as `"frame:<FrameName>"`.
 - `customFrames` {FrameName -> true}: the list of own windows; `customLimit` (nil = default 100).
-- `presets` {name -> {keep, combat, players}}: custom presets.
+- `presets` {name -> {keep, combat, players, enemies}}: custom presets.
 - `saved` {cvar -> string} or nil: original CVar values while hidden (or leftovers after a failed restore). `nil` means "nothing to restore".
-- `playerNames` 0..3, `combatShow`, `mouselookAuto`, `shotCombatShow`, `shotBefore`/`shotAfter` (0.1..3), `cycleMessage`, `indicator`, `minimapIcon`, `minimapAngle`, `verbose`, `welcomed`, `combatNotice` (one-time flag).
+- `playerNames` 0..3 (none/own/friendly players/both) and `enemyNames` 0..3 (none/enemy players/hostile mobs/both), `combatShow`, `mouselookAuto`, `shotCombatShow`, `shotBefore`/`shotAfter` (0.1..3), `toasts`, `indicator`, `minimapIcon`, `minimapAngle`, `verbose`, `welcomed`, `combatNotice` (one-time flag).
 - The file is only written on logout or `/reload`.
 - Migrations: none exist today (pre-1.0 green field). From `v1.0.0` on, existing users have saved data, so key renames/removals/meaning changes need a deliberate decision (see CLAUDE.md). There is no schema version field; add one only if a migration needs it.
 
 ## Hide / show flow
 `ns.toggle` -> `ns.userSetAll(show)` (aborts a running screenshot, clears pending/autoShown/peek) -> `ns.setAll(show)`:
-- hide: `ns.hideAll()`, then `ns.applyUI(false)` (`UIParent:SetShown`, `ns.sync()`, optional mouselook), then `ns.setStage(TUIHDB.playerNames)`.
+- hide: `ns.hideAll()`, then `ns.applyUI(false)` (`UIParent:SetShown`, `ns.sync()`, optional mouselook), then `ns.setStage(TUIHDB.playerNames, TUIHDB.enemyNames)`.
 - show: `ns.restore(quiet)`, then `ns.applyUI(true)`.
 
 CVars (CVars.lua):
@@ -51,7 +51,7 @@ CVars (CVars.lua):
 - `ns.hideAll()`: `ns.snapshot()` (merge-only into `TUIHDB.saved`, so a partial restore never loses originals), then sets every listed CVar to "0" except kept ones (`ns.isKept`), enemy nameplates (special case, `keep.enemyplates`) and plate CVars in combat. Remembers what it set in the runtime table `applied`.
 - `ns.setCVar(c, v, isRestore)`: `pcall(SetCVar)` then a read-back with `GetCVar` (blocked actions in combat do not raise errors, so only the read-back proves success). Numeric tolerant compare (`sameValue`).
 - `ns.restore()` per CVar: missing -> skip; already equals saved -> nothing; differs from `applied` -> the player changed it while hidden -> keep their value ("Kept your change", once per value, verbose only); plates in combat -> stays in `saved` (pending); else `setCVar(saved)`. `TUIHDB.saved` becomes nil only when nothing is pending.
-- Ownership: an element with `cvars = {...}` or `match = function(c)` owns those CVars. Not kept -> forced to "0" while hidden; kept -> original value stays/returns. The three player-name CVars (`unitnameown`, `unitnamefriendlyplayername`, `unitnameenemyplayername`) belong to the name stage instead (`ns.setStage`, `ns.hidePlayerPlates`), not to a keep element.
+- Ownership: an element with `cvars = {...}` or `match = function(c)` owns those CVars. Not kept -> forced to "0" while hidden; kept -> original value stays/returns. The four name-stage CVars (`UnitNameOwn`, `UnitNameFriendlyPlayerName`, `UnitNameEnemyPlayerName`, `UnitNameHostleNPC`) are set by the name stages (`ns.setStage(players, enemies)`, `ns.getStage()` reads them, `ns.hidePlayerPlates`) and skipped by the forced-off rule; a kept CVar is still left alone by the stage.
 - Auto-restore: `PLAYER_LOGOUT` (also fires on `/reload`) calls restore quietly; `PLAYER_LOGIN` restores leftovers if `saved` exists and UIParent is shown.
 
 ## Frames (Frames.lua)
@@ -76,6 +76,7 @@ CVars (CVars.lua):
 ## Indicator, logging, help
 - Indicator.lua: red dot (20 px, WorldFrame CENTER offset -160/120) shown when UIParent is shown AND (`TUIHDB.saved ~= nil` or `ns.hasDetached()`) AND the setting is on AND no screenshot. Hooks `ns.setAll`. Left click `userSetAll(true)`, right click `userSetAll(false)`.
 - Errors for refused or invalid actions go through `ns.error(msg)` (Core.lua): a `StaticPopup` dialog (`TUIH_ERROR`), and also the chat when the UI is hidden (popups are invisible then) or verbose is on. Command typos and usage hints stay in the chat via `ns.log`.
+- On-screen messages: `ns.toast(text)` (Frames.lua) writes yellow text into Blizzard's `UIErrorsFrame` (same look as the screenshot message). The message is held for `TUIHDB.toastSeconds` (default 3, range 0..10 in steps of 0.5, 0 fades at once, slider in the panel) by temporarily setting the frame's `SetTimeVisible` (restored afterwards); while the UI is hidden `ns.sync` treats the frame as wanted for hold + fade + margin so it is visible, then syncs again; nothing is shown during screenshots and `ns.clearToast()` (called at screenshot start and when the setting is turned off) removes a message that is still showing; fallback is an own FontString if the frame is missing. `ns.notify(text, key)` = `ns.info` + `ns.toast`; use it for changes made by keybind/command (keep toggles, name cycles, preset apply/cycle). Setting `toasts` (`/tuih set messages`).
 - Every chat message goes through `ns.log(msg, key)` which prefixes a hoverable `[TUIH]` link (`|Haddon:TUIH:<key>|h`). Help.lua hooks `OnHyperlinkEnter` on all chat frames (also temporary windows via `FCF_OpenTemporaryWindow`). Help tooltips are per topic so none grows taller than the screen.
 - Commands: handler table `add(fn, "name", "alias", ...)`; handlers receive `(lowercased arg, raw arg)`. Frame names are case-sensitive, so use the raw arg for them.
 

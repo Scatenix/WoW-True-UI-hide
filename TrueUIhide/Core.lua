@@ -11,6 +11,7 @@ ns.state = {
   needsSync = false,  -- a frame sync was blocked by combat
   autoShown = false,  -- UI was shown automatically by the combat option
   autoStage = nil,
+  autoEnemies = nil,
   pending = nil,      -- UI change queued until combat ends
 }
 
@@ -24,6 +25,10 @@ ns.SHOT_BEFORE_DEFAULT = 0.1
 ns.SHOT_AFTER_DEFAULT = 0.1
 ns.SHOT_WAIT_MIN = 0.1
 ns.SHOT_WAIT_MAX = 3
+-- On-screen messages: how long the text stays before it fades (seconds)
+ns.TOAST_SECONDS_DEFAULT = 3
+ns.TOAST_SECONDS_MIN = 0
+ns.TOAST_SECONDS_MAX = 10
 ns.SHOT_COMBAT_WARNING = "If you turn this off, the UI stays hidden when combat starts during a screenshot, and may stay hidden until combat ends."
 ns.COMBAT_WARNING = "The game may block showing the UI in combat. If nothing happens, the UI stays hidden until combat ends."
 
@@ -88,10 +93,18 @@ local function sanitize()
   end
   if type(TUIHDB.welcomed) ~= "boolean" then TUIHDB.welcomed = nil end
   if type(TUIHDB.verbose) ~= "boolean" then TUIHDB.verbose = false end
-  if type(TUIHDB.cycleMessage) ~= "boolean" then TUIHDB.cycleMessage = true end
+  if type(TUIHDB.toasts) ~= "boolean" then TUIHDB.toasts = true end
   do
-    local n = tonumber(TUIHDB.playerNames)
-    TUIHDB.playerNames = (n and n >= 0 and n <= 3) and math.floor(n) or 0
+    local n = tonumber(TUIHDB.toastSeconds)
+    if n and n >= ns.TOAST_SECONDS_MIN and n <= ns.TOAST_SECONDS_MAX then
+      TUIHDB.toastSeconds = n
+    else
+      TUIHDB.toastSeconds = nil
+    end
+  end
+  for _, key in ipairs({ "playerNames", "enemyNames" }) do
+    local n = tonumber(TUIHDB[key])
+    TUIHDB[key] = (n and n >= 0 and n <= 3) and math.floor(n) or 0
   end
   if type(TUIHDB.customFrames) ~= "table" then TUIHDB.customFrames = {} end
   for name, v in pairs(TUIHDB.customFrames) do
@@ -117,7 +130,7 @@ local function sanitize()
     if next(TUIHDB.saved) == nil then TUIHDB.saved = nil end
   end
 
-  -- Custom presets: name -> { keep = table, players = 0..3, combat = boolean|nil }
+  -- Custom presets: name -> { keep = table, players = 0..3, enemies = 0..3, combat = boolean|nil }
   for name, p in pairs(TUIHDB.presets) do
     if type(name) ~= "string" or type(p) ~= "table" then
       TUIHDB.presets[name] = nil
@@ -125,6 +138,8 @@ local function sanitize()
       if type(p.keep) ~= "table" then p.keep = {} end
       local n = tonumber(p.players)
       p.players = (n and n >= 0 and n <= 3) and math.floor(n) or 0
+      local e = tonumber(p.enemies)
+      p.enemies = (e and e >= 0 and e <= 3) and math.floor(e) or 0
       if p.combat ~= nil and type(p.combat) ~= "boolean" then p.combat = nil end
     end
   end

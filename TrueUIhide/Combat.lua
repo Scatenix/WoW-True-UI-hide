@@ -18,7 +18,7 @@ ev:SetScript("OnEvent", function(_, event)
     end
     if TUIHDB.combatShow and not UIParent:IsShown() and not st.peek.mode and not st.shotBusy then
       st.autoShown = true
-      st.autoStage = ns.getStage()
+      st.autoStage, st.autoEnemies = ns.getStage()
       ns.setAll(true, true)
     end
   else
@@ -30,7 +30,7 @@ ev:SetScript("OnEvent", function(_, event)
     elseif st.autoShown then
       st.autoShown = false
       ns.setAll(false)
-      ns.setStage(st.autoStage or 0)
+      ns.setStage(st.autoStage, st.autoEnemies)
     end
     if st.needsSync then
       st.needsSync = false
