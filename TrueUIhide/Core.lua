@@ -29,6 +29,10 @@ ns.SHOT_WAIT_MAX = 3
 ns.TOAST_SECONDS_DEFAULT = 3
 ns.TOAST_SECONDS_MIN = 0
 ns.TOAST_SECONDS_MAX = 10
+-- Chat on whisper: how long chat stays visible after a whisper while the UI is hidden
+ns.WHISPER_SECONDS_DEFAULT = 10
+ns.WHISPER_SECONDS_MIN = 3
+ns.WHISPER_SECONDS_MAX = 60
 ns.SHOT_COMBAT_WARNING = "If you turn this off, the UI stays hidden when combat starts during a screenshot, and may stay hidden until combat ends."
 ns.COMBAT_WARNING = "The game may block showing the UI in combat. If nothing happens, the UI stays hidden until combat ends."
 
@@ -94,6 +98,15 @@ local function sanitize()
   if type(TUIHDB.welcomed) ~= "boolean" then TUIHDB.welcomed = nil end
   if type(TUIHDB.verbose) ~= "boolean" then TUIHDB.verbose = false end
   if type(TUIHDB.toasts) ~= "boolean" then TUIHDB.toasts = true end
+  if type(TUIHDB.whisperChat) ~= "boolean" then TUIHDB.whisperChat = true end
+  do
+    local n = tonumber(TUIHDB.whisperSeconds)
+    if n and n >= ns.WHISPER_SECONDS_MIN and n <= ns.WHISPER_SECONDS_MAX then
+      TUIHDB.whisperSeconds = n
+    else
+      TUIHDB.whisperSeconds = nil
+    end
+  end
   do
     local n = tonumber(TUIHDB.toastSeconds)
     if n and n >= ns.TOAST_SECONDS_MIN and n <= ns.TOAST_SECONDS_MAX then

@@ -258,6 +258,48 @@ function ns.notify(text, key)
   ns.toast(text)
 end
 
+-- Chat on whisper: a whisper while the UI is hidden shows the chat for a while
+local whisperUntil = 0
+
+local function whisperActive()
+  return GetTime() < whisperUntil
+end
+
+local function onWhisper()
+  if not (TUIHDB and TUIHDB.whisperChat) then return end
+  if UIParent:IsShown() or ns.state.shotMode or ns.state.shotBusy then return end
+  local seconds = TUIHDB.whisperSeconds or ns.WHISPER_SECONDS_DEFAULT
+  whisperUntil = GetTime() + seconds
+  ns.sync()
+  C_Timer.After(seconds + 0.2, function()
+    if not whisperActive() then ns.sync() end  -- a newer whisper keeps it longer
+  end)
+end
+
+-- Game menu: Escape would show the hidden UI first, so the menu has its own
+-- way in. The menu is a child of UIParent: while it is open and the UI is
+-- hidden, ns.sync moves it under the stand-in parent so it can be seen.
+function ns.openGameMenu()
+  if not (GameMenuFrame and GameMenuFrame_Show) then
+    ns.error("The game menu is not available in this client.")
+    return
+  end
+  if GameMenuFrame:IsShown() then
+    HideUIPanel(GameMenuFrame)
+  else
+    GameMenuFrame_Show()
+  end
+  ns.sync()
+  C_Timer.After(0, ns.sync)  -- in case the panel was shown a moment later
+end
+
+ns.onLogin[#ns.onLogin + 1] = function()
+  if GameMenuFrame and GameMenuFrame.HookScript then
+    -- when the menu closes, it goes back under the normal UI
+    GameMenuFrame:HookScript("OnHide", function() ns.sync() end)
+  end
+end
+
 -- Make the frame state match "UI hidden" + the keep settings
 function ns.sync()
   if InCombatLockdown() then ns.state.needsSync = true return end
@@ -275,7 +317,7 @@ function ns.sync()
       syncFullscreen(active and TUIHDB.keep[e.key])
     end
     if e.frames and ns.available(e) then
-      local want = active and TUIHDB.keep[e.key] and true or false
+      local want = active and (TUIHDB.keep[e.key] or (e.key == "chat" and whisperActive())) and true or false
       for _, f in ipairs(framesFor(e)) do consider(f, want) end
     end
   end
@@ -284,6 +326,7 @@ function ns.sync()
     if f then consider(f, active and TUIHDB.keep[customKey(name)] and true or false) end
   end
   if active and toastActive() and UIErrorsFrame then consider(UIErrorsFrame, true) end
+  if active and GameMenuFrame and GameMenuFrame:IsShown() then consider(GameMenuFrame, true) end
   for f in pairs(detached) do consider(f, false) end  -- e.g. just removed from the list
   for _, f in ipairs(all) do
     if wanted[f] then detach(f) else attach(f) end
@@ -338,7 +381,13 @@ local loader = CreateFrame("Frame")
 loader:RegisterEvent("ADDON_LOADED")
 loader:RegisterEvent("UI_SCALE_CHANGED")
 loader:RegisterEvent("DISPLAY_SIZE_CHANGED")
+loader:RegisterEvent("CHAT_MSG_WHISPER")
+loader:RegisterEvent("CHAT_MSG_BN_WHISPER")
 loader:SetScript("OnEvent", function(_, event)
+  if event == "CHAT_MSG_WHISPER" or event == "CHAT_MSG_BN_WHISPER" then
+    onWhisper()
+    return
+  end
   if event ~= "ADDON_LOADED" then
     if host then getHost() end  -- UI scale or resolution changed: refresh the scale
     return

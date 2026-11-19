@@ -124,6 +124,12 @@
   <Binding name="TUIH_KEEP_CHARWINDOWS" category="True UI Hide">
     TUIH_Keep("charwindows")
   </Binding>
+  <Binding name="TUIH_KEEP_WORLDMAP" category="True UI Hide">
+    TUIH_Keep("worldmap")
+  </Binding>
+  <Binding name="TUIH_KEEP_GAMEMENU" category="True UI Hide">
+    TUIH_Keep("gamemenu")
+  </Binding>
   <Binding name="TUIH_KEEP_CHAT" category="True UI Hide">
     TUIH_Keep("chat")
   </Binding>
@@ -154,6 +160,9 @@
 
   <Binding name="TUIH_CONFIG" header="TUIH_MISC" category="True UI Hide">
     TUIH_Config()
+  </Binding>
+  <Binding name="TUIH_GAMEMENU" category="True UI Hide">
+    TUIH_GameMenu()
   </Binding>
   <Binding name="TUIH_HELP" category="True UI Hide">
     TUIH_Help()

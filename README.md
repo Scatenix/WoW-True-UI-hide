@@ -36,7 +36,7 @@ You can setup a lot of keybindings in options -> keybindings -> True UI Hide.
 
 ---
 
-A small icon on the minimap border opens the settings with a click. Drag it to move it around the minimap. It can be hidden in the settings (or with `/tuih set icon`).
+A small icon on the minimap border opens the settings with a click and the game menu with a right click. Drag it to move it around the minimap. It can be hidden in the settings (or with `/tuih set icon`).
 
 A small red dot appears slightly up and left of the screen center when the UI is visible but hide settings are still applied, meaning we are in an unstable state (for example after the game showed the UI on Escape, or a restore was blocked by combat). Left-click restores everything, right-click hides the UI again. It disappears on its own once the state is clean. It can be turned off in the settings (or with `/tuih set dot`).
 
@@ -98,6 +98,7 @@ The most used commands sit at the root. Everything else is grouped: `/tuih toggl
 | `/tuih mouselook` | `look`, `ml` | Enter or leave mouselook, right-click style (right-click ends it) |
 | `/tuih status` | `s` | Show the current settings |
 | `/tuih config` | `cfg`, `options`, `o` | Open the options panel |
+| `/tuih menu` | `gamemenu` | Open or close the game menu. Works while the UI is hidden (Escape would show the UI first) |
 | `/tuih reset` | | Reset everything and clear the saved state |
 | `/tuih wipe` | | Nuclear option: restore your game settings, then delete ALL addon data and start fresh. Asks you to run `/tuih wipe confirm` |
 | `/tuih help` | `h`, `?` | Print the hoverable help links, one per topic |
@@ -136,7 +137,9 @@ Keeping an element only leaves it as it is. If it is already turned off in the g
 | `/tuih toggle loot` | `looting` | Loot windows (the loot window and the group loot roll windows) |
 | `/tuih toggle popups` | `popup`, `invites` | Popups and invites (group invites, resurrect and summon requests, duels, ready checks and queue pops) |
 | `/tuih toggle trademail` | `trade`, `mail`, `auction` | Trade, mail, auctions (trade, mail, auction house and crafting windows) |
-| `/tuih toggle charwindows` | `character`, `spellbook`, `talents`, `worldmap` | Character windows (character, spellbook, talents, friends and the world map) |
+| `/tuih toggle charwindows` | `character`, `spellbook`, `talents` | Character windows (character, spellbook, talents and friends) |
+| `/tuih toggle worldmap` | `bigmap`, `wm` | World map (the big map, opened with M) |
+| `/tuih toggle gamemenu` | `menu`, `settings` | Game menu and settings (the game menu and the settings windows, also this addon's settings (/tuih config)) |
 | **Bars, chat and text** | | |
 | `/tuih toggle chat` | `c` | Chat |
 | `/tuih toggle actionbars` | `bars`, `ab`, `actionbar` | Action bars (all action bars, including the stance and pet bars) |
@@ -197,6 +200,7 @@ Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). 
 | `/tuih set mouselook` | Enter mouselook whenever the UI is hidden |
 | `/tuih set icon` | Show or hide the minimap icon |
 | `/tuih set shotcombat` | Show the UI if combat starts during a screenshot (on by default) |
+| `/tuih set whisper` | Show the chat for a while when you get a whisper while the UI is hidden (on by default; the duration is in the settings, 3 to 60 seconds, default 10) |
 | `/tuih set messages` | Show the yellow on-screen text (like the screenshot message, also while the UI is hidden) when you toggle an element, cycle names or presets (on by default). How long it stays is set in the settings (0 to 10 seconds in steps of 0.5, default 3; 0 fades the text at once) |
 | `/tuih set dot` | Show or hide the red warning dot (on by default) |
 | `/tuih set verbose` | Show True UI Hide events in chat for debugging ("UI on", "Preset: ...", ...). Off by default |
@@ -221,6 +225,7 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 | Toggle: one per element in the table above | Same as `/tuih toggle <element>` (Questie does nothing without Questie) |
 | Keep the window under the mouse visible | Same as `/tuih keepframe pick`, without the wait |
 | Open options | Same as `/tuih config` |
+| Open or close the game menu | Same as `/tuih menu` |
 | Show help links | Same as `/tuih help` |
 
 These commands have no keybinding and are chat-only: `/tuih on`, `/tuih off`, `/tuih status`, `/tuih reset`, `/tuih diff`, `/tuih set ...`, `/tuih preset save|delete|list` and custom presets.

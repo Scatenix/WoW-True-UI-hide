@@ -62,7 +62,7 @@ local function keepFrameCommand(arg, raw)
   end
 end
 
--- /tuih set <combat | mouselook | icon | shotcombat | dot | messages | verbose>
+-- /tuih set <combat | mouselook | icon | shotcombat | dot | messages | whisper | verbose>
 local function setCommand(arg)
   local word = firstWord(arg)
   if word == "combat" then
@@ -75,12 +75,14 @@ local function setCommand(arg)
     ns.toggleShotCombat()
   elseif word == "messages" or word == "message" or word == "toast" then
     ns.toggleToasts()
+  elseif word == "whisper" or word == "whispers" then
+    ns.toggleWhisperChat()
   elseif word == "dot" or word == "indicator" then
     ns.toggleIndicator()
   elseif word == "verbose" or word == "chat" then
     ns.toggleVerbose()
   else
-    ns.log("Usage: /tuih set combat | mouselook | icon | shotcombat | dot | messages | verbose")
+    ns.log("Usage: /tuih set combat | mouselook | icon | shotcombat | dot | messages | whisper | verbose")
   end
 end
 
@@ -98,6 +100,7 @@ add(function() ns.shot() end, "shot", "ss")
 add(function() ns.toggleMouselook() end, "mouselook", "look", "ml")
 add(function() ns.status() end, "status", "s")
 add(function() ns.openConfig() end, "config", "cfg", "options", "o")
+add(function() ns.openGameMenu() end, "menu", "gamemenu")
 add(function() ns.reset() end, "reset")
 add(function(arg)
   if arg == "confirm" then

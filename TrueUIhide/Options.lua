@@ -431,27 +431,34 @@ local function buildConfig()
     function() return TUIHDB.toastSeconds or ns.TOAST_SECONDS_DEFAULT end,
     function(v) TUIHDB.toastSeconds = v end)
 
-  heading(y - 332, "Screenshot:")
-  addCheck(y - 354, "Show the UI if combat starts during a screenshot",
+  addCheck(y - 336, "Show the chat for a while when you get a whisper while the UI is hidden",
+    function() return TUIHDB.whisperChat end,
+    function(v) TUIHDB.whisperChat = v end)
+  addSlider(y - 390, "Chat duration", ns.WHISPER_SECONDS_MIN, ns.WHISPER_SECONDS_MAX, 1,
+    function() return TUIHDB.whisperSeconds or ns.WHISPER_SECONDS_DEFAULT end,
+    function(v) TUIHDB.whisperSeconds = v end)
+
+  heading(y - 444, "Screenshot:")
+  addCheck(y - 466, "Show the UI if combat starts during a screenshot",
     function() return TUIHDB.shotCombatShow end,
     function(v) TUIHDB.shotCombatShow = v end)
-  addNote(y - 380, ns.SHOT_COMBAT_WARNING, true)
-  addSlider(y - 434, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addNote(y - 492, ns.SHOT_COMBAT_WARNING, true)
+  addSlider(y - 546, "Wait before the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotBefore end,
     function(v) TUIHDB.shotBefore = v end)
-  addSlider(y - 482, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
+  addSlider(y - 594, "Wait after the screenshot", ns.SHOT_WAIT_MIN, ns.SHOT_WAIT_MAX, 0.1,
     function() return TUIHDB.shotAfter end,
     function(v) TUIHDB.shotAfter = v end)
-  addNote(y - 504, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
+  addNote(y - 616, "The UI is hidden this long before the screenshot is taken, and stays hidden this long afterwards.")
 
   -- Limits: only a safety net against runaway lists
-  heading(y - 544, "Limits:")
+  heading(y - 656, "Limits:")
   local limitLabel = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-  limitLabel:SetPoint("TOPLEFT", 44, y - 570)
+  limitLabel:SetPoint("TOPLEFT", 44, y - 682)
   limitLabel:SetText("Max windows in \"Your own windows\":")
   local limitBox = CreateFrame("EditBox", "TUIHCustomLimit", host, "InputBoxTemplate")
   limitBox:SetSize(60, 20)
-  limitBox:SetPoint("TOPLEFT", 280, y - 568)
+  limitBox:SetPoint("TOPLEFT", 280, y - 680)
   limitBox:SetAutoFocus(false)
   limitBox:SetNumeric(true)
   limitBox:SetMaxLetters(5)
@@ -470,9 +477,9 @@ local function buildConfig()
     self:ClearFocus()
   end)
   refreshers[#refreshers + 1] = function() limitBox:SetText(tostring(ns.customLimit())) end
-  addNote(y - 596, "This is just a small limit so the list cannot grow by accident. Raise it if you really need more windows (default " .. ns.DEFAULT_CUSTOM_LIMIT .. ").", false, true)
+  addNote(y - 708, "This is just a small limit so the list cannot grow by accident. Raise it if you really need more windows (default " .. ns.DEFAULT_CUSTOM_LIMIT .. ").", false, true)
 
-  local TAIL_MAINT = -650  -- below the Limits section
+  local TAIL_MAINT = -762  -- below the Limits section
   local mHeading = heading(0, "If something is wrong:")
   local function addMaintButton(x, text, onClick)
     local b = CreateFrame("Button", nil, host, "UIPanelButtonTemplate")

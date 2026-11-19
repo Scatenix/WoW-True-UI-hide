@@ -104,6 +104,11 @@ function ns.cyclePreset(kind, step)
   end
 end
 
+function ns.toggleWhisperChat()
+  TUIHDB.whisperChat = not TUIHDB.whisperChat
+  ns.log("Chat on whisper while hidden: " .. (TUIHDB.whisperChat and "on" or "off"), "toggle")
+end
+
 function ns.toggleToasts()
   TUIHDB.toasts = not TUIHDB.toasts
   if not TUIHDB.toasts then ns.clearToast() end

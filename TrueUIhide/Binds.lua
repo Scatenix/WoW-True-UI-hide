@@ -15,6 +15,7 @@ BINDING_NAME_TUIH_SHOT = "Screenshot without UI"
 BINDING_NAME_TUIH_MOUSELOOK = "Mouselook (right-click style)"
 BINDING_NAME_TUIH_RESET = "Reset (back to normal)"
 BINDING_NAME_TUIH_CONFIG = "Open options"
+BINDING_NAME_TUIH_GAMEMENU = "Open or close the game menu (works while the UI is hidden)"
 BINDING_NAME_TUIH_KEEPFRAME = "Keep the window under the mouse visible"
 BINDING_NAME_TUIH_HELP = "Show help links"
 BINDING_NAME_TUIH_PRESET_CYCLE = "Cycle through all presets"
@@ -44,6 +45,7 @@ function TUIH_Shot() ns.shot() end
 function TUIH_Mouselook() ns.toggleMouselook() end
 function TUIH_Reset() ns.reset() end
 function TUIH_Config() ns.openConfig() end
+function TUIH_GameMenu() ns.openGameMenu() end
 function TUIH_Help() ns.showHelp() end
 function TUIH_PresetCycle(kind, step) ns.cyclePreset(kind, step) end
 function TUIH_Preset(name) ns.applyPreset(name) end
