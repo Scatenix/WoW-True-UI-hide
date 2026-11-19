@@ -9,10 +9,22 @@ function ns.resetState()
   ns.setMouselook(false)  -- back to normal also means a visible cursor
 end
 
+-- Finds a preset by name, ignoring case. Returns the stored name, the preset
+-- and whether it is a built-in one. Built-in names are lowercase.
+function ns.findPreset(name)
+  name = tostring(name or "")
+  local lower = name:lower()
+  if ns.builtin[lower] then return lower, ns.builtin[lower], true end
+  if TUIHDB.presets[name] then return name, TUIHDB.presets[name], false end
+  for k, p in pairs(TUIHDB.presets) do
+    if k:lower() == lower then return k, p, false end
+  end
+end
+
 -- silent: the caller reports the result itself (preset cycling)
 function ns.applyPreset(name, silent)
-  name = (name or ""):lower()
-  local p = ns.builtin[name] or TUIHDB.presets[name]
+  local p
+  name, p = ns.findPreset(name)
   if not p then return false end
   TUIHDB.keep = ns.copy(p.keep)
   -- Only presets that specify the combat option change it
@@ -28,8 +40,8 @@ end
 -- Used by the settings panel: only changes the settings (kept elements and
 -- the combat option), does not hide the UI and leaves the game settings alone
 function ns.applyPresetSettings(name)
-  name = (name or ""):lower()
-  local p = ns.builtin[name] or TUIHDB.presets[name]
+  local p
+  name, p = ns.findPreset(name)
   if not p then return false end
   TUIHDB.keep = ns.copy(p.keep)
   if p.combat ~= nil then TUIHDB.combatShow = p.combat end
@@ -39,11 +51,15 @@ function ns.applyPresetSettings(name)
   return true
 end
 
--- Custom preset names, sorted
+-- Custom preset names, sorted (ignoring case)
 function ns.customPresetList()
   local mine = {}
   for k in pairs(TUIHDB.presets) do mine[#mine + 1] = k end
-  table.sort(mine)
+  table.sort(mine, function(a, b)
+    local la, lb = a:lower(), b:lower()
+    if la ~= lb then return la < lb end
+    return a < b
+  end)
   return mine
 end
 
@@ -102,7 +118,7 @@ end
 -- if the game settings could not be restored (data is still needed for that).
 function ns.wipeAll()
   if InCombatLockdown() then
-    ns.log("Not possible in combat. Try again after combat.")
+    ns.error("Not possible in combat. Try again after combat.")
     return false
   end
   local active = TUIHDB.saved ~= nil or not UIParent:IsShown() or ns.hasDetached()
@@ -111,7 +127,7 @@ function ns.wipeAll()
     ns.userSetAll(true)
     ns.setMouselook(false)
     if TUIHDB.saved ~= nil then
-      ns.log("Could not restore your game settings. Nothing was deleted.")
+      ns.error("Could not restore your game settings. Nothing was deleted.")
       return false
     end
   end
@@ -134,19 +150,25 @@ local MAX_NAME_LENGTH = 24
 -- /tuih preset [<name> | save <name> | delete <name> | list]
 -- Save the current state as a custom preset. Returns true on success.
 function ns.savePreset(name)
-  name = (name or ""):lower()
+  name = name or ""  -- the case is kept as typed
   if name == "" then
-    ns.log("Enter a name for the preset.", "preset")
+    ns.error("Enter a name for the preset.", "preset")
     return false
   end
-  if ns.builtin[name] or RESERVED_NAMES[name] then
-    ns.log("That name is reserved (built-in preset or subcommand).", "preset")
+  if ns.builtin[name:lower()] or RESERVED_NAMES[name:lower()] then
+    ns.error("That name is reserved (built-in preset or subcommand).", "preset")
+    return false
+  end
+  if name:find("%s") then
+    ns.error("Preset names cannot contain spaces. Use - or _ instead.", "preset")
     return false
   end
   if #name > MAX_NAME_LENGTH or not name:match("^[%w_%-]+$") then
-    ns.log("Preset names may use letters, digits, - and _ (max " .. MAX_NAME_LENGTH .. " characters).", "preset")
+    ns.error("Preset names may use letters, digits, - and _ (max " .. MAX_NAME_LENGTH .. " characters).", "preset")
     return false
   end
+  local existing = ns.findPreset(name)  -- same name in another case: replace it
+  if existing then TUIHDB.presets[existing] = nil end
   TUIHDB.presets[name] = {
     keep = ns.copy(TUIHDB.keep),
     combat = TUIHDB.combatShow and true or false,
@@ -158,28 +180,34 @@ function ns.savePreset(name)
 end
 
 function ns.deletePreset(name)
-  if TUIHDB.presets[name] then
-    TUIHDB.presets[name] = nil
-    ns.log("Preset deleted: " .. name, "preset")
+  local found, _, isBuiltin = ns.findPreset(name)
+  if found and not isBuiltin then
+    TUIHDB.presets[found] = nil
+    ns.log("Preset deleted: " .. found, "preset")
     if ns.refreshOptions then ns.refreshOptions() end
     return true
   end
-  ns.log("No custom preset named " .. name, "preset")
+  ns.error("No custom preset named " .. name, "preset")
   return false
 end
 
 function ns.presetCommand(arg)
-  local sub, name = arg:match("^(%S*)%s*(%S*)")
-  if sub == "save" and name ~= "" then
-    ns.savePreset(name)
-  elseif sub == "delete" and name ~= "" then
-    ns.deletePreset(name)
-  elseif sub == "next" or sub == "cycle" then
+  -- arg keeps the case as typed (custom preset names are case-preserving)
+  -- For save and delete everything after the word is the name, so a name with
+  -- spaces is rejected instead of being cut off at the first space
+  local sub, rest = arg:match("^(%S*)%s*(.-)%s*$")
+  local name = rest:match("^(%S*)") or ""
+  local word, kind = sub:lower(), name:lower()
+  if word == "save" and rest ~= "" then
+    ns.savePreset(rest)
+  elseif word == "delete" and rest ~= "" then
+    ns.deletePreset(rest)
+  elseif word == "next" or word == "cycle" then
     -- /tuih preset next [builtin | custom]
-    ns.cyclePreset((name == "builtin" or name == "custom") and name or nil, 1)
-  elseif sub == "prev" or sub == "previous" then
-    ns.cyclePreset((name == "builtin" or name == "custom") and name or nil, -1)
-  elseif sub == "" or sub == "list" then
+    ns.cyclePreset((kind == "builtin" or kind == "custom") and kind or nil, 1)
+  elseif word == "prev" or word == "previous" then
+    ns.cyclePreset((kind == "builtin" or kind == "custom") and kind or nil, -1)
+  elseif word == "" or word == "list" then
     ns.log("Built-in: " .. table.concat(ns.presetOrder, ", "), "preset")
     local mine = ns.customPresetList()
     ns.log("Custom: " .. (#mine > 0 and table.concat(mine, ", ") or "none"), "preset")

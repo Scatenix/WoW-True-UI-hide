@@ -108,7 +108,7 @@ end, "wipe")
 add(function() ns.showHelp() end, "help", "h", "?")
 add(function() ns.diff() end, "diff", "d")
 add(toggleCommand, "toggle", "keep", "k")
-add(function(arg) ns.presetCommand(arg) end, "preset", "presets", "pr")
+add(function(_, raw) ns.presetCommand(raw) end, "preset", "presets", "pr")
 add(keepFrameCommand, "keepframe", "kf", "frame")
 add(setCommand, "set", "option", "opt")
 

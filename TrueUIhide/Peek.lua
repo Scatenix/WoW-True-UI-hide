@@ -15,24 +15,9 @@ function ns.endPeek()
   end
 end
 
--- Hold to show the UI while it is hidden
-function ns.peekShow(keystate)
-  local peek = ns.state.peek
-  if ns.state.shotBusy then return end
-  if keystate == "down" then
-    if peek.mode then ns.endPeek() end  -- stale peek: its key-up never came
-    if not UIParent:IsShown() then
-      peek.mode = "show"
-      peek.stage = ns.getStage()
-      ns.setAll(true)
-    end
-  elseif peek.mode == "show" then
-    ns.endPeek()
-  end
-end
-
--- Hold to hide the UI while it is visible
-function ns.peekHide(keystate)
+-- Hold the key to flip the UI: shows it when it is hidden, hides it when it
+-- is visible. Releasing the key flips it back.
+function ns.peek(keystate)
   local peek = ns.state.peek
   if ns.state.shotBusy then return end
   if keystate == "down" then
@@ -40,8 +25,12 @@ function ns.peekHide(keystate)
     if UIParent:IsShown() then
       peek.mode = "hide"
       ns.setAll(false)
+    else
+      peek.mode = "show"
+      peek.stage = ns.getStage()
+      ns.setAll(true)
     end
-  elseif peek.mode == "hide" then
+  elseif peek.mode then
     ns.endPeek()
   end
 end

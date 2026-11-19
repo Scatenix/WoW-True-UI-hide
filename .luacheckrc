@@ -26,7 +26,7 @@ read_globals = {
   "GetCVar", "GetCVarDefault", "GetCursorPosition", "GetMouseFoci", "GetMouseFocus",
   "HideUIPanel", "InCombatLockdown", "InterfaceOptionsFrame",
   "InterfaceOptionsFrame_OpenToCategory", "InterfaceOptions_AddCategory",
-  "IsMouselooking", "Minimap", "MouselookStart", "MouselookStop", "NUM_CHAT_WINDOWS",
+  "IsMouselooking", "Minimap", "MouselookStart", "MouselookStop", "NUM_CHAT_WINDOWS", "OKAY",
   "Screenshot", "SetCVar", "Settings", "SettingsPanel", "StaticPopup_Show",
   "UIDropDownMenu_AddButton", "UIDropDownMenu_CreateInfo", "UIDropDownMenu_Initialize",
   "UIDropDownMenu_SetText", "UIDropDownMenu_SetWidth", "UIParent", "WorldFrame",

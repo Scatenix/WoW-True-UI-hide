@@ -48,6 +48,25 @@ function ns.info(msg, key)
   if TUIHDB and TUIHDB.verbose then ns.log(msg, key) end
 end
 
+-- Errors for things the player tried to do (a refused action, an invalid
+-- name): shown in a dialog so they are not missed. Popups are children of
+-- UIParent and invisible while the UI is hidden, so then (and with the verbose
+-- setting on) the message also goes to the chat.
+StaticPopupDialogs["TUIH_ERROR"] = {
+  text = "|cffa335eeTrue UI Hide|r\n\n%s",
+  button1 = OKAY or "OK",
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  preferredIndex = 3,
+}
+
+function ns.error(msg, key)
+  local shown = UIParent and UIParent:IsShown() and StaticPopup_Show ~= nil
+  if shown then StaticPopup_Show("TUIH_ERROR", msg) end
+  if not shown or (TUIHDB and TUIHDB.verbose) then ns.log(msg, key) end
+end
+
 function ns.toggleVerbose()
   TUIHDB.verbose = not TUIHDB.verbose
   ns.log("Events in chat: " .. (TUIHDB.verbose and "on" or "off"), "toggle")

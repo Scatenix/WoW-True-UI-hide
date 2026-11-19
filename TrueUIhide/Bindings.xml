@@ -5,9 +5,6 @@
   <Binding name="TUIH_PEEK" category="True UI Hide" runOnUp="true">
     TUIH_Peek(keystate)
   </Binding>
-  <Binding name="TUIH_PEEK_HIDE" category="True UI Hide" runOnUp="true">
-    TUIH_PeekHide(keystate)
-  </Binding>
   <Binding name="TUIH_PLAYERS" category="True UI Hide">
     TUIH_Players()
   </Binding>

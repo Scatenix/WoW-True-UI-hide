@@ -310,12 +310,14 @@ local function buildConfig()
 
   local py = y - 14
   heading(py, "Built-in presets:")
+  -- Built-in names are shown capitalized, custom names exactly as saved
   local function capitalize(name)
+    if not ns.builtin[name] then return name end
     return name:sub(1, 1):upper() .. name:sub(2)
   end
   -- Labels of what a preset keeps, for its tooltip
   local function keptText(name)
-    local p = ns.builtin[name] or TUIHDB.presets[name]
+    local _, p = ns.findPreset(name)
     if not p or not p.keep then return nil end
     local labels = {}
     for k in pairs(p.keep) do
@@ -371,8 +373,9 @@ local function buildConfig()
     saveBox:ClearFocus()
   end
   local function savePreset()
-    local name = (saveBox:GetText():match("^%s*(%S*)") or ""):lower()
-    if TUIHDB.presets[name] then
+    local name = saveBox:GetText():match("^%s*(.-)%s*$") or ""  -- spaces inside are rejected by ns.savePreset
+    local existing = ns.findPreset(name)
+    if existing and not ns.builtin[existing] then
       -- Saving over an existing preset asks first (the command does not)
       StaticPopup_Show("TUIH_OVERWRITE_PRESET", name, nil, name)
     elseif ns.savePreset(name) then

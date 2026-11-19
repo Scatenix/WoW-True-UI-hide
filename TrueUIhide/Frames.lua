@@ -103,25 +103,25 @@ end
 function ns.addCustomFrame(name)
   name = (name or ""):match("^%s*(.-)%s*$")
   if name == "" or #name > 64 or not name:match("^[%w_]+$") then
-    ns.log("Enter a frame name (letters, digits and _ only). Tip: /tuih keepframe pick")
+    ns.error("Enter a frame name (letters, digits and _ only). Tip: /tuih keepframe pick")
     return false
   end
   if NEVER_KEEP[name] then
-    ns.log("That frame cannot be kept: " .. name)
+    ns.error("That frame cannot be kept: " .. name)
     return false
   end
   local f = frameByName(name)
   if not f then
-    ns.log("No frame named " .. name .. " (names are case-sensitive; the window may need to be opened once first).")
+    ns.error("No frame named " .. name .. " (names are case-sensitive; the window may need to be opened once first).")
     return false
   end
   TUIHDB.customFrames = TUIHDB.customFrames or {}
   if TUIHDB.customFrames[name] then
-    ns.log(name .. " is already in your list.")
+    ns.error(name .. " is already in your list.")
     return false
   end
   if #ns.customFrameList() >= ns.customLimit() then
-    ns.log("Your list is full (" .. ns.customLimit() .. " windows). Remove one, or raise the limit in the settings.")
+    ns.error("Your list is full (" .. ns.customLimit() .. " windows). Remove one, or raise the limit in the settings.")
     return false
   end
   TUIHDB.customFrames[name] = true
@@ -180,10 +180,10 @@ end
 -- Add the window under the mouse to the list
 function ns.pickFrame()
   local f, why = frameUnderMouse()
-  if not f then ns.log(why) return end
+  if not f then ns.error(why) return end
   local name = f:GetName()
   if not name then
-    ns.log("That window has no name, so it cannot be kept.")
+    ns.error("That window has no name, so it cannot be kept.")
     return
   end
   ns.addCustomFrame(name)

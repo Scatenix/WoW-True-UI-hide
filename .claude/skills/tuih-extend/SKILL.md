@@ -49,7 +49,7 @@ for n,p in pairs(ns.builtin) do for k in pairs(p.keep) do assert(ns.keepByKey[k]
 ## Add a slash command
 - Commands.lua: `add(function(arg, raw) ... end, "name", "alias")`. `arg` is lowercased, `raw` keeps case (needed for frame names). Grouped commands (`toggle`, `preset`, `set`, `keepframe`) have their own sub-dispatch.
 - Add it to the right Help.lua group row, the README command table, and the usage text.
-- Chat output: `ns.log` for results the user asked for, `ns.info` for routine confirmations (only shown with the verbose setting).
+- Chat output: `ns.log` for results the user asked for, `ns.info` for routine confirmations (only shown with the verbose setting). Use `ns.error` for refused or invalid input (it opens a dialog, or uses the chat while the UI is hidden).
 
 ## Add a keybinding
 - `Bindings.xml`: `<Binding name="TUIH_X" category="True UI Hide">TUIH_X()</Binding>`; first binding of a section carries `header="TUIH_<SECTION>"` and `BINDING_HEADER_TUIH_<SECTION>` must exist in Binds.lua. Key-up bindings need `runOnUp="true"` and use `keystate`.

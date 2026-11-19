@@ -72,11 +72,11 @@ end
 -- them, including numeric ones). Returns how many were reset.
 local function resetToDefaults(matches, what)
   if InCombatLockdown() then
-    ns.log("Not possible in combat. Try again after combat.")
+    ns.error("Not possible in combat. Try again after combat.")
     return 0
   end
   if TUIHDB.saved ~= nil then
-    ns.log("The UI is still in hide mode. Run /tuih on first, then try again.")
+    ns.error("The UI is still in hide mode. Run /tuih on first, then try again.")
     return 0
   end
   local n = 0

@@ -186,7 +186,7 @@ Built-in presets (each one hides the UI and keeps only what is listed):
 | `minimal` | Player and target frame, cast bar, action bars, buffs, party and raid frames, enemy nameplates, error text, popups, loot windows | none |
 | `screenshot` | Nothing | none |
 
-Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). `save`, `delete`, `list`, `next`, `prev`, `previous`, `cycle` and the built-in names are reserved.
+Custom preset names may use letters, digits, `-` and `_` (up to 24 characters). Spaces are not allowed (a name with a space is rejected, not cut off). The case you type is kept (`MyExplore` stays `MyExplore`), but names are matched ignoring case, so `myexplore` and `MyExplore` are the same preset. `save`, `delete`, `list`, `next`, `prev`, `previous`, `cycle` and the built-in names are reserved.
 
 ### Settings: `/tuih set ...`
 
@@ -207,8 +207,7 @@ Options > Keybindings > True UI Hide. They are grouped into Main, Presets, Toggl
 | Action | Description |
 |---|---|
 | Toggle UI and names | Same as `/tuih` |
-| Peek: show UI while held | UI is visible only while the key is held |
-| Peek: hide UI while held | UI is hidden only while the key is held |
+| Peek: flip the UI while held | While the key is held the UI is flipped: shown if it was hidden, hidden if it was visible. Releasing the key flips it back |
 | Cycle player names | Same as `/tuih players` |
 | Screenshot without UI | Same as `/tuih shot` |
 | Mouselook (right-click style) | Same as `/tuih mouselook` |

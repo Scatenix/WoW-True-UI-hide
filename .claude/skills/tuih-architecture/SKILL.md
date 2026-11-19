@@ -62,17 +62,18 @@ CVars (CVars.lua):
 
 ## Combat, peek, screenshot
 - Combat.lua: on `PLAYER_REGEN_DISABLED` the UI is shown (if `combatShow`) by calling protected show/hide inside the event handler, which the game allows (verified by the maintainer). A running peek is ended first; a running screenshot is aborted when `shotCombatShow`. `ns.state.autoShown/autoStage` remember what to redo on `PLAYER_REGEN_ENABLED`; `ns.state.pending == "show"` is a show that was blocked by combat.
-- Peek.lua: `peekShow/peekHide` (key down/up). A lost key-up is handled by `ns.endPeek()` (called on the next key down, on combat, on `PLAYER_ENTERING_WORLD`).
+- Peek.lua: `ns.peek(keystate)` (one key: flips the UI while held; key down/up). A lost key-up is handled by `ns.endPeek()` (called on the next key down, on combat, on `PLAYER_ENTERING_WORLD`).
 - Screenshot: `ns.shot` sets `shotMode/shotBusy`, hides everything (also kept elements), waits `shotBefore`, `Screenshot()`, waits `shotAfter`, `finishShot`. `ns.state.shotCtx` holds the timers.
 
 ## Presets
-- `ns.builtin[name] = {keep, players}` (+ optional `combat`), order in `ns.presetOrder`. Custom presets in `TUIHDB.presets`.
+- `ns.builtin[name] = {keep, players}` (+ optional `combat`), order in `ns.presetOrder`. Custom presets in `TUIHDB.presets` (names keep the typed case; look them up with `ns.findPreset(name)`, which ignores case; built-in names are lowercase and reserved case-insensitively).
 - Command/keybind: `ns.applyPreset` sets keep/players/combat, then `ns.userSetAll(false)` + `ns.syncPlates()` (it HIDES the UI). The panel: `ns.applyPresetSettings` changes settings only.
 - Cycling uses `ns.state.presetCurrent`; unknown current -> first (forward) or last (backward).
 - "Back to normal" is `ns.reset` (keep cleared, combat default, UI shown, `saved = nil`) and is not a preset. `ns.wipeAll` restores first (only if hide mode is active), then wipes `TUIHDB` and calls `ns.initDB()`.
 
 ## Indicator, logging, help
 - Indicator.lua: red dot (20 px, WorldFrame CENTER offset -160/120) shown when UIParent is shown AND (`TUIHDB.saved ~= nil` or `ns.hasDetached()`) AND the setting is on AND no screenshot. Hooks `ns.setAll`. Left click `userSetAll(true)`, right click `userSetAll(false)`.
+- Errors for refused or invalid actions go through `ns.error(msg)` (Core.lua): a `StaticPopup` dialog (`TUIH_ERROR`), and also the chat when the UI is hidden (popups are invisible then) or verbose is on. Command typos and usage hints stay in the chat via `ns.log`.
 - Every chat message goes through `ns.log(msg, key)` which prefixes a hoverable `[TUIH]` link (`|Haddon:TUIH:<key>|h`). Help.lua hooks `OnHyperlinkEnter` on all chat frames (also temporary windows via `FCF_OpenTemporaryWindow`). Help tooltips are per topic so none grows taller than the screen.
 - Commands: handler table `add(fn, "name", "alias", ...)`; handlers receive `(lowercased arg, raw arg)`. Frame names are case-sensitive, so use the raw arg for them.
 
