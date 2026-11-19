@@ -1,7 +1,7 @@
 -- Frames: keep elements visible while UIParent is hidden
 local _, ns = ...
 
-local detached = {}  -- [frame] = { scale = original scale, points = original anchors }
+local detached = {}  -- [frame] = true while it is under the stand-in parent
 
 -- Resolve an element's frames; entries can be names or frame objects
 local function framesFor(e)
@@ -18,58 +18,43 @@ local function framesFor(e)
   return out
 end
 
-local function savePoints(f)
-  local pts = {}
-  for i = 1, f:GetNumPoints() do
-    local point, rel, relPoint, x, y = f:GetPoint(i)
-    pts[i] = { point, rel, relPoint, x, y }
+-- One stand-in parent for everything that is kept visible. UIParent is hidden,
+-- so kept frames get a parent that is not: a child of WorldFrame with the same
+-- rectangle (anchored to UIParent) and the same effective scale. Frames keep
+-- their own scale and anchors untouched, so a window that sets its own scale
+-- when it opens (settings panel, maps, ...) still looks right. Bags use the
+-- same frame as the game's "fullscreen frame" (see syncFullscreen).
+local host
+local function getHost()
+  if not host then
+    host = CreateFrame("Frame", nil, WorldFrame)
+    host:SetAllPoints(UIParent)
   end
-  return pts
+  host:SetScale(UIParent:GetEffectiveScale() / WorldFrame:GetEffectiveScale())
+  return host
 end
 
--- Re-apply anchors; a nil anchor target means "my parent", so pin it to UIParent
-local function loadPoints(f, pts, pinToUIParent)
-  f:ClearAllPoints()
-  for _, a in ipairs(pts) do
-    local rel = a[2]
-    if rel == nil and pinToUIParent then rel = UIParent end
-    f:SetPoint(a[1], rel, a[3], a[4], a[5])
-  end
-end
-
--- Move a frame to WorldFrame while keeping its on-screen size and position
+-- Move a frame under the stand-in parent. Its anchors are kept (a nil anchor
+-- target means "my parent", which has the same rectangle as UIParent).
 local function detach(f)
   if detached[f] or f:GetParent() ~= UIParent then return end
-  local scale = f:GetScale()
-  local pts = savePoints(f)
-  local ratio = UIParent:GetEffectiveScale() / WorldFrame:GetEffectiveScale()
-  detached[f] = { scale = scale, points = pts }
-  f:SetParent(WorldFrame)
-  f:SetScale(scale * ratio)
-  loadPoints(f, pts, true)
+  detached[f] = true
+  f:SetParent(getHost())
 end
 
 local function attach(f)
-  local st = detached[f]
-  if not st then return end
+  if not detached[f] then return end
   f:SetParent(UIParent)
-  f:SetScale(st.scale)
-  loadPoints(f, st.points, false)
   detached[f] = nil
 end
 
 -- Bags: the game refuses to open them while UIParent is hidden. It has a
--- hook for that: it can use another frame as the "fullscreen" parent.
--- A stand-in for UIParent (same size and scale), so the bags keep their look.
+-- hook for that: it can use another frame as the "fullscreen" parent. We
+-- give it the stand-in parent from above.
 local fullscreenSet = false
-local standIn
 local function syncFullscreen(want)
   if want and not fullscreenSet and ContainerFrame_SetFullScreenFrame then
-    standIn = standIn or CreateFrame("Frame", nil, WorldFrame)
-    standIn:ClearAllPoints()
-    standIn:SetScale(UIParent:GetEffectiveScale() / WorldFrame:GetEffectiveScale())
-    standIn:SetAllPoints(UIParent)
-    ContainerFrame_SetFullScreenFrame(standIn)
+    ContainerFrame_SetFullScreenFrame(getHost())
     fullscreenSet = true
   elseif not want and fullscreenSet then
     if ContainerFrame_ClearFullScreenFrame then ContainerFrame_ClearFullScreenFrame() end
@@ -273,6 +258,12 @@ end
 -- their addon loads: pick them up while the UI is hidden
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("ADDON_LOADED")
-loader:SetScript("OnEvent", function()
+loader:RegisterEvent("UI_SCALE_CHANGED")
+loader:RegisterEvent("DISPLAY_SIZE_CHANGED")
+loader:SetScript("OnEvent", function(_, event)
+  if event ~= "ADDON_LOADED" then
+    if host then getHost() end  -- UI scale or resolution changed: refresh the scale
+    return
+  end
   if TUIHDB and not UIParent:IsShown() then ns.sync() end
 end)
