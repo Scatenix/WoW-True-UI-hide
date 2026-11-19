@@ -5,6 +5,8 @@ description: How True UI Hide releases are made (tag push triggers the GitHub Ac
 
 # Releasing True UI Hide
 
+> Hard rule (see CLAUDE.md): never implement anything without an explicit go from the maintainer. A question like "what is next?" is a question, not a go.
+
 You never commit, tag or push. You prepare, explain, and give the maintainer the exact commands.
 
 ## Normal release

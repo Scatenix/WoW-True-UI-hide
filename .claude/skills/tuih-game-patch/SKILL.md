@@ -5,6 +5,8 @@ description: What to do when a World of Warcraft patch or client update may affe
 
 # Maintaining True UI Hide across game patches
 
+> Hard rule (see CLAUDE.md): never implement anything without an explicit go from the maintainer. A question like "what is next?" is a question, not a go.
+
 ## 1. Interface number
 - `TrueUIhide/TrueUIhide.toc` has `## Interface: 16001`. The game marks the addon "out of date" when it differs from the client's number. The release pipeline does NOT touch this line (it only rewrites `## Version:`).
 - Ask the maintainer to run in game: `/dump (select(4, GetBuildInfo()))` and use that number. A comma-separated list (`## Interface: 16001, 50503`) works if several clients must be supported; do not add numbers you have not confirmed.

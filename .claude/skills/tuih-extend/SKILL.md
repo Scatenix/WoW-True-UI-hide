@@ -5,6 +5,8 @@ description: Step-by-step recipes for extending the True UI Hide addon - add a k
 
 # Extending True UI Hide
 
+> Hard rule (see CLAUDE.md): never implement anything without an explicit go from the maintainer. A question like "what is next?" is a question, not a go.
+
 Load `tuih-architecture` first if you have not. Never commit. Finish every change with the checklist at the end.
 
 ## Add a keep element (Data.lua `ns.keepList`)

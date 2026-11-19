@@ -5,6 +5,8 @@ description: How to investigate True UI Hide bug reports without a game running 
 
 # Debugging True UI Hide
 
+> Hard rule (see CLAUDE.md): never implement anything without an explicit go from the maintainer. A question like "what is next?" is a question, not a go.
+
 You cannot run WoW. The maintainer can, but cannot copy text out of the chat and dislikes long manual procedures. So: collect evidence from files, keep requests to the maintainer to 3-4 simple steps, and say exactly when to `/reload`.
 
 ## Evidence channel 1: the SavedVariables file

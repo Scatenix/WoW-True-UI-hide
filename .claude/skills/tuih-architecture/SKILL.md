@@ -5,6 +5,8 @@ description: How the True UI Hide WoW addon works internally (modules, saved var
 
 # True UI Hide: architecture
 
+> Hard rule (see CLAUDE.md): never implement anything without an explicit go from the maintainer. A question like "what is next?" is a question, not a go.
+
 Goal of the addon: hide ALL UI (Alt+Z only hides UIParent). It hides `UIParent`, turns name/nameplate/soft-target/combat-text CVars off, and keeps chosen things visible ("keep elements"). Everything is reversible; the original CVar values are saved first.
 
 ## Modules (TOC load order, `TrueUIhide/TrueUIhide.toc`)
@@ -84,7 +86,8 @@ CVars (CVars.lua):
 
 ## Quirks and traps
 - `UIParent` hidden means anything parented to it is hidden, and the game blocks opening some windows (bags). Windows reparented to WorldFrame can drift slightly in position/scale because the game re-anchors them with offsets in their own scale units (popups are the likeliest).
-- Escape and some menus show `UIParent` again: this leaves hide settings active ("unstable state"); that is what the red dot is for.
+- Escape: Blizzard's `Blizzard_GameMenuEsc` runs handlers registered with `RegisterGameMenuEscHandler(priority, fn)`; the "Framework" handler does `UIParent:Show(); SetUIVisibility(true)` when UIParent is hidden, which is why Escape brings the UI back. TRIED AND REMOVED: an own handler at an earlier priority that kept the UI hidden. It blocked the addon on every Escape press (likely taint from registering into Blizzard's handler list) and `CloseAllWindows` from it did not close windows. Do not retry that way. Showing UIParent also fires `UI.TopLevelParentShown`, which calls `CloseAllWindows` (why open bags close when the UI comes back).
+- Other things can still show `UIParent` again (Alt+Z, other addons, menus): this leaves hide settings active ("unstable state"); that is what the red dot is for.
 - Name CVar `UnitNameHostleNPC` is spelled that way by Blizzard (do not "fix" it).
 - Popups (`StaticPopup1-4`) are used by secure code: reparenting them is a taint risk. If "action blocked" errors ever appear, suspect the `popups` element first, then other window elements.
 - Nameplate CVars cannot be changed in combat (read-back check catches it).
